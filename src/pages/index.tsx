@@ -33,6 +33,15 @@ export default function Home() {
     setLoading(false);
   };
 
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(resultText);
+      alert("Code copied to clipboard!");
+    } catch (err) {
+      alert("Failed to copy code.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="max-w-xl w-full bg-white shadow-md rounded p-8">
@@ -67,15 +76,23 @@ export default function Home() {
               rows={10}
               className="w-full p-2 border border-gray-300 rounded"
             />
-            <a
-              href={`data:text/plain;charset=utf-8,${encodeURIComponent(
-                resultText
-              )}`}
-              download="code.txt"
-              className="inline-block mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              Download as .txt
-            </a>
+            <div className="mt-4 flex gap-4">
+              <button
+                onClick={handleCopy}
+                className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+              >
+                Copy Code
+              </button>
+              <a
+                href={`data:text/plain;charset=utf-8,${encodeURIComponent(
+                  resultText
+                )}`}
+                download="code.txt"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                Download as .txt
+              </a>
+            </div>
           </div>
         )}
       </div>
