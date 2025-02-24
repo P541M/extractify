@@ -1,3 +1,4 @@
+// src/pages/api/extract.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 
 type Data = {
@@ -55,10 +56,10 @@ export default async function handler(
       return res.status(400).json({ error: "Failed to fetch repository tree" });
     }
     const treeData = await treeRes.json();
-    // Filter out files inside node_modules or similar directories (add more as needed)
-    const files = treeData.tree.filter(
-      (item: any) => item.type === "blob" && !item.path.includes("node_modules")
-    );
+    let files = treeData.tree.filter((item: any) => item.type === "blob");
+
+    // Exclude the package-lock.json file
+    files = files.filter((file: any) => file.path !== "package-lock.json");
 
     // Limit the number of files processed (for demo purposes)
     const limit = 50;
