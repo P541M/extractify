@@ -55,7 +55,10 @@ export default async function handler(
       return res.status(400).json({ error: "Failed to fetch repository tree" });
     }
     const treeData = await treeRes.json();
-    const files = treeData.tree.filter((item: any) => item.type === "blob");
+    // Filter out files inside node_modules or similar directories (add more as needed)
+    const files = treeData.tree.filter(
+      (item: any) => item.type === "blob" && !item.path.includes("node_modules")
+    );
 
     // Limit the number of files processed (for demo purposes)
     const limit = 50;
