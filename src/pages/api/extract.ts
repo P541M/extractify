@@ -79,8 +79,10 @@ export default async function handler(
       const fileData = await fileRes.json();
       // Decode base64 content
       const content = Buffer.from(fileData.content, "base64").toString("utf8");
+      // Extract file name from file path
+      const fileName = filePath.split("/").pop();
 
-      combinedCode += `\n\n=== ${filePath} ===\n\n${content}\n`;
+      combinedCode += `\nFile name: ${fileName}\nFile path: ${filePath}\nFile Code:\n${content}\n\n`;
     }
 
     res.status(200).json({ code: combinedCode });

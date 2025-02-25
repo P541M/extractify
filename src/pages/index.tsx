@@ -6,12 +6,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setResultText("");
+    setSuccessMessage("");
     try {
       const res = await fetch("/api/extract", {
         method: "POST",
@@ -22,7 +24,6 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok || data.error) {
-        // Display the error message returned by the API
         setError(data.error || "Failed to fetch repository code.");
       } else {
         setResultText(data.code);
@@ -36,10 +37,18 @@ export default function Home() {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(resultText);
-      alert("Code copied to clipboard!");
+      setSuccessMessage("Code copied to clipboard!");
+      // Optionally clear the success message after a delay
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
-      alert("Failed to copy code.");
+      setError("Failed to copy code.");
     }
+  };
+
+  const handleDownload = () => {
+    // Since download is triggered via the anchor tag, we just set a success message on click.
+    setSuccessMessage("Code downloaded as .txt!");
+    setTimeout(() => setSuccessMessage(""), 3000);
   };
 
   return (
@@ -88,11 +97,17 @@ export default function Home() {
                   resultText
                 )}`}
                 download="code.txt"
+                onClick={handleDownload}
                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
               >
                 Download as .txt
               </a>
             </div>
+            {successMessage && (
+              <p className="mt-4 text-green-600 font-medium">
+                {successMessage}
+              </p>
+            )}
           </div>
         )}
       </div>
