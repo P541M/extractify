@@ -1,15 +1,10 @@
 // src/pages/api/extract.ts
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 
 type Data = {
   code?: string;
   error?: string;
-};
-
-// Add headers for GitHub API requests
-const githubHeaders = {
-  "User-Agent": "Extractify (https://github.com/yourusername/yourrepo)", // Replace with your app's info
-  Accept: "application/vnd.github.v3+json",
 };
 
 export default async function handler(
@@ -26,6 +21,18 @@ export default async function handler(
     return res.status(400).json({ error: "Repository URL is required" });
   }
 
+  // Get the current session (if any) to retrieve the user's GitHub token
+  const session = await getSession({ req });
+
+  // Build GitHub API headers. Use the user's token if they're authenticated.
+  const githubHeaders = {
+    "User-Agent": "Extractify (https://github.com/yourusername/yourrepo)", // Replace with your app's info
+    Accept: "application/vnd.github.v3+json",
+    ...(session?.accessToken && {
+      Authorization: `token ${session.accessToken}`,
+    }),
+  };
+
   try {
     // Extract owner and repo from the URL using regex
     const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
@@ -35,7 +42,7 @@ export default async function handler(
     const owner = match[1];
     let repo = match[2].replace(/\.git$/, ""); // Remove .git suffix if present
 
-    // Fetch repository info with headers
+    // Fetch repository info with OAuth headers
     const repoInfoRes = await fetch(
       `https://api.github.com/repos/${owner}/${repo}`,
       { headers: githubHeaders }
@@ -57,7 +64,7 @@ export default async function handler(
 
     const defaultBranch = repoInfo.default_branch || "main";
 
-    // Fetch the repository tree recursively with headers
+    // Fetch the repository tree recursively with OAuth headers
     const treeRes = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`,
       { headers: githubHeaders }
@@ -79,7 +86,7 @@ export default async function handler(
 
     for (const file of selectedFiles) {
       const filePath = file.path;
-      // Get file content from the GitHub API with headers
+      // Get file content from the GitHub API with OAuth headers
       const fileRes = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${defaultBranch}`,
         { headers: githubHeaders }

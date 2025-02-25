@@ -1,5 +1,6 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Home() {
   const [repoUrl, setRepoUrl] = useState("");
@@ -7,6 +8,7 @@ export default function Home() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const { data: session } = useSession();
 
   // Automatically add the dark class to html for dark mode
   useEffect(() => {
@@ -57,6 +59,20 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
       <div className="max-w-xl w-full bg-gray-800 shadow-md rounded p-8">
+        <div className="flex justify-end mb-4">
+          {session ? (
+            <button onClick={() => signOut()} className="text-white underline">
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={() => signIn("github")}
+              className="text-white underline"
+            >
+              Sign In with GitHub
+            </button>
+          )}
+        </div>
         <h1 className="text-2xl font-bold mb-4 text-foreground">Extractify</h1>
         <form onSubmit={handleSubmit} className="mb-4">
           <label className="block mb-2 text-foreground">
