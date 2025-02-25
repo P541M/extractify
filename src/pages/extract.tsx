@@ -1,4 +1,4 @@
-// src/pages/index.tsx
+// src/pages/extract.tsx
 import { useState, useEffect } from "react";
 
 export default function Home() {

@@ -10,10 +10,11 @@ export default function LandingPage() {
       <p className="text-xl text-gray-300 mb-8">
         Easily extract and explore your GitHub repositories.
       </p>
-      <Link href="/extract">
-        <a className="bg-primary text-white px-6 py-3 rounded hover:bg-blue-600">
-          Get Started
-        </a>
+      <Link
+        href="/extract"
+        className="bg-primary text-white px-6 py-3 rounded hover:bg-blue-600"
+      >
+        Get Started
       </Link>
     </div>
   );
