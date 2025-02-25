@@ -6,6 +6,12 @@ type Data = {
   error?: string;
 };
 
+// Add headers for GitHub API requests
+const githubHeaders = {
+  "User-Agent": "Extractify (https://github.com/yourusername/yourrepo)", // Replace with your app's info
+  Accept: "application/vnd.github.v3+json",
+};
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
@@ -22,19 +28,22 @@ export default async function handler(
 
   try {
     // Extract owner and repo from the URL using regex
-    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)(\/|$)/);
+    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
     if (!match) {
-      return res.status(400).json({ error: "Invalid GitHub repository URL" });
+      return res.status(400).json({ error: "Invalid GitHub URL" });
     }
     const owner = match[1];
-    const repo = match[2];
+    let repo = match[2].replace(/\.git$/, ""); // Remove .git suffix if present
 
-    // Fetch repository info to determine the default branch and check if it's public
+    // Fetch repository info with headers
     const repoInfoRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}`
+      `https://api.github.com/repos/${owner}/${repo}`,
+      { headers: githubHeaders }
     );
     if (!repoInfoRes.ok) {
-      return res.status(400).json({ error: "Failed to fetch repository info" });
+      const errorResp = await repoInfoRes.json();
+      console.error("GitHub Error:", errorResp);
+      return res.status(400).json({ error: "Failed to fetch repo info" });
     }
     const repoInfo = await repoInfoRes.json();
 
@@ -48,9 +57,10 @@ export default async function handler(
 
     const defaultBranch = repoInfo.default_branch || "main";
 
-    // Fetch the repository tree recursively
+    // Fetch the repository tree recursively with headers
     const treeRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`
+      `https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`,
+      { headers: githubHeaders }
     );
     if (!treeRes.ok) {
       return res.status(400).json({ error: "Failed to fetch repository tree" });
@@ -69,9 +79,10 @@ export default async function handler(
 
     for (const file of selectedFiles) {
       const filePath = file.path;
-      // Get file content from the GitHub API
+      // Get file content from the GitHub API with headers
       const fileRes = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${defaultBranch}`
+        `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}?ref=${defaultBranch}`,
+        { headers: githubHeaders }
       );
       if (!fileRes.ok) {
         continue;
