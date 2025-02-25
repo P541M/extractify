@@ -1,21 +1,48 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
+import { db } from "../firebase/firebase";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
 export default function ExtractPage() {
   const [repoUrl, setRepoUrl] = useState("");
+  const [repoList, setRepoList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { data: session } = useSession();
 
-  // Automatically add the dark class to html for dark mode
+  // Enable dark mode by default
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
 
-  // If the user is not authenticated, prompt to sign in
+  // Load stored repositories from Firestore when the component mounts
+  useEffect(() => {
+    const fetchRepos = async () => {
+      try {
+        const q = query(collection(db, "repositories"), orderBy("createdAt"));
+        const querySnapshot = await getDocs(q);
+        const repos: string[] = [];
+        querySnapshot.forEach((doc) => {
+          repos.push(doc.data().url);
+        });
+        setRepoList(repos);
+      } catch (err: any) {
+        console.error("Error fetching repos:", err.message);
+      }
+    };
+
+    fetchRepos();
+  }, []);
+
   if (!session) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
@@ -32,19 +59,18 @@ export default function ExtractPage() {
     );
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Function to fetch repo code from the API
+  const fetchRepo = async (url: string) => {
     setLoading(true);
     setError("");
     setResultText("");
-    setSuccessMessage("");
     try {
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ repoUrl }),
+        body: JSON.stringify({ repoUrl: url }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -58,6 +84,31 @@ export default function ExtractPage() {
     setLoading(false);
   };
 
+  // Handle form submission by storing the repo URL and fetching code
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (repoUrl && !repoList.includes(repoUrl)) {
+      try {
+        // Save the repo URL to Firestore with a timestamp
+        await addDoc(collection(db, "repositories"), {
+          url: repoUrl,
+          createdAt: new Date(),
+        });
+        setRepoList((prev) => [...prev, repoUrl]);
+      } catch (err: any) {
+        console.error("Error saving repo:", err.message);
+      }
+    }
+    await fetchRepo(repoUrl);
+  };
+
+  // Handle clicking a repo from the sidebar
+  const handleRepoClick = async (url: string) => {
+    setRepoUrl(url);
+    await fetchRepo(url);
+  };
+
+  // Copy to clipboard function remains the same
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(resultText);
@@ -68,14 +119,32 @@ export default function ExtractPage() {
     }
   };
 
+  // Download handler
   const handleDownload = () => {
     setSuccessMessage("Code downloaded as .txt!");
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
-      <div className="max-w-xl w-full bg-gray-800 shadow-md rounded p-8">
+    <div className="min-h-screen flex bg-gray-900">
+      {/* Sidebar with stored repos */}
+      <aside className="w-64 bg-gray-800 p-4 border-r border-gray-700">
+        <h2 className="text-xl font-bold text-white mb-4">Repositories</h2>
+        <ul>
+          {repoList.map((url, index) => (
+            <li key={index} className="mb-2">
+              <button
+                onClick={() => handleRepoClick(url)}
+                className="text-left text-white hover:underline break-all"
+              >
+                {url}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+      {/* Main extraction area */}
+      <main className="flex-1 p-8">
         <div className="flex justify-end mb-4">
           <button onClick={() => signOut()} className="text-white underline">
             Sign Out
@@ -161,7 +230,7 @@ export default function ExtractPage() {
             )}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
