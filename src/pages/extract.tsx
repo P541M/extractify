@@ -1,8 +1,8 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession, signOut } from "next-auth/react";
 
-export default function Home() {
+export default function ExtractPage() {
   const [repoUrl, setRepoUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultText, setResultText] = useState("");
@@ -14,6 +14,23 @@ export default function Home() {
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
+
+  // If the user is not authenticated, prompt to sign in
+  if (!session) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900">
+        <p className="text-white mb-4">
+          You must be signed in to use the extraction tool.
+        </p>
+        <button
+          onClick={() => signIn("github")}
+          className="text-white underline bg-primary px-6 py-3 rounded hover:bg-blue-600"
+        >
+          Sign in with GitHub
+        </button>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,18 +77,9 @@ export default function Home() {
     <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center p-4">
       <div className="max-w-xl w-full bg-gray-800 shadow-md rounded p-8">
         <div className="flex justify-end mb-4">
-          {session ? (
-            <button onClick={() => signOut()} className="text-white underline">
-              Sign Out
-            </button>
-          ) : (
-            <button
-              onClick={() => signIn("github")}
-              className="text-white underline"
-            >
-              Sign In with GitHub
-            </button>
-          )}
+          <button onClick={() => signOut()} className="text-white underline">
+            Sign Out
+          </button>
         </div>
         <h1 className="text-2xl font-bold mb-4 text-foreground">Extractify</h1>
         <form onSubmit={handleSubmit} className="mb-4">
