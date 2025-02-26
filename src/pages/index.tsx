@@ -15,19 +15,27 @@ export default function LandingPage() {
           </Link>
           <nav className="flex items-center space-x-6">
             {session ? (
-              <button
-                onClick={() => signOut()}
-                className="text-muted hover:text-primary transition-colors"
-              >
-                Sign Out
-              </button>
+              <>
+                <Link
+                  href="/extract"
+                  className="text-muted hover:text-primary transition-colors"
+                >
+                  Extract
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="text-muted hover:text-primary transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
             ) : (
-              <button
-                onClick={() => signIn("github")}
+              <Link
+                href="/login"
                 className="text-muted hover:text-primary transition-colors"
               >
                 Sign In
-              </button>
+              </Link>
             )}
           </nav>
         </div>
@@ -35,30 +43,28 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">
-        <div className="text-center max-w-2xl animate-slide-up">
-          <h1 className="text-4xl font-bold mb-4 text-white">
-            Welcome to Extractify
+        <div className="text-center max-w-3xl animate-slide-up">
+          <h1 className="text-5xl font-bold mb-6 text-white">
+            Discover Code with Extractify
           </h1>
-          <p className="text-lg text-muted mb-8">
-            Extract and explore GitHub repositories with ease.
+          <p className="text-xl text-muted mb-8">
+            Effortlessly extract and explore code from public GitHub
+            repositories. Sign in with GitHub to get started!
           </p>
           {session ? (
-            <>
-              <p className="text-muted mb-6">Hello, {session.user?.name}!</p>
-              <Link
-                href="/extract"
-                className="inline-block bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-500 transition-colors"
-              >
-                Start Extracting
-              </Link>
-            </>
-          ) : (
-            <button
-              onClick={() => signIn("github")}
-              className="bg-primary text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-500 transition-colors"
+            <Link
+              href="/extract"
+              className="inline-block bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors text-lg"
             >
-              Sign in with GitHub
-            </button>
+              Go to Extractor
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="inline-block bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors text-lg"
+            >
+              Sign In with GitHub
+            </Link>
           )}
         </div>
       </main>

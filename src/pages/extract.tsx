@@ -1,6 +1,7 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
-import { signIn, useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
 import {
   collection,
@@ -9,6 +10,7 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
+import Link from "next/link";
 
 export default function ExtractPage() {
   const [repoUrl, setRepoUrl] = useState("");
@@ -17,7 +19,15 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // Redirect to /login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -37,21 +47,19 @@ export default function ExtractPage() {
         console.error("Error fetching repos:", err.message);
       }
     };
-    fetchRepos();
-  }, []);
+    if (session) fetchRepos();
+  }, [session]);
 
-  if (!session) {
+  if (status === "loading") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <p className="text-muted mb-6">Please sign in to continue.</p>
-        <button
-          onClick={() => signIn("github")}
-          className="bg-primary text-white px-6 py-3 rounded-xl hover:bg-blue-500 transition-colors"
-        >
-          Sign in with GitHub
-        </button>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted">Loading...</p>
       </div>
     );
+  }
+
+  if (!session) {
+    return null; // Redirect will handle this
   }
 
   const fetchRepo = async (url: string) => {
@@ -134,7 +142,9 @@ export default function ExtractPage() {
       {/* Main Content */}
       <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-white">Extractify</h1>
+          <Link href="/" className="text-2xl font-semibold text-white">
+            Extractify
+          </Link>
           <button
             onClick={() => signOut()}
             className="text-muted hover:text-primary transition-colors"
