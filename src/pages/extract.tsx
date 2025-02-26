@@ -24,7 +24,8 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Set sidebarOpen to true by default
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Settings states
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
@@ -34,6 +35,7 @@ export default function ExtractPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const settingsRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -47,18 +49,20 @@ export default function ExtractPage() {
     }
   }, []);
 
-  // Hide settings menu when clicking outside
+  // Hide settings menu when clicking outside of the settings dropdown and toggle button
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
+    const handleMouseDown = (e: MouseEvent) => {
       if (
         settingsRef.current &&
-        !settingsRef.current.contains(e.target as Node)
+        !settingsRef.current.contains(e.target as Node) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(e.target as Node)
       ) {
         setShowSettings(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleMouseDown);
+    return () => document.removeEventListener("mousedown", handleMouseDown);
   }, []);
 
   useEffect(() => {
@@ -221,7 +225,7 @@ export default function ExtractPage() {
       <header className="bg-gray-800 shadow-sm p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            onClick={() => setSidebarOpen((prev) => !prev)}
             className="text-muted hover:text-primary transition-colors"
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
@@ -263,13 +267,13 @@ export default function ExtractPage() {
           </Link>
         </div>
         <div className="relative">
-          {/* Account/Settings icon */}
+          {/* Profile (Settings) icon as a toggle */}
           <button
-            onClick={() => setShowSettings(!showSettings)}
+            ref={toggleButtonRef}
+            onClick={() => setShowSettings((prev) => !prev)}
             className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors"
             aria-label="Account settings"
           >
-            {/* Simple circle avatar placeholder */}
             <span className="text-white text-sm">A</span>
           </button>
           {showSettings && (
@@ -288,7 +292,7 @@ export default function ExtractPage() {
                   }
                 />
               </div>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-muted">
                   Auto extract on click
                 </span>
@@ -300,14 +304,16 @@ export default function ExtractPage() {
                   }
                 />
               </div>
+              <div className="mt-4">
+                <button
+                  onClick={() => signOut()}
+                  className="w-full bg-secondary text-white px-3 py-2 rounded-lg hover:bg-green-400 transition-colors text-sm"
+                >
+                  Sign Out
+                </button>
+              </div>
             </div>
           )}
-          <button
-            onClick={() => signOut()}
-            className="ml-4 text-muted hover:text-primary transition-colors"
-          >
-            Sign Out
-          </button>
         </div>
       </header>
 
@@ -404,19 +410,6 @@ export default function ExtractPage() {
                 ) : null}
                 {loading ? "Extracting..." : "Extract"}
               </button>
-            </div>
-            <div className="flex items-center gap-2 mt-4">
-              <input
-                type="checkbox"
-                id="lineNumbers"
-                checked={includeLineNumbers}
-                onChange={(e) =>
-                  updateSetting("includeLineNumbers", e.target.checked)
-                }
-              />
-              <label htmlFor="lineNumbers" className="text-sm text-muted">
-                Include line numbers
-              </label>
             </div>
           </form>
 
