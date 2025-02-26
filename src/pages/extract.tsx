@@ -22,7 +22,6 @@ export default function ExtractPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Redirect to /login if not authenticated
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
@@ -71,6 +70,7 @@ export default function ExtractPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoUrl: url }),
+        credentials: "include", // Ensure session cookie is sent
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -122,7 +122,6 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen flex bg-background text-foreground">
-      {/* Sidebar */}
       <aside className="w-72 bg-gray-800 p-6 shadow-lg">
         <h2 className="text-xl font-semibold text-white mb-4">Recent Repos</h2>
         <ul className="space-y-2">
@@ -139,7 +138,6 @@ export default function ExtractPage() {
         </ul>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
           <Link href="/" className="text-2xl font-semibold text-white">

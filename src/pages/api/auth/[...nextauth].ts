@@ -1,4 +1,4 @@
-// /pages/api/auth/[...nextauth].ts
+// pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 
@@ -10,18 +10,18 @@ export default NextAuth({
       authorization: { params: { scope: "read:user repo" } },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }) {
-      // When signing in, persist the GitHub access token in the JWT
       if (account) {
         token.accessToken = account.access_token;
       }
       return token;
     },
     async session({ session, token }) {
-      // Make the access token available in the session
-      session.accessToken = token.accessToken;
+      session.accessToken = token.accessToken as string | undefined;
       return session;
     },
   },
+  debug: true, // Enable debug mode for detailed logs
 });
