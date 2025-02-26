@@ -1,4 +1,3 @@
-// src/pages/api/extract.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 
@@ -27,7 +26,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { repoUrl } = req.body;
+  const { repoUrl, includeLineNumbers } = req.body;
   if (!repoUrl) {
     return res.status(400).json({ error: "Repository URL is required" });
   }
@@ -129,12 +128,19 @@ export default async function handler(
         );
         if (!fileRes.ok) {
           console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
-          continue; // Skip files we can’t access
+          continue;
         }
         const fileData = await fileRes.json();
-        const content = Buffer.from(fileData.content, "base64").toString(
-          "utf8"
-        );
+        let content = Buffer.from(fileData.content, "base64").toString("utf8");
+
+        // Conditionally add line numbers
+        if (includeLineNumbers) {
+          content = content
+            .split("\n")
+            .map((line, index) => `${index + 1}: ${line}`)
+            .join("\n");
+        }
+
         combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
       }
     }

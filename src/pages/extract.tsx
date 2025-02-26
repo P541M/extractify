@@ -1,4 +1,3 @@
-// src/pages/extract.tsx
 import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -25,6 +24,7 @@ export default function ExtractPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -80,7 +80,7 @@ export default function ExtractPage() {
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl: url }),
+        body: JSON.stringify({ repoUrl: url, includeLineNumbers }),
         credentials: "include",
       });
 
@@ -88,11 +88,9 @@ export default function ExtractPage() {
       setProgress(100);
 
       const data = await res.json();
-      if (!res.ok || data.error) {
+      if (!res.ok || data.error)
         setError(data.error || "Failed to fetch repository code.");
-      } else {
-        setResultText(data.code);
-      }
+      else setResultText(data.code);
     } catch (err: any) {
       setProgress(0);
       setError(err.message || "Something went wrong");
@@ -319,6 +317,17 @@ export default function ExtractPage() {
                 ) : null}
                 {loading ? "Extracting..." : "Extract"}
               </button>
+            </div>
+            <div className="flex items-center gap-2 mt-4">
+              <input
+                type="checkbox"
+                id="lineNumbers"
+                checked={includeLineNumbers}
+                onChange={(e) => setIncludeLineNumbers(e.target.checked)}
+              />
+              <label htmlFor="lineNumbers" className="text-sm text-muted">
+                Include line numbers
+              </label>
             </div>
           </form>
 
