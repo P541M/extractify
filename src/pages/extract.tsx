@@ -9,12 +9,17 @@ import {
   getDocs,
   query,
   orderBy,
+  deleteDoc,
+  doc,
+  where,
 } from "firebase/firestore";
 import Link from "next/link";
 
 export default function ExtractPage() {
   const [repoUrl, setRepoUrl] = useState("");
-  const [repoList, setRepoList] = useState<string[]>([]);
+  const [repoList, setRepoList] = useState<Array<{ id: string; url: string }>>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [resultText, setResultText] = useState("");
@@ -37,11 +42,14 @@ export default function ExtractPage() {
   useEffect(() => {
     const fetchRepos = async () => {
       try {
-        const q = query(collection(db, "repositories"), orderBy("createdAt"));
+        const q = query(
+          collection(db, "repositories"),
+          orderBy("createdAt", "desc")
+        );
         const querySnapshot = await getDocs(q);
-        const repos: string[] = [];
+        const repos: Array<{ id: string; url: string }> = [];
         querySnapshot.forEach((doc) => {
-          repos.push(doc.data().url);
+          repos.push({ id: doc.id, url: doc.data().url });
         });
         setRepoList(repos);
       } catch (err: any) {
@@ -109,23 +117,87 @@ export default function ExtractPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (repoUrl && !repoList.includes(repoUrl)) {
+    if (!repoUrl) return;
+
+    // Check if repo already exists
+    const existingRepo = repoList.find((repo) => repo.url === repoUrl);
+
+    if (existingRepo) {
+      // Move to top by clicking on it
+      handleRepoClick(repoUrl);
+    } else {
       try {
-        await addDoc(collection(db, "repositories"), {
+        const docRef = await addDoc(collection(db, "repositories"), {
           url: repoUrl,
           createdAt: new Date(),
         });
-        setRepoList((prev) => [...prev, repoUrl]);
+        // Add new repo to the top of the list
+        setRepoList((prev) => [{ id: docRef.id, url: repoUrl }, ...prev]);
       } catch (err: any) {
         console.error("Error saving repo:", err.message);
       }
+      await fetchRepo(repoUrl);
     }
-    await fetchRepo(repoUrl);
   };
 
   const handleRepoClick = async (url: string) => {
+    // Find repo by URL
+    const clickedRepo = repoList.find((repo) => repo.url === url);
+    if (!clickedRepo) return;
+
+    // Remove the clicked repo from list
+    const updatedList = repoList.filter((repo) => repo.url !== url);
+
+    // Add it back to the top
+    setRepoList([clickedRepo, ...updatedList]);
+
+    // Update in Firestore: delete and create new to update timestamp
+    try {
+      // Delete existing document
+      await deleteDoc(doc(db, "repositories", clickedRepo.id));
+
+      // Create new document with current timestamp
+      const docRef = await addDoc(collection(db, "repositories"), {
+        url: url,
+        createdAt: new Date(),
+      });
+
+      // Update the ID in our state
+      setRepoList((prev) => [
+        { id: docRef.id, url },
+        ...prev.filter((repo) => repo.url !== url),
+      ]);
+    } catch (err: any) {
+      console.error("Error updating repo order:", err.message);
+    }
+
+    // Set URL and fetch
     setRepoUrl(url);
     await fetchRepo(url);
+  };
+
+  const handleDeleteRepo = async (
+    e: React.MouseEvent,
+    repoId: string,
+    repoUrl: string
+  ) => {
+    e.stopPropagation(); // Prevent triggering the parent click event
+
+    try {
+      // Delete from Firestore
+      await deleteDoc(doc(db, "repositories", repoId));
+
+      // Update state
+      setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
+
+      // If the currently selected repo was deleted, clear the input
+      if (repoUrl === repoUrl) {
+        setRepoUrl("");
+      }
+    } catch (err: any) {
+      console.error("Error deleting repo:", err.message);
+      setError("Failed to delete repository from history.");
+    }
   };
 
   const handleCopy = async () => {
@@ -152,22 +224,66 @@ export default function ExtractPage() {
       {/* Sidebar */}
       <aside
         className={`${
-          sidebarOpen ? "w-72" : "w-0 -ml-6"
-        } bg-gray-800 shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
+          sidebarOpen ? "w-72" : "w-0"
+        } bg-gray-800 shadow-lg transition-all duration-300 ease-in-out overflow-hidden relative`}
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold text-white">Recent Repos</h2>
+            <button
+              onClick={toggleSidebar}
+              className="text-muted hover:text-primary transition-colors p-2"
+              aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+            >
+              {/* X icon for closing sidebar */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
           <ul className="space-y-2">
-            {repoList.map((url, index) => (
-              <li key={index}>
-                <button
-                  onClick={() => handleRepoClick(url)}
-                  className="w-full text-left text-muted hover:text-primary transition-colors truncate"
-                >
-                  {url.replace("https://github.com/", "")}
-                </button>
+            {repoList.map((repo) => (
+              <li key={repo.id} className="group">
+                <div className="flex justify-between items-center">
+                  <button
+                    onClick={() => handleRepoClick(repo.url)}
+                    className="flex-1 text-left text-muted hover:text-primary transition-colors truncate py-1"
+                  >
+                    {repo.url.replace("https://github.com/", "")}
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteRepo(e, repo.id, repo.url)}
+                    className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-400 transition-all p-1"
+                    aria-label="Delete repository"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18"></path>
+                      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
+                      <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                    </svg>
+                  </button>
+                </div>
               </li>
             ))}
           </ul>
@@ -178,39 +294,30 @@ export default function ExtractPage() {
       <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-4">
-            <button
-              onClick={toggleSidebar}
-              className="text-muted hover:text-primary transition-colors p-2"
-              aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-            >
-              {/* Hamburger/close icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            {!sidebarOpen && (
+              <button
+                onClick={toggleSidebar}
+                className="text-muted hover:text-primary transition-colors p-2"
+                aria-label="Open sidebar"
               >
-                {sidebarOpen ? (
-                  <>
-                    {/* X icon when sidebar is open */}
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </>
-                ) : (
-                  <>
-                    {/* Hamburger icon when sidebar is closed */}
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                  </>
-                )}
-              </svg>
-            </button>
+                {/* Hamburger icon when sidebar is closed */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              </button>
+            )}
             <Link href="/" className="text-2xl font-semibold text-white">
               Extractify
             </Link>
