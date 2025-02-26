@@ -24,7 +24,7 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Closed by default for cleaner UI
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -88,9 +88,11 @@ export default function ExtractPage() {
       setProgress(100);
 
       const data = await res.json();
-      if (!res.ok || data.error)
+      if (!res.ok || data.error) {
         setError(data.error || "Failed to fetch repository code.");
-      else setResultText(data.code);
+      } else {
+        setResultText(data.code);
+      }
     } catch (err: any) {
       setProgress(0);
       setError(err.message || "Something went wrong");
@@ -172,7 +174,6 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Top Bar */}
       <header className="bg-gray-800 shadow-sm p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button
@@ -226,7 +227,6 @@ export default function ExtractPage() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
         <aside
           className={`${
             sidebarOpen ? "w-64" : "w-0"
@@ -275,11 +275,10 @@ export default function ExtractPage() {
           </div>
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1 flex flex-col items-center p-8 max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="w-full mb-6">
             <label htmlFor="repoUrl" className="block text-sm text-muted mb-2">
-              Enter GitHub Repository URL
+              Enter GitHub Repository URL (Public or Private)
             </label>
             <div className="flex gap-2">
               <input
@@ -288,7 +287,7 @@ export default function ExtractPage() {
                 value={repoUrl}
                 onChange={(e) => setRepoUrl(e.target.value)}
                 className="flex-1 p-3 bg-gray-700 text-foreground rounded-lg border border-gray-600 focus:outline-none focus:border-primary transition-colors"
-                placeholder="e.g., https://github.com/user/repo"
+                placeholder="e.g., https://github.com/user/repo (private repos require access)"
                 required
               />
               <button

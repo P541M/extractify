@@ -1,4 +1,4 @@
-// pages/api/extract.ts
+// src/pages/api/extract.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 
@@ -13,7 +13,6 @@ export default async function handler(
 ) {
   console.log("Request headers:", req.headers);
 
-  // Get JWT token directly
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   console.log("JWT token:", token);
 
@@ -34,7 +33,7 @@ export default async function handler(
   }
 
   const githubHeaders = {
-    "User-Agent": "Your-App-Name", // Replace with your app's name
+    "User-Agent": "Extractify", // Updated to app name
     Accept: "application/vnd.github.v3+json",
     Authorization: `token ${token.accessToken}`,
   };
@@ -54,18 +53,26 @@ export default async function handler(
     if (!repoInfoRes.ok) {
       const errorResp = await repoInfoRes.json();
       console.error("Repo fetch error:", errorResp);
+      if (repoInfoRes.status === 403) {
+        return res.status(403).json({
+          error: "You don’t have permission to access this repository.",
+        });
+      } else if (repoInfoRes.status === 404) {
+        return res.status(404).json({
+          error: "Repository not found or you lack access.",
+        });
+      }
       return res
-        .status(400)
+        .status(repoInfoRes.status)
         .json({ error: errorResp.message || "Failed to fetch repo info" });
     }
     const repoInfo = await repoInfoRes.json();
 
-    if (repoInfo.private) {
-      return res.status(400).json({
-        error:
-          "This tool only works on public repositories unless you have access.",
-      });
-    }
+    // Removed private repo restriction
+    console.log(
+      "Repository visibility:",
+      repoInfo.private ? "Private" : "Public"
+    );
 
     const defaultBranch = repoInfo.default_branch || "main";
     const treeRes = await fetch(
@@ -75,7 +82,12 @@ export default async function handler(
     if (!treeRes.ok) {
       const errorResp = await treeRes.json();
       console.error("Tree fetch error:", errorResp);
-      return res.status(400).json({
+      if (treeRes.status === 403) {
+        return res.status(403).json({
+          error: "You don’t have permission to access this repository’s tree.",
+        });
+      }
+      return res.status(treeRes.status).json({
         error: errorResp.message || "Failed to fetch repository tree",
       });
     }
@@ -95,7 +107,7 @@ export default async function handler(
       );
       if (!fileRes.ok) {
         console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
-        continue;
+        continue; // Skip files we can’t access
       }
       const fileData = await fileRes.json();
       const content = Buffer.from(fileData.content, "base64").toString("utf8");

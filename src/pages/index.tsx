@@ -7,7 +7,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Navbar */}
       <header className="bg-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link href="/" className="text-2xl font-semibold text-white">
@@ -41,15 +40,14 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <main className="flex-1 flex items-center justify-center px-4 py-16">
         <div className="text-center max-w-3xl animate-slide-up">
           <h1 className="text-5xl font-bold mb-6 text-white">
             Discover Code with Extractify
           </h1>
           <p className="text-xl text-muted mb-8">
-            Effortlessly extract and explore code from public GitHub
-            repositories. Sign in with GitHub to get started!
+            Effortlessly extract and explore code from public or private GitHub
+            repositories you have access to. Sign in with GitHub to get started!
           </p>
           {session ? (
             <Link
@@ -69,7 +67,6 @@ export default function LandingPage() {
         </div>
       </main>
 
-      {/* Footer */}
       <footer className="bg-gray-800 py-4">
         <div className="max-w-7xl mx-auto px-4 text-center text-muted">
           © {new Date().getFullYear()} Extractify. All rights reserved.
