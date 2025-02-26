@@ -1,7 +1,8 @@
+// tailwind.config.ts
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: "class", // Enable dark mode via a class on the html element
+  darkMode: "class",
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,10 +11,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#1F2937", // Dark background
-        foreground: "#F9FAFB", // Light text for dark mode
-        primary: "#2563EB", // Blue tone for primary actions
-        secondary: "#10B981", // Green tone for secondary actions
+        background: "#1F2937",
+        foreground: "#F9FAFB",
+        primary: "#3B82F6", // Softer blue
+        secondary: "#34D399", // Softer green
+        accent: "#FBBF24", // Warm yellow for highlights
+        muted: "#6B7280", // Gray for secondary text
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"], // Modern, friendly font
+      },
+      borderRadius: {
+        xl: "1rem", // Softer corners
+      },
+      animation: {
+        "fade-in": "fadeIn 0.3s ease-in-out",
+        "slide-up": "slideUp 0.3s ease-out",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
       },
     },
   },
