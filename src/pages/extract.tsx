@@ -12,6 +12,7 @@ import {
   doc,
 } from "firebase/firestore";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ExtractPage() {
   // Repository state
@@ -271,11 +272,22 @@ export default function ExtractPage() {
           <button
             ref={toggleButtonRef}
             onClick={() => setShowSettings((prev) => !prev)}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors overflow-hidden"
             aria-label="Account settings"
           >
-            <span className="text-white text-sm">A</span>
+            {session?.user?.image ? (
+              <Image
+                src={session.user.image}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="object-cover"
+              />
+            ) : (
+              <span className="text-white text-sm">A</span>
+            )}
           </button>
+
           {showSettings && (
             <div
               ref={settingsRef}
