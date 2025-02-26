@@ -33,7 +33,7 @@ export default async function handler(
   }
 
   const githubHeaders = {
-    "User-Agent": "Extractify", // Updated to app name
+    "User-Agent": "Extractify",
     Accept: "application/vnd.github.v3+json",
     Authorization: `token ${token.accessToken}`,
   };
@@ -68,7 +68,6 @@ export default async function handler(
     }
     const repoInfo = await repoInfoRes.json();
 
-    // Removed private repo restriction
     console.log(
       "Repository visibility:",
       repoInfo.private ? "Private" : "Public"
@@ -100,19 +99,44 @@ export default async function handler(
     const selectedFiles = files.slice(0, limit);
     let combinedCode = "";
 
+    // Define common image file extensions
+    const imageExtensions = [
+      ".png",
+      ".jpg",
+      ".jpeg",
+      ".gif",
+      ".bmp",
+      ".tiff",
+      ".svg",
+      ".webp",
+      ".ico",
+    ];
+
     for (const file of selectedFiles) {
-      const fileRes = await fetch(
-        `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${defaultBranch}`,
-        { headers: githubHeaders }
+      const fileName = file.path.split("/").pop() || "";
+      const isImage = imageExtensions.some((ext) =>
+        fileName.toLowerCase().endsWith(ext)
       );
-      if (!fileRes.ok) {
-        console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
-        continue; // Skip files we can’t access
+
+      if (isImage) {
+        // For images, only include metadata without content
+        combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Image content omitted]\n\n`;
+      } else {
+        // For non-image files, fetch and include content
+        const fileRes = await fetch(
+          `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${defaultBranch}`,
+          { headers: githubHeaders }
+        );
+        if (!fileRes.ok) {
+          console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
+          continue; // Skip files we can’t access
+        }
+        const fileData = await fileRes.json();
+        const content = Buffer.from(fileData.content, "base64").toString(
+          "utf8"
+        );
+        combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
       }
-      const fileData = await fileRes.json();
-      const content = Buffer.from(fileData.content, "base64").toString("utf8");
-      const fileName = file.path.split("/").pop();
-      combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
     }
 
     res.status(200).json({ code: combinedCode });
