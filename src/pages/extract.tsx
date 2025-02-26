@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 
 export default function ExtractPage() {
+  // Repository state
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<Array<{ id: string; url: string }>>(
     []
@@ -24,9 +25,41 @@ export default function ExtractPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Settings states
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
+  const [autoExtract, setAutoExtract] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+
   const { data: session, status } = useSession();
   const router = useRouter();
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const storedLineNumbers = localStorage.getItem("includeLineNumbers");
+    const storedAutoExtract = localStorage.getItem("autoExtract");
+    if (storedLineNumbers !== null) {
+      setIncludeLineNumbers(storedLineNumbers === "true");
+    }
+    if (storedAutoExtract !== null) {
+      setAutoExtract(storedAutoExtract === "true");
+    }
+  }, []);
+
+  // Hide settings menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        settingsRef.current &&
+        !settingsRef.current.contains(e.target as Node)
+      ) {
+        setShowSettings(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -65,6 +98,16 @@ export default function ExtractPage() {
   }
 
   if (!session) return null;
+
+  // Save a setting to localStorage and update state
+  const updateSetting = (
+    key: "includeLineNumbers" | "autoExtract",
+    value: boolean
+  ) => {
+    localStorage.setItem(key, value.toString());
+    if (key === "includeLineNumbers") setIncludeLineNumbers(value);
+    if (key === "autoExtract") setAutoExtract(value);
+  };
 
   const fetchRepo = async (url: string) => {
     setLoading(true);
@@ -136,7 +179,10 @@ export default function ExtractPage() {
       console.error("Error updating repo order:", err.message);
     }
     setRepoUrl(url);
-    await fetchRepo(url);
+    // Auto extract only if enabled
+    if (autoExtract) {
+      await fetchRepo(url);
+    }
   };
 
   const handleDeleteRepo = async (
@@ -171,7 +217,7 @@ export default function ExtractPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative">
       <header className="bg-gray-800 shadow-sm p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button
@@ -216,12 +262,53 @@ export default function ExtractPage() {
             Extractify
           </Link>
         </div>
-        <button
-          onClick={() => signOut()}
-          className="text-muted hover:text-primary transition-colors"
-        >
-          Sign Out
-        </button>
+        <div className="relative">
+          {/* Account/Settings icon */}
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors"
+            aria-label="Account settings"
+          >
+            {/* Simple circle avatar placeholder */}
+            <span className="text-white text-sm">A</span>
+          </button>
+          {showSettings && (
+            <div
+              ref={settingsRef}
+              className="absolute right-0 mt-2 w-64 bg-gray-700 rounded-lg shadow-lg p-4 z-10"
+            >
+              <h3 className="text-white font-semibold mb-2">Settings</h3>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted">Include line numbers</span>
+                <input
+                  type="checkbox"
+                  checked={includeLineNumbers}
+                  onChange={(e) =>
+                    updateSetting("includeLineNumbers", e.target.checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted">
+                  Auto extract on click
+                </span>
+                <input
+                  type="checkbox"
+                  checked={autoExtract}
+                  onChange={(e) =>
+                    updateSetting("autoExtract", e.target.checked)
+                  }
+                />
+              </div>
+            </div>
+          )}
+          <button
+            onClick={() => signOut()}
+            className="ml-4 text-muted hover:text-primary transition-colors"
+          >
+            Sign Out
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-1">
@@ -323,7 +410,9 @@ export default function ExtractPage() {
                 type="checkbox"
                 id="lineNumbers"
                 checked={includeLineNumbers}
-                onChange={(e) => setIncludeLineNumbers(e.target.checked)}
+                onChange={(e) =>
+                  updateSetting("includeLineNumbers", e.target.checked)
+                }
               />
               <label htmlFor="lineNumbers" className="text-sm text-muted">
                 Include line numbers
