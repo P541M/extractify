@@ -20,6 +20,7 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -142,29 +143,78 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
   return (
     <div className="min-h-screen flex bg-background text-foreground">
-      <aside className="w-72 bg-gray-800 p-6 shadow-lg">
-        <h2 className="text-xl font-semibold text-white mb-4">Recent Repos</h2>
-        <ul className="space-y-2">
-          {repoList.map((url, index) => (
-            <li key={index}>
-              <button
-                onClick={() => handleRepoClick(url)}
-                className="w-full text-left text-muted hover:text-primary transition-colors truncate"
-              >
-                {url.replace("https://github.com/", "")}
-              </button>
-            </li>
-          ))}
-        </ul>
+      {/* Sidebar */}
+      <aside
+        className={`${
+          sidebarOpen ? "w-72" : "w-0 -ml-6"
+        } bg-gray-800 shadow-lg transition-all duration-300 ease-in-out overflow-hidden`}
+      >
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-white">Recent Repos</h2>
+          </div>
+          <ul className="space-y-2">
+            {repoList.map((url, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => handleRepoClick(url)}
+                  className="w-full text-left text-muted hover:text-primary transition-colors truncate"
+                >
+                  {url.replace("https://github.com/", "")}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </aside>
 
+      {/* Main content */}
       <main className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
-          <Link href="/" className="text-2xl font-semibold text-white">
-            Extractify
-          </Link>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={toggleSidebar}
+              className="text-muted hover:text-primary transition-colors p-2"
+              aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+            >
+              {/* Hamburger/close icon */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {sidebarOpen ? (
+                  <>
+                    {/* X icon when sidebar is open */}
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </>
+                ) : (
+                  <>
+                    {/* Hamburger icon when sidebar is closed */}
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                  </>
+                )}
+              </svg>
+            </button>
+            <Link href="/" className="text-2xl font-semibold text-white">
+              Extractify
+            </Link>
+          </div>
           <button
             onClick={() => signOut()}
             className="text-muted hover:text-primary transition-colors"
