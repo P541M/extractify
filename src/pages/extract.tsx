@@ -16,6 +16,7 @@ export default function ExtractPage() {
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -65,13 +66,29 @@ export default function ExtractPage() {
     setLoading(true);
     setError("");
     setResultText("");
+    setProgress(0);
+
     try {
+      // Simulate progress before actual API call
+      const progressInterval = setInterval(() => {
+        setProgress((prevProgress) => {
+          // Slowly increase progress up to 90%
+          const newProgress = prevProgress + Math.random() * 5;
+          return newProgress < 90 ? newProgress : 90;
+        });
+      }, 300);
+
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoUrl: url }),
         credentials: "include", // Ensure session cookie is sent
       });
+
+      // Clear the interval and set progress to 100% when request completes
+      clearInterval(progressInterval);
+      setProgress(100);
+
       const data = await res.json();
       if (!res.ok || data.error) {
         setError(data.error || "Failed to fetch repository code.");
@@ -79,9 +96,14 @@ export default function ExtractPage() {
         setResultText(data.code);
       }
     } catch (err: any) {
+      setProgress(0);
       setError(err.message || "Something went wrong");
     }
-    setLoading(false);
+
+    // Small delay before clearing loading state for smoother UX
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -187,9 +209,29 @@ export default function ExtractPage() {
                 />
               </svg>
             )}
-            {loading ? "Extracting..." : "Extract Code"}
+            {loading ? `Extracting... ${progress.toFixed(0)}%` : "Extract Code"}
           </button>
         </form>
+
+        {loading && (
+          <div className="mb-6 animate-fade-in">
+            <div className="w-full bg-gray-700 rounded-full h-2.5">
+              <div
+                className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+            <p className="text-muted text-sm mt-2">
+              {progress < 30
+                ? "Initializing repository access..."
+                : progress < 60
+                ? "Fetching repository files..."
+                : progress < 90
+                ? "Processing code content..."
+                : "Finalizing extraction..."}
+            </p>
+          </div>
+        )}
 
         {error && <p className="text-red-400 mb-4 animate-fade-in">{error}</p>}
         {resultText && (
