@@ -41,6 +41,7 @@ export default function ExtractPage() {
   const settingsRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
+  // **Effects**
   useEffect(() => {
     const storedLineNumbers = localStorage.getItem("includeLineNumbers");
     const storedAutoExtract = localStorage.getItem("autoExtract");
@@ -114,6 +115,7 @@ export default function ExtractPage() {
     if (session) fetchRepos();
   }, [session]);
 
+  // **Loading and Authentication Checks**
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -124,6 +126,7 @@ export default function ExtractPage() {
 
   if (!session) return null;
 
+  // **Helper Functions**
   const updateSetting = (
     key: "includeLineNumbers" | "autoExtract",
     value: boolean
@@ -303,6 +306,7 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  // **JSX Return**
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       {/* Header */}
@@ -412,119 +416,198 @@ export default function ExtractPage() {
 
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside
-          className={`${
-            sidebarOpen ? "w-64" : "w-0"
-          } bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden`}
-        >
+        <aside className="w-64 bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden">
           <div className="p-4">
             {/* Starred Repos Section */}
-            {/* Starred Repos Section */}
             {starredRepos.length > 0 && (
-              <ul className="space-y-2 mb-4">
-                {starredRepos.map((repo, index) => (
-                  <li
-                    key={repo.id}
-                    className="flex items-center"
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={handleDragOver}
-                    onDrop={() => handleDrop(index)}
-                  >
-                    {/* Low-key drag handle */}
-                    <div className="w-4 h-8 bg-gray-600 mr-2 cursor-move rounded" />
-
-                    {/* Repo Name with star icon in a flex container */}
-                    <button
-                      onClick={() => handleRepoClick(repo.url)}
-                      className="flex flex-1 items-center gap-2 text-left text-muted hover:text-primary py-1"
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-white mb-2">
+                  Starred Repositories
+                </h3>
+                <ul className="space-y-2">
+                  {starredRepos.map((repo, index) => (
+                    <li
+                      key={repo.id}
+                      className="flex items-center group"
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add("bg-gray-700");
+                      }}
+                      onDragLeave={(e) =>
+                        e.currentTarget.classList.remove("bg-gray-700")
+                      }
+                      onDrop={(e) => {
+                        e.currentTarget.classList.remove("bg-gray-700");
+                        handleDrop(index);
+                      }}
                     >
-                      {/* Fixed width container for repo name to force truncation */}
-                      <span className="block truncate max-w-[calc(100%-24px)]">
-                        {repo.url.replace("https://github.com/", "")}
-                      </span>
-                      {/* Star icon */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                        className="text-yellow-400 flex-shrink-0"
+                      {/* Improved Drag Handle */}
+                      <div
+                        className="w-4 h-8 flex items-center justify-center mr-2 cursor-move text-gray-400 hover:text-primary transition-colors"
+                        role="button"
+                        aria-label="Drag to reorder"
+                        tabIndex={0}
                       >
-                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.32-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.63.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                      </svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+                        </svg>
+                      </div>
+
+                      {/* Repo Name with Fade Effect */}
+                      <div className="flex-1 relative overflow-hidden">
+                        <button
+                          onClick={() => handleRepoClick(repo.url)}
+                          className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
+                          title={repo.url} // Tooltip for full name on hover
+                        >
+                          <span className="block overflow-hidden text-clip whitespace-nowrap">
+                            {repo.url.replace("https://github.com/", "")}
+                          </span>
+                        </button>
+                        {/* Gradient fade overlay */}
+                        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
+                      </div>
+
+                      {/* Three-Dot Menu */}
+                      <div className="ml-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenMenuRepoId(
+                              openMenuRepoId === repo.id ? null : repo.id
+                            );
+                          }}
+                          className="p-1 text-gray-400 hover:text-blue-400"
+                          aria-label="More options"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle cx="12" cy="5" r="1.5" />
+                            <circle cx="12" cy="12" r="1.5" />
+                            <circle cx="12" cy="19" r="1.5" />
+                          </svg>
+                        </button>
+                        {openMenuRepoId === repo.id && (
+                          <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10">
+                            <button
+                              onClick={() => toggleStar(repo, false)}
+                              className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
+                            >
+                              Unstar
+                            </button>
+                            <button
+                              onClick={(e) =>
+                                handleDeleteRepo(
+                                  e,
+                                  repo.id,
+                                  repo.url,
+                                  repo.starred
+                                )
+                              }
+                              className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             {/* Divider */}
             <hr className="border-gray-600 my-4" />
 
             {/* Recent Repos Section */}
-            <ul className="space-y-2">
-              {repoList.map((repo) => (
-                <li
-                  key={repo.id}
-                  className="group flex justify-between items-center"
-                >
-                  <button
-                    onClick={() => handleRepoClick(repo.url)}
-                    className="flex-1 text-left text-muted hover:text-primary truncate py-1"
-                  >
-                    {repo.url.replace("https://github.com/", "")}
-                  </button>
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenMenuRepoId(
-                          openMenuRepoId === repo.id ? null : repo.id
-                        );
-                      }}
-                      className="p-1 text-muted hover:text-primary transition-all"
-                      aria-label="More options"
-                    >
-                      {/* Vertical ellipsis icon */}
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
+            <div>
+              <h3 className="text-sm font-semibold text-white mb-2">
+                Recent Repositories
+              </h3>
+              <ul className="space-y-2">
+                {repoList.map((repo) => (
+                  <li key={repo.id} className="flex items-center relative">
+                    {/* Repository Name with Fade Effect */}
+                    <div className="flex-1 relative overflow-hidden">
+                      <button
+                        onClick={() => handleRepoClick(repo.url)}
+                        className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
+                        title={repo.url} // Tooltip for full name on hover
                       >
-                        <circle cx="12" cy="5" r="1.5" />
-                        <circle cx="12" cy="12" r="1.5" />
-                        <circle cx="12" cy="19" r="1.5" />
-                      </svg>
-                    </button>
-                    {openMenuRepoId === repo.id && (
-                      <div className="absolute right-0 mt-1 w-32 bg-gray-700 rounded shadow-lg z-10">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleStar(repo, !repo.starred);
-                          }}
-                          className="w-full text-left text-muted hover:text-primary px-3 py-2 text-sm"
+                        <span className="block overflow-hidden text-clip whitespace-nowrap">
+                          {repo.url.replace("https://github.com/", "")}
+                        </span>
+                      </button>
+                      {/* Gradient fade overlay */}
+                      <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
+                    </div>
+
+                    {/* Three-Dot Menu */}
+                    <div className="ml-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuRepoId(
+                            openMenuRepoId === repo.id ? null : repo.id
+                          );
+                        }}
+                        className="p-1 text-gray-400 hover:text-blue-400"
+                        aria-label="More options"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          {repo.starred ? "Unstar" : "Star"}
-                        </button>
-                        <button
-                          onClick={(e) =>
-                            handleDeleteRepo(e, repo.id, repo.url, repo.starred)
-                          }
-                          className="w-full text-left text-muted hover:text-red-400 px-3 py-2 text-sm"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
+                          <circle cx="12" cy="5" r="1.5" />
+                          <circle cx="12" cy="12" r="1.5" />
+                          <circle cx="12" cy="19" r="1.5" />
+                        </svg>
+                      </button>
+                      {openMenuRepoId === repo.id && (
+                        <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10">
+                          <button
+                            onClick={() => toggleStar(repo, true)}
+                            className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
+                          >
+                            Star
+                          </button>
+                          <button
+                            onClick={(e) =>
+                              handleDeleteRepo(
+                                e,
+                                repo.id,
+                                repo.url,
+                                repo.starred
+                              )
+                            }
+                            className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </aside>
 
