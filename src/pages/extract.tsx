@@ -17,13 +17,10 @@ import Image from "next/image";
 
 export default function ExtractPage() {
   // **State Variables**
-  // Repository state
   const [repoUrl, setRepoUrl] = useState("");
-  // Recent (non-starred) repositories
   const [repoList, setRepoList] = useState<
     Array<{ id: string; url: string; starred: boolean }>
   >([]);
-  // Starred repositories
   const [starredRepos, setStarredRepos] = useState<
     Array<{ id: string; url: string; starred: boolean; order?: number }>
   >([]);
@@ -32,24 +29,18 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default
-
-  // Settings states
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
   const [autoExtract, setAutoExtract] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-
-  // For drag-and-drop reordering of starred repos
   const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
+  const [openMenuRepoId, setOpenMenuRepoId] = useState<string | null>(null);
 
-  // **Hooks and Refs**
   const { data: session, status } = useSession();
   const router = useRouter();
   const settingsRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
-  // **Effects**
-  // Load settings from localStorage on mount
   useEffect(() => {
     const storedLineNumbers = localStorage.getItem("includeLineNumbers");
     const storedAutoExtract = localStorage.getItem("autoExtract");
@@ -61,7 +52,6 @@ export default function ExtractPage() {
     }
   }, []);
 
-  // Hide settings menu when clicking outside
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (
@@ -77,17 +67,14 @@ export default function ExtractPage() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, []);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
   }, [status, router]);
 
-  // Set dark mode
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
 
-  // Fetch repositories from Firebase
   useEffect(() => {
     const fetchRepos = async () => {
       try {
@@ -117,7 +104,6 @@ export default function ExtractPage() {
             recent.push(repo);
           }
         });
-        // Optionally sort starred repos by order
         starred.sort((a, b) => (a.order || 0) - (b.order || 0));
         setStarredRepos(starred);
         setRepoList(recent);
@@ -128,7 +114,6 @@ export default function ExtractPage() {
     if (session) fetchRepos();
   }, [session]);
 
-  // **Loading State Check**
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -138,8 +123,6 @@ export default function ExtractPage() {
   }
 
   if (!session) return null;
-
-  // **Functions**
 
   const updateSetting = (
     key: "includeLineNumbers" | "autoExtract",
@@ -188,7 +171,7 @@ export default function ExtractPage() {
     const existsInRecent = repoList.find((repo) => repo.url === repoUrl);
     const existsInStarred = starredRepos.find((repo) => repo.url === repoUrl);
     if (existsInRecent || existsInStarred) {
-      await handleRepoClick(repoUrl, true); // Always fetch when submitting
+      await handleRepoClick(repoUrl, true);
     } else {
       try {
         const docRef = await addDoc(collection(db, "repositories"), {
@@ -212,12 +195,10 @@ export default function ExtractPage() {
       repoList.find((repo) => repo.url === url) ||
       starredRepos.find((repo) => repo.url === url);
     if (!clickedRepo) return;
-    // For non-starred repos, auto-move to top by reordering the list
     if (!clickedRepo.starred) {
       const updatedRecent = repoList.filter((repo) => repo.url !== url);
       setRepoList([clickedRepo, ...updatedRecent]);
       try {
-        // Remove and re-add the repo to update its createdAt timestamp.
         await deleteDoc(doc(db, "repositories", clickedRepo.id));
         const docRef = await addDoc(collection(db, "repositories"), {
           url: url,
@@ -234,7 +215,6 @@ export default function ExtractPage() {
         console.error("Error updating repo order:", err.message);
       }
     }
-    // For starred repos, leave order unchanged.
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
@@ -255,7 +235,8 @@ export default function ExtractPage() {
       } else {
         setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
       }
-      if (repoUrl === repoUrl) setRepoUrl("");
+      setRepoUrl("");
+      setOpenMenuRepoId(null);
     } catch (err: any) {
       console.error("Error deleting repo:", err.message);
       setError("Failed to delete repository from history.");
@@ -271,20 +252,18 @@ export default function ExtractPage() {
         starred: newStarred,
       });
       if (newStarred) {
-        // Remove from recent and add to starred (append to end)
         setRepoList((prev) => prev.filter((r) => r.id !== repo.id));
         setStarredRepos((prev) => [...prev, { ...repo, starred: true }]);
       } else {
-        // Remove from starred and add to recent (prepend)
         setStarredRepos((prev) => prev.filter((r) => r.id !== repo.id));
         setRepoList((prev) => [{ ...repo, starred: false }, ...prev]);
       }
+      setOpenMenuRepoId(null);
     } catch (err: any) {
       console.error("Error updating star status:", err.message);
     }
   };
 
-  // Drag and drop handlers for starred repos
   const handleDragStart = (index: number) => {
     setDraggedRepoIndex(index);
   };
@@ -300,7 +279,6 @@ export default function ExtractPage() {
     updated.splice(index, 0, moved);
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
-    // Update order in Firestore for each repo (optional)
     updated.forEach(async (repo, idx) => {
       try {
         await updateDoc(doc(db, "repositories", repo.id), { order: idx });
@@ -325,7 +303,6 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
-  // **Render**
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       {/* Header */}
@@ -392,7 +369,6 @@ export default function ExtractPage() {
               <span className="text-white text-sm">A</span>
             )}
           </button>
-
           {showSettings && (
             <div
               ref={settingsRef}
@@ -443,58 +419,51 @@ export default function ExtractPage() {
         >
           <div className="p-4">
             {/* Starred Repos Section */}
+            {/* Starred Repos Section */}
             {starredRepos.length > 0 && (
-              <>
-                <h2 className="text-lg font-semibold text-white mb-2">
-                  Starred Repos
-                </h2>
-                <ul className="space-y-2 mb-4">
-                  {starredRepos.map((repo, index) => (
-                    <li
-                      key={repo.id}
-                      className="group flex justify-between items-center bg-gray-700 p-2 rounded cursor-move"
-                      draggable
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={handleDragOver}
-                      onDrop={() => handleDrop(index)}
+              <ul className="space-y-2 mb-4">
+                {starredRepos.map((repo, index) => (
+                  <li
+                    key={repo.id}
+                    className="flex items-center"
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={handleDragOver}
+                    onDrop={() => handleDrop(index)}
+                  >
+                    {/* Low-key drag handle */}
+                    <div className="w-4 h-8 bg-gray-600 mr-2 cursor-move rounded" />
+
+                    {/* Repo Name with star icon in a flex container */}
+                    <button
+                      onClick={() => handleRepoClick(repo.url)}
+                      className="flex flex-1 items-center gap-2 text-left text-muted hover:text-primary py-1"
                     >
-                      <button
-                        onClick={() => handleRepoClick(repo.url)}
-                        className="flex-1 text-left text-muted hover:text-primary truncate py-1"
-                      >
+                      {/* Fixed width container for repo name to force truncation */}
+                      <span className="block truncate max-w-[calc(100%-24px)]">
                         {repo.url.replace("https://github.com/", "")}
-                      </button>
-                      <div className="flex gap-2 items-center">
-                        {/* Unstar button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleStar(repo, false);
-                          }}
-                          className="text-yellow-400 hover:text-yellow-500"
-                          aria-label="Unstar repository"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.32-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.63.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-                          </svg>
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </>
+                      </span>
+                      {/* Star icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                        className="text-yellow-400 flex-shrink-0"
+                      >
+                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.32-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.63.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             )}
 
+            {/* Divider */}
+            <hr className="border-gray-600 my-4" />
+
             {/* Recent Repos Section */}
-            <h2 className="text-lg font-semibold text-white mb-4">
-              Recent Repos
-            </h2>
             <ul className="space-y-2">
               {repoList.map((repo) => (
                 <li
@@ -507,53 +476,51 @@ export default function ExtractPage() {
                   >
                     {repo.url.replace("https://github.com/", "")}
                   </button>
-                  <div className="flex gap-2 items-center">
-                    {/* Star button */}
+                  <div className="relative">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggleStar(repo, true);
+                        setOpenMenuRepoId(
+                          openMenuRepoId === repo.id ? null : repo.id
+                        );
                       }}
-                      className="text-muted hover:text-yellow-400 transition-all p-1"
-                      aria-label="Star repository"
+                      className="p-1 text-muted hover:text-primary transition-all"
+                      aria-label="More options"
                     >
+                      {/* Vertical ellipsis icon */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
                         height="16"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        fill="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                        <circle cx="12" cy="5" r="1.5" />
+                        <circle cx="12" cy="12" r="1.5" />
+                        <circle cx="12" cy="19" r="1.5" />
                       </svg>
                     </button>
-                    <button
-                      onClick={(e) =>
-                        handleDeleteRepo(e, repo.id, repo.url, repo.starred)
-                      }
-                      className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-400 transition-all p-1"
-                      aria-label="Delete repository"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M3 6h18"></path>
-                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
-                        <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                      </svg>
-                    </button>
+                    {openMenuRepoId === repo.id && (
+                      <div className="absolute right-0 mt-1 w-32 bg-gray-700 rounded shadow-lg z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleStar(repo, !repo.starred);
+                          }}
+                          className="w-full text-left text-muted hover:text-primary px-3 py-2 text-sm"
+                        >
+                          {repo.starred ? "Unstar" : "Star"}
+                        </button>
+                        <button
+                          onClick={(e) =>
+                            handleDeleteRepo(e, repo.id, repo.url, repo.starred)
+                          }
+                          className="w-full text-left text-muted hover:text-red-400 px-3 py-2 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
