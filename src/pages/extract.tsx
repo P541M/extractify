@@ -1,4 +1,3 @@
-// src/pages/extract.tsx
 import { useState, useEffect, useRef } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -31,6 +30,7 @@ export default function ExtractPage() {
 
   // Settings states
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
+  const [autoExtract, setAutoExtract] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   const { data: session, status } = useSession();
@@ -41,8 +41,12 @@ export default function ExtractPage() {
   // Load settings from localStorage on mount
   useEffect(() => {
     const storedLineNumbers = localStorage.getItem("includeLineNumbers");
+    const storedAutoExtract = localStorage.getItem("autoExtract");
     if (storedLineNumbers !== null) {
       setIncludeLineNumbers(storedLineNumbers === "true");
+    }
+    if (storedAutoExtract !== null) {
+      setAutoExtract(storedAutoExtract === "true");
     }
   }, []);
 
@@ -101,9 +105,13 @@ export default function ExtractPage() {
   if (!session) return null;
 
   // Save a setting to localStorage and update state
-  const updateSetting = (key: "includeLineNumbers", value: boolean) => {
+  const updateSetting = (
+    key: "includeLineNumbers" | "autoExtract",
+    value: boolean
+  ) => {
     localStorage.setItem(key, value.toString());
     if (key === "includeLineNumbers") setIncludeLineNumbers(value);
+    if (key === "autoExtract") setAutoExtract(value);
   };
 
   const fetchRepo = async (url: string) => {
@@ -176,7 +184,10 @@ export default function ExtractPage() {
       console.error("Error updating repo order:", err.message);
     }
     setRepoUrl(url);
-    // Auto extract functionality removed – user must manually trigger extraction.
+    // Auto extract only if enabled
+    if (autoExtract) {
+      await fetchRepo(url);
+    }
   };
 
   const handleDeleteRepo = async (
@@ -200,7 +211,7 @@ export default function ExtractPage() {
       await navigator.clipboard.writeText(resultText);
       setSuccessMessage("Copied to clipboard!");
       setTimeout(() => setSuccessMessage(""), 3000);
-    } catch (err: any) {
+    } catch (err) {
       setError("Failed to copy code.");
     }
   };
@@ -290,6 +301,18 @@ export default function ExtractPage() {
                   checked={includeLineNumbers}
                   onChange={(e) =>
                     updateSetting("includeLineNumbers", e.target.checked)
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted">
+                  Auto extract on click
+                </span>
+                <input
+                  type="checkbox"
+                  checked={autoExtract}
+                  onChange={(e) =>
+                    updateSetting("autoExtract", e.target.checked)
                   }
                 />
               </div>
