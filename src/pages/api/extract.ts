@@ -90,6 +90,8 @@ export default async function handler(
       });
     }
     const treeData = await treeRes.json();
+
+    // Filter files: include all blob files except package-lock.json
     const files = treeData.tree
       .filter((item: any) => item.type === "blob")
       .filter((file: any) => file.path !== "package-lock.json");
@@ -98,7 +100,7 @@ export default async function handler(
     const selectedFiles = files.slice(0, limit);
     let combinedCode = "";
 
-    // Define common image file extensions
+    // Define image and document file extensions to omit content
     const imageExtensions = [
       ".png",
       ".jpg",
@@ -110,38 +112,54 @@ export default async function handler(
       ".webp",
       ".ico",
     ];
+    const documentExtensions = [
+      ".pdf",
+      ".doc",
+      ".docx",
+      ".xls",
+      ".xlsx",
+      ".ppt",
+      ".pptx",
+      ".odt",
+      ".ods",
+      ".odp",
+      ".rtf",
+    ];
 
     for (const file of selectedFiles) {
       const fileName = file.path.split("/").pop() || "";
-      const isImage = imageExtensions.some((ext) =>
-        fileName.toLowerCase().endsWith(ext)
-      );
+      const extension = fileName.split(".").pop()?.toLowerCase();
+      const isImage = imageExtensions.includes(`.${extension}`);
+      const isDocument = documentExtensions.includes(`.${extension}`);
 
       if (isImage) {
-        // For images, only include metadata without content
+        // Omit image content
         combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Image content omitted]\n\n`;
+      } else if (isDocument) {
+        // omit document content
+        combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Document content omitted]\n\n`;
       } else {
-        // For non-image files, fetch and include content
+        // Attempt to fetch and include content for all other files
         const fileRes = await fetch(
           `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${defaultBranch}`,
           { headers: githubHeaders }
         );
-        if (!fileRes.ok) {
+        if (fileRes.ok) {
+          const fileData = await fileRes.json();
+          let content = Buffer.from(fileData.content, "base64").toString(
+            "utf8"
+          );
+          if (includeLineNumbers) {
+            content = content
+              .split("\n")
+              .map((line, index) => `${index + 1}: ${line}`)
+              .join("\n");
+          }
+          combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
+        } else {
           console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
-          continue;
+          combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Content could not be fetched]\n\n`;
         }
-        const fileData = await fileRes.json();
-        let content = Buffer.from(fileData.content, "base64").toString("utf8");
-
-        // Conditionally add line numbers
-        if (includeLineNumbers) {
-          content = content
-            .split("\n")
-            .map((line, index) => `${index + 1}: ${line}`)
-            .join("\n");
-        }
-
-        combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
       }
     }
 
