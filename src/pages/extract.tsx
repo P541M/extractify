@@ -10,6 +10,7 @@ import {
   orderBy,
   deleteDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,9 +19,14 @@ export default function ExtractPage() {
   // **State Variables**
   // Repository state
   const [repoUrl, setRepoUrl] = useState("");
-  const [repoList, setRepoList] = useState<Array<{ id: string; url: string }>>(
-    []
-  );
+  // Recent (non-starred) repositories
+  const [repoList, setRepoList] = useState<
+    Array<{ id: string; url: string; starred: boolean }>
+  >([]);
+  // Starred repositories
+  const [starredRepos, setStarredRepos] = useState<
+    Array<{ id: string; url: string; starred: boolean; order?: number }>
+  >([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [resultText, setResultText] = useState("");
@@ -32,6 +38,9 @@ export default function ExtractPage() {
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
   const [autoExtract, setAutoExtract] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  // For drag-and-drop reordering of starred repos
+  const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
 
   // **Hooks and Refs**
   const { data: session, status } = useSession();
@@ -87,11 +96,31 @@ export default function ExtractPage() {
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
-        const repos: Array<{ id: string; url: string }> = [];
-        querySnapshot.forEach((doc) =>
-          repos.push({ id: doc.id, url: doc.data().url })
-        );
-        setRepoList(repos);
+        const starred: Array<{
+          id: string;
+          url: string;
+          starred: boolean;
+          order?: number;
+        }> = [];
+        const recent: Array<{ id: string; url: string; starred: boolean }> = [];
+        querySnapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const repo = {
+            id: docSnap.id,
+            url: data.url,
+            starred: data.starred || false,
+            order: data.order || 0,
+          };
+          if (repo.starred) {
+            starred.push(repo);
+          } else {
+            recent.push(repo);
+          }
+        });
+        // Optionally sort starred repos by order
+        starred.sort((a, b) => (a.order || 0) - (b.order || 0));
+        setStarredRepos(starred);
+        setRepoList(recent);
       } catch (err: any) {
         console.error("Error fetching repos:", err.message);
       }
@@ -111,6 +140,7 @@ export default function ExtractPage() {
   if (!session) return null;
 
   // **Functions**
+
   const updateSetting = (
     key: "includeLineNumbers" | "autoExtract",
     value: boolean
@@ -155,16 +185,21 @@ export default function ExtractPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!repoUrl) return;
-    const existingRepo = repoList.find((repo) => repo.url === repoUrl);
-    if (existingRepo) {
+    const existsInRecent = repoList.find((repo) => repo.url === repoUrl);
+    const existsInStarred = starredRepos.find((repo) => repo.url === repoUrl);
+    if (existsInRecent || existsInStarred) {
       await handleRepoClick(repoUrl, true); // Always fetch when submitting
     } else {
       try {
         const docRef = await addDoc(collection(db, "repositories"), {
           url: repoUrl,
           createdAt: new Date(),
+          starred: false,
         });
-        setRepoList((prev) => [{ id: docRef.id, url: repoUrl }, ...prev]);
+        setRepoList((prev) => [
+          { id: docRef.id, url: repoUrl, starred: false },
+          ...prev,
+        ]);
       } catch (err: any) {
         console.error("Error saving repo:", err.message);
       }
@@ -173,20 +208,39 @@ export default function ExtractPage() {
   };
 
   const handleRepoClick = async (url: string, forceFetch: boolean = false) => {
-    const clickedRepo = repoList.find((repo) => repo.url === url);
+    let clickedRepo =
+      repoList.find((repo) => repo.url === url) ||
+      starredRepos.find((repo) => repo.url === url);
     if (!clickedRepo) return;
-    const updatedList = repoList.filter((repo) => repo.url !== url);
-    setRepoList([clickedRepo, ...updatedList]);
+    // Reorder the clicked repo to the top of its respective list.
+    if (clickedRepo.starred) {
+      const updatedStarred = starredRepos.filter((repo) => repo.url !== url);
+      setStarredRepos([clickedRepo, ...updatedStarred]);
+    } else {
+      const updatedRecent = repoList.filter((repo) => repo.url !== url);
+      setRepoList([clickedRepo, ...updatedRecent]);
+    }
     try {
+      // Remove and re-add the repo to update its createdAt timestamp.
       await deleteDoc(doc(db, "repositories", clickedRepo.id));
       const docRef = await addDoc(collection(db, "repositories"), {
         url: url,
         createdAt: new Date(),
+        starred: clickedRepo.starred,
+        order: clickedRepo.order || 0,
       });
-      setRepoList((prev) => [
-        { id: docRef.id, url },
-        ...prev.filter((repo) => repo.url !== url),
-      ]);
+      clickedRepo.id = docRef.id;
+      if (clickedRepo.starred) {
+        setStarredRepos((prev) => [
+          clickedRepo,
+          ...prev.filter((repo) => repo.url !== url),
+        ]);
+      } else {
+        setRepoList((prev) => [
+          clickedRepo,
+          ...prev.filter((repo) => repo.url !== url),
+        ]);
+      }
     } catch (err: any) {
       console.error("Error updating repo order:", err.message);
     }
@@ -199,17 +253,70 @@ export default function ExtractPage() {
   const handleDeleteRepo = async (
     e: React.MouseEvent,
     repoId: string,
-    repoUrl: string
+    repoUrl: string,
+    starred: boolean
   ) => {
     e.stopPropagation();
     try {
       await deleteDoc(doc(db, "repositories", repoId));
-      setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
+      if (starred) {
+        setStarredRepos((prev) => prev.filter((repo) => repo.id !== repoId));
+      } else {
+        setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
+      }
       if (repoUrl === repoUrl) setRepoUrl("");
     } catch (err: any) {
       console.error("Error deleting repo:", err.message);
       setError("Failed to delete repository from history.");
     }
+  };
+
+  const toggleStar = async (
+    repo: { id: string; url: string; starred: boolean; order?: number },
+    newStarred: boolean
+  ) => {
+    try {
+      await updateDoc(doc(db, "repositories", repo.id), {
+        starred: newStarred,
+      });
+      if (newStarred) {
+        // Remove from recent and add to starred (append to end)
+        setRepoList((prev) => prev.filter((r) => r.id !== repo.id));
+        setStarredRepos((prev) => [...prev, { ...repo, starred: true }]);
+      } else {
+        // Remove from starred and add to recent (prepend)
+        setStarredRepos((prev) => prev.filter((r) => r.id !== repo.id));
+        setRepoList((prev) => [{ ...repo, starred: false }, ...prev]);
+      }
+    } catch (err: any) {
+      console.error("Error updating star status:", err.message);
+    }
+  };
+
+  // Drag and drop handlers for starred repos
+  const handleDragStart = (index: number) => {
+    setDraggedRepoIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLLIElement>) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (index: number) => {
+    if (draggedRepoIndex === null) return;
+    const updated = Array.from(starredRepos);
+    const [moved] = updated.splice(draggedRepoIndex, 1);
+    updated.splice(index, 0, moved);
+    setStarredRepos(updated);
+    setDraggedRepoIndex(null);
+    // Update order in Firestore for each repo (optional)
+    updated.forEach(async (repo, idx) => {
+      try {
+        await updateDoc(doc(db, "repositories", repo.id), { order: idx });
+      } catch (err: any) {
+        console.error("Error updating repo order:", err.message);
+      }
+    });
   };
 
   const handleCopy = async () => {
@@ -344,6 +451,57 @@ export default function ExtractPage() {
           } bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden`}
         >
           <div className="p-4">
+            {/* Starred Repos Section */}
+            {starredRepos.length > 0 && (
+              <>
+                <h2 className="text-lg font-semibold text-white mb-2">
+                  Starred Repos
+                </h2>
+                <ul className="space-y-2 mb-4">
+                  {starredRepos.map((repo, index) => (
+                    <li
+                      key={repo.id}
+                      className="group flex justify-between items-center bg-gray-700 p-2 rounded cursor-move"
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={handleDragOver}
+                      onDrop={() => handleDrop(index)}
+                    >
+                      <button
+                        onClick={() => handleRepoClick(repo.url)}
+                        className="flex-1 text-left text-muted hover:text-primary truncate py-1"
+                      >
+                        {repo.url.replace("https://github.com/", "")}
+                      </button>
+                      <div className="flex gap-2 items-center">
+                        {/* Unstar button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleStar(repo, false);
+                          }}
+                          className="text-yellow-400 hover:text-yellow-500"
+                          aria-label="Unstar repository"
+                        >
+                          {/* Star filled icon */}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.32-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.63.283.95l-3.523 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                          </svg>
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {/* Recent Repos Section */}
             <h2 className="text-lg font-semibold text-white mb-4">
               Recent Repos
             </h2>
@@ -354,32 +512,60 @@ export default function ExtractPage() {
                   className="group flex justify-between items-center"
                 >
                   <button
-                    onClick={() => handleRepoClick(repo.url)} // No forceFetch
+                    onClick={() => handleRepoClick(repo.url)}
                     className="flex-1 text-left text-muted hover:text-primary truncate py-1"
                   >
                     {repo.url.replace("https://github.com/", "")}
                   </button>
-                  <button
-                    onClick={(e) => handleDeleteRepo(e, repo.id, repo.url)}
-                    className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-400 transition-all p-1"
-                    aria-label="Delete repository"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <div className="flex gap-2 items-center">
+                    {/* Star button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleStar(repo, true);
+                      }}
+                      className="text-muted hover:text-yellow-400 transition-all p-1"
+                      aria-label="Star repository"
                     >
-                      <path d="M3 6h18"></path>
-                      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
-                      <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
-                    </svg>
-                  </button>
+                      {/* Star outline icon */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={(e) =>
+                        handleDeleteRepo(e, repo.id, repo.url, repo.starred)
+                      }
+                      className="opacity-0 group-hover:opacity-100 text-muted hover:text-red-400 transition-all p-1"
+                      aria-label="Delete repository"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
+                        <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
