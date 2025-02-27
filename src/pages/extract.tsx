@@ -16,7 +16,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function ExtractPage() {
-  // **State Variables**
+  // State Variables
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<
     Array<{ id: string; url: string; starred: boolean }>
@@ -41,7 +41,24 @@ export default function ExtractPage() {
   const settingsRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
-  // **Effects**
+  // Effects
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        openMenuRepoId &&
+        !event.target.closest(".menu") &&
+        !event.target.closest(".three-dot-button")
+      ) {
+        setOpenMenuRepoId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openMenuRepoId]);
+
   useEffect(() => {
     const storedLineNumbers = localStorage.getItem("includeLineNumbers");
     const storedAutoExtract = localStorage.getItem("autoExtract");
@@ -115,7 +132,6 @@ export default function ExtractPage() {
     if (session) fetchRepos();
   }, [session]);
 
-  // **Loading and Authentication Checks**
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -126,7 +142,6 @@ export default function ExtractPage() {
 
   if (!session) return null;
 
-  // **Helper Functions**
   const updateSetting = (
     key: "includeLineNumbers" | "autoExtract",
     value: boolean
@@ -306,7 +321,7 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
-  // **JSX Return**
+  // JSX Return
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
       {/* Header */}
@@ -415,8 +430,12 @@ export default function ExtractPage() {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <aside className="w-64 bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden">
+        {/* Sidebar with conditional width */}
+        <aside
+          className={`${
+            sidebarOpen ? "w-64" : "w-0"
+          } bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden`}
+        >
           <div className="p-4">
             {/* Starred Repos Section */}
             {starredRepos.length > 0 && (
@@ -443,7 +462,6 @@ export default function ExtractPage() {
                         handleDrop(index);
                       }}
                     >
-                      {/* Improved Drag Handle */}
                       <div
                         className="w-4 h-8 flex items-center justify-center mr-2 cursor-move text-gray-400 hover:text-primary transition-colors"
                         role="button"
@@ -461,23 +479,20 @@ export default function ExtractPage() {
                         </svg>
                       </div>
 
-                      {/* Repo Name with Fade Effect */}
                       <div className="flex-1 relative overflow-hidden">
                         <button
                           onClick={() => handleRepoClick(repo.url)}
                           className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
-                          title={repo.url} // Tooltip for full name on hover
+                          title={repo.url}
                         >
                           <span className="block overflow-hidden text-clip whitespace-nowrap">
                             {repo.url.replace("https://github.com/", "")}
                           </span>
                         </button>
-                        {/* Gradient fade overlay */}
                         <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
                       </div>
 
-                      {/* Three-Dot Menu */}
-                      <div className="ml-2">
+                      <div className="ml-2 relative">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -485,7 +500,7 @@ export default function ExtractPage() {
                               openMenuRepoId === repo.id ? null : repo.id
                             );
                           }}
-                          className="p-1 text-gray-400 hover:text-blue-400"
+                          className="p-1 text-gray-400 hover:text-blue-400 three-dot-button"
                           aria-label="More options"
                         >
                           <svg
@@ -501,7 +516,7 @@ export default function ExtractPage() {
                           </svg>
                         </button>
                         {openMenuRepoId === repo.id && (
-                          <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10">
+                          <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10 menu">
                             <button
                               onClick={() => toggleStar(repo, false)}
                               className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
@@ -530,10 +545,8 @@ export default function ExtractPage() {
               </div>
             )}
 
-            {/* Divider */}
             <hr className="border-gray-600 my-4" />
 
-            {/* Recent Repos Section */}
             <div>
               <h3 className="text-sm font-semibold text-white mb-2">
                 Recent Repositories
@@ -541,23 +554,20 @@ export default function ExtractPage() {
               <ul className="space-y-2">
                 {repoList.map((repo) => (
                   <li key={repo.id} className="flex items-center relative">
-                    {/* Repository Name with Fade Effect */}
                     <div className="flex-1 relative overflow-hidden">
                       <button
                         onClick={() => handleRepoClick(repo.url)}
                         className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
-                        title={repo.url} // Tooltip for full name on hover
+                        title={repo.url}
                       >
                         <span className="block overflow-hidden text-clip whitespace-nowrap">
                           {repo.url.replace("https://github.com/", "")}
                         </span>
                       </button>
-                      {/* Gradient fade overlay */}
                       <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
                     </div>
 
-                    {/* Three-Dot Menu */}
-                    <div className="ml-2">
+                    <div className="ml-2 relative">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -565,7 +575,7 @@ export default function ExtractPage() {
                             openMenuRepoId === repo.id ? null : repo.id
                           );
                         }}
-                        className="p-1 text-gray-400 hover:text-blue-400"
+                        className="p-1 text-gray-400 hover:text-blue-400 three-dot-button"
                         aria-label="More options"
                       >
                         <svg
@@ -581,7 +591,7 @@ export default function ExtractPage() {
                         </svg>
                       </button>
                       {openMenuRepoId === repo.id && (
-                        <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10">
+                        <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10 menu">
                           <button
                             onClick={() => toggleStar(repo, true)}
                             className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
