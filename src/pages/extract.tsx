@@ -15,6 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function ExtractPage() {
+  // **State Variables**
   // Repository state
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<Array<{ id: string; url: string }>>(
@@ -25,19 +26,20 @@ export default function ExtractPage() {
   const [resultText, setResultText] = useState("");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  // Set sidebarOpen to true by default
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Sidebar open by default
 
   // Settings states
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
   const [autoExtract, setAutoExtract] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
+  // **Hooks and Refs**
   const { data: session, status } = useSession();
   const router = useRouter();
   const settingsRef = useRef<HTMLDivElement>(null);
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
+  // **Effects**
   // Load settings from localStorage on mount
   useEffect(() => {
     const storedLineNumbers = localStorage.getItem("includeLineNumbers");
@@ -50,7 +52,7 @@ export default function ExtractPage() {
     }
   }, []);
 
-  // Hide settings menu when clicking outside of the settings dropdown and toggle button
+  // Hide settings menu when clicking outside
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       if (
@@ -66,14 +68,17 @@ export default function ExtractPage() {
     return () => document.removeEventListener("mousedown", handleMouseDown);
   }, []);
 
+  // Redirect to login if not authenticated
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
   }, [status, router]);
 
+  // Set dark mode
   useEffect(() => {
     document.documentElement.classList.add("dark");
   }, []);
 
+  // Fetch repositories from Firebase
   useEffect(() => {
     const fetchRepos = async () => {
       try {
@@ -94,6 +99,7 @@ export default function ExtractPage() {
     if (session) fetchRepos();
   }, [session]);
 
+  // **Loading State Check**
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -104,7 +110,7 @@ export default function ExtractPage() {
 
   if (!session) return null;
 
-  // Save a setting to localStorage and update state
+  // **Functions**
   const updateSetting = (
     key: "includeLineNumbers" | "autoExtract",
     value: boolean
@@ -150,8 +156,9 @@ export default function ExtractPage() {
     e.preventDefault();
     if (!repoUrl) return;
     const existingRepo = repoList.find((repo) => repo.url === repoUrl);
-    if (existingRepo) handleRepoClick(repoUrl);
-    else {
+    if (existingRepo) {
+      await handleRepoClick(repoUrl, true); // Always fetch when submitting
+    } else {
       try {
         const docRef = await addDoc(collection(db, "repositories"), {
           url: repoUrl,
@@ -165,7 +172,7 @@ export default function ExtractPage() {
     }
   };
 
-  const handleRepoClick = async (url: string) => {
+  const handleRepoClick = async (url: string, forceFetch: boolean = false) => {
     const clickedRepo = repoList.find((repo) => repo.url === url);
     if (!clickedRepo) return;
     const updatedList = repoList.filter((repo) => repo.url !== url);
@@ -184,8 +191,7 @@ export default function ExtractPage() {
       console.error("Error updating repo order:", err.message);
     }
     setRepoUrl(url);
-    // Auto extract only if enabled
-    if (autoExtract) {
+    if (forceFetch || autoExtract) {
       await fetchRepo(url);
     }
   };
@@ -221,8 +227,10 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  // **Render**
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
+      {/* Header */}
       <header className="bg-gray-800 shadow-sm p-4 flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button
@@ -268,7 +276,6 @@ export default function ExtractPage() {
           </Link>
         </div>
         <div className="relative">
-          {/* Profile (Settings) icon as a toggle */}
           <button
             ref={toggleButtonRef}
             onClick={() => setShowSettings((prev) => !prev)}
@@ -330,6 +337,7 @@ export default function ExtractPage() {
       </header>
 
       <div className="flex flex-1">
+        {/* Sidebar */}
         <aside
           className={`${
             sidebarOpen ? "w-64" : "w-0"
@@ -346,7 +354,7 @@ export default function ExtractPage() {
                   className="group flex justify-between items-center"
                 >
                   <button
-                    onClick={() => handleRepoClick(repo.url)}
+                    onClick={() => handleRepoClick(repo.url)} // No forceFetch
                     className="flex-1 text-left text-muted hover:text-primary truncate py-1"
                   >
                     {repo.url.replace("https://github.com/", "")}
@@ -378,6 +386,7 @@ export default function ExtractPage() {
           </div>
         </aside>
 
+        {/* Main Content */}
         <main className="flex-1 flex flex-col items-center p-8 max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="w-full mb-6">
             <label htmlFor="repoUrl" className="block text-sm text-muted mb-2">
