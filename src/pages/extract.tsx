@@ -212,38 +212,29 @@ export default function ExtractPage() {
       repoList.find((repo) => repo.url === url) ||
       starredRepos.find((repo) => repo.url === url);
     if (!clickedRepo) return;
-    // Reorder the clicked repo to the top of its respective list.
-    if (clickedRepo.starred) {
-      const updatedStarred = starredRepos.filter((repo) => repo.url !== url);
-      setStarredRepos([clickedRepo, ...updatedStarred]);
-    } else {
+    // For non-starred repos, auto-move to top by reordering the list
+    if (!clickedRepo.starred) {
       const updatedRecent = repoList.filter((repo) => repo.url !== url);
       setRepoList([clickedRepo, ...updatedRecent]);
-    }
-    try {
-      // Remove and re-add the repo to update its createdAt timestamp.
-      await deleteDoc(doc(db, "repositories", clickedRepo.id));
-      const docRef = await addDoc(collection(db, "repositories"), {
-        url: url,
-        createdAt: new Date(),
-        starred: clickedRepo.starred,
-        order: clickedRepo.order || 0,
-      });
-      clickedRepo.id = docRef.id;
-      if (clickedRepo.starred) {
-        setStarredRepos((prev) => [
-          clickedRepo,
-          ...prev.filter((repo) => repo.url !== url),
-        ]);
-      } else {
+      try {
+        // Remove and re-add the repo to update its createdAt timestamp.
+        await deleteDoc(doc(db, "repositories", clickedRepo.id));
+        const docRef = await addDoc(collection(db, "repositories"), {
+          url: url,
+          createdAt: new Date(),
+          starred: clickedRepo.starred,
+          order: clickedRepo.order || 0,
+        });
+        clickedRepo.id = docRef.id;
         setRepoList((prev) => [
           clickedRepo,
           ...prev.filter((repo) => repo.url !== url),
         ]);
+      } catch (err: any) {
+        console.error("Error updating repo order:", err.message);
       }
-    } catch (err: any) {
-      console.error("Error updating repo order:", err.message);
     }
+    // For starred repos, leave order unchanged.
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
@@ -483,7 +474,6 @@ export default function ExtractPage() {
                           className="text-yellow-400 hover:text-yellow-500"
                           aria-label="Unstar repository"
                         >
-                          {/* Star filled icon */}
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="16"
@@ -527,7 +517,6 @@ export default function ExtractPage() {
                       className="text-muted hover:text-yellow-400 transition-all p-1"
                       aria-label="Star repository"
                     >
-                      {/* Star outline icon */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="16"
