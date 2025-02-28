@@ -1,19 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 
-type Data = {
+interface Data {
   code?: string;
   error?: string;
-};
+}
+
+interface GitTreeItem {
+  path: string;
+  mode: string;
+  type: "blob" | "tree";
+  sha: string;
+  size?: number;
+  url: string;
+}
+
+const DEBUG = process.env.DEBUG_LOGGING === "true";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  console.log("Request headers:", req.headers);
+  if (DEBUG) {
+    console.log("Request headers:", req.headers);
+  }
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  console.log("JWT token:", token);
+  if (DEBUG) {
+    console.log("JWT token:", token);
+  }
 
   if (!token || !token.accessToken) {
     return res
@@ -67,10 +82,12 @@ export default async function handler(
     }
     const repoInfo = await repoInfoRes.json();
 
-    console.log(
-      "Repository visibility:",
-      repoInfo.private ? "Private" : "Public"
-    );
+    if (DEBUG) {
+      console.log(
+        "Repository visibility:",
+        repoInfo.private ? "Private" : "Public"
+      );
+    }
 
     const defaultBranch = repoInfo.default_branch || "main";
     const treeRes = await fetch(
@@ -91,10 +108,9 @@ export default async function handler(
     }
     const treeData = await treeRes.json();
 
-    // Filter files: include all blob files except package-lock.json
-    const files = treeData.tree
-      .filter((item: any) => item.type === "blob")
-      .filter((file: any) => file.path !== "package-lock.json");
+    const files: GitTreeItem[] = (treeData.tree as GitTreeItem[])
+      .filter((item) => item.type === "blob")
+      .filter((file) => file.path !== "package-lock.json");
 
     const limit = 50;
     const selectedFiles = files.slice(0, limit);
@@ -133,13 +149,10 @@ export default async function handler(
       const isDocument = documentExtensions.includes(`.${extension}`);
 
       if (isImage) {
-        // Omit image content
         combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Image content omitted]\n\n`;
       } else if (isDocument) {
-        // omit document content
         combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Document content omitted]\n\n`;
       } else {
-        // Attempt to fetch and include content for all other files
         const fileRes = await fetch(
           `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${defaultBranch}`,
           { headers: githubHeaders }
@@ -164,8 +177,10 @@ export default async function handler(
     }
 
     res.status(200).json({ code: combinedCode });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("API error:", error);
-    res.status(500).json({ error: error.message || "Internal Server Error" });
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    res.status(500).json({ error: message });
   }
 }
