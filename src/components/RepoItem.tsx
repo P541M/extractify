@@ -67,7 +67,7 @@ export default function RepoItem({
             {repo.url.replace("https://github.com/", "")}
           </span>
         </button>
-        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none"></div>
       </div>
       <div className="ml-2 relative">
         <button
