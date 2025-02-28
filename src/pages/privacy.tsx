@@ -1,8 +1,14 @@
-// src/pages/privacy.tsx
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function PrivacyPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
@@ -23,16 +29,16 @@ export default function PrivacyPage() {
           </Link>
           <nav className="flex items-center space-x-6">
             <Link
-              href="/"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Home
-            </Link>
-            <Link
               href="/extract"
               className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
             >
               Extract
+            </Link>
+            <Link
+              href="/login"
+              className="bg-gradient-to-r from-primary to-blue-500 text-white px-5 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-md font-medium"
+            >
+              Dashboard
             </Link>
           </nav>
         </div>
@@ -41,39 +47,65 @@ export default function PrivacyPage() {
       {/* Privacy Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-6">Privacy Policy</h1>
-          <p className="text-gray-300 mb-4">
-            At Extractify, we value your privacy and are committed to protecting
-            your personal information. This Privacy Policy outlines how we
-            collect, use, and safeguard your data.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Information We Collect
-          </h2>
-          <p className="text-gray-300 mb-4">
-            We collect information you provide directly to us, such as when you
-            sign in with GitHub. This may include your GitHub username, email
-            address, and profile information.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            How We Use Your Information
-          </h2>
-          <p className="text-gray-300 mb-4">
-            We use your information to provide and improve our services,
-            including accessing GitHub repositories on your behalf. We do not
-            share your personal information with third parties except as
-            necessary to provide our services.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Data Security
-          </h2>
-          <p className="text-gray-300 mb-4">
-            We implement appropriate security measures to protect your data from
-            unauthorized access, alteration, or disclosure.
-          </p>
-          <p className="text-gray-300">
-            For more details, please contact us at privacy@extractify.com.
-          </p>
+          <div
+            className={`bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-xl ${
+              mounted ? "animate-fade-in" : "opacity-0"
+            }`}
+          >
+            <h1 className="text-4xl font-bold text-white mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Privacy Policy
+            </h1>
+            <div className="space-y-6 text-gray-300">
+              <p className="text-lg leading-relaxed">
+                At Extractify, we prioritize your privacy and data security.
+                This policy outlines how we collect, use, and protect your
+                information when you use our services.
+              </p>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">
+                  Data Collection
+                </h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>GitHub OAuth data (username, email, public profile)</li>
+                  <li>Repository access tokens (encrypted at rest)</li>
+                  <li>Usage metrics (feature interactions, error logs)</li>
+                  <li>Extraction history (stored securely in Firebase)</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">
+                  Data Usage
+                </h2>
+                <p className="mb-3">We use your data to:</p>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>Provide core extraction functionality</li>
+                  <li>Improve service performance and reliability</li>
+                  <li>Enhance security measures</li>
+                  <li>Offer personalized features</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">
+                  Security Measures
+                </h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>End-to-end encryption for all data transfers</li>
+                  <li>Regular security audits and penetration testing</li>
+                  <li>Role-based access control systems</li>
+                  <li>Compliance with GDPR and CCPA regulations</li>
+                </ul>
+              </div>
+
+              <p className="text-lg leading-relaxed">
+                For full documentation of our security practices or to request
+                data deletion, contact our privacy team at{" "}
+                <span className="text-primary">privacy@extractify.com</span>.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 

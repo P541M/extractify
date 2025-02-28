@@ -1,8 +1,14 @@
-// src/pages/terms.tsx
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function TermsPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
@@ -23,16 +29,16 @@ export default function TermsPage() {
           </Link>
           <nav className="flex items-center space-x-6">
             <Link
-              href="/"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Home
-            </Link>
-            <Link
               href="/extract"
               className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
             >
               Extract
+            </Link>
+            <Link
+              href="/login"
+              className="bg-gradient-to-r from-primary to-blue-500 text-white px-5 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-md font-medium"
+            >
+              Dashboard
             </Link>
           </nav>
         </div>
@@ -41,39 +47,54 @@ export default function TermsPage() {
       {/* Terms Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-6">
-            Terms of Service
-          </h1>
-          <p className="text-gray-300 mb-4">
-            By using Extractify, you agree to these Terms of Service. Please
-            read them carefully.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Use of Service
-          </h2>
-          <p className="text-gray-300 mb-4">
-            You may use Extractify only for lawful purposes and in accordance
-            with these terms. You agree not to use the service in any way that
-            violates any applicable laws or regulations.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Intellectual Property
-          </h2>
-          <p className="text-gray-300 mb-4">
-            The content extracted from GitHub repositories remains the property
-            of its respective owners. Extractify does not claim any ownership
-            over the extracted code.
-          </p>
-          <h2 className="text-2xl font-semibold text-white mb-2">
-            Limitation of Liability
-          </h2>
-          <p className="text-gray-300 mb-4">
-            Extractify is provided "as is" without any warranties. We are not
-            liable for any damages arising from the use of this service.
-          </p>
-          <p className="text-gray-300">
-            For more information, please contact us at terms@extractify.com.
-          </p>
+          <div className={`bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-xl ${
+            mounted ? "animate-fade-in" : "opacity-0"
+          }`}>
+            <h1 className="text-4xl font-bold text-white mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Terms of Service
+            </h1>
+            <div className="space-y-6 text-gray-300">
+              <p className="text-lg leading-relaxed">
+                By using Extractify, you agree to these terms governing your access to and use of 
+                our services. Please read them carefully.
+              </p>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">Service Usage</h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>Proper authorization required for all repository access</li>
+                  <li>Compliance with GitHub's Terms of Service</li>
+                  <li>Non-commercial use unless enterprise agreement exists</li>
+                  <li>Prohibition of automated bulk extraction</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">Intellectual Property</h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>You retain ownership of all extracted code</li>
+                  <li>Extractify claims no rights to user-generated content</li>
+                  <li>License grant for technical processing of your data</li>
+                  <li>Responsibility for proper licensing of extracted code</li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">Limitations</h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>AS-IS service without warranty</li>
+                  <li>Limitation of liability for indirect damages</li>
+                  <li>Right to terminate abusive accounts</li>
+                  <li>Governing law: Ontario, Canada</li>
+                </ul>
+              </div>
+
+              <p className="text-lg leading-relaxed">
+                For enterprise agreements or compliance inquiries, contact 
+                <span className="text-primary"> legal@extractify.com</span>.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 
@@ -95,22 +116,13 @@ export default function TermsPage() {
               </span>
             </div>
             <div className="flex space-x-6 mb-4 md:mb-0">
-              <Link
-                href="/about"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
+              <Link href="/about" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm">
                 About
               </Link>
-              <Link
-                href="/privacy"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
+              <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm">
                 Privacy
               </Link>
-              <Link
-                href="/terms"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
+              <Link href="/terms" className="text-gray-400 hover:text-white transition-colors duration-300 text-sm">
                 Terms
               </Link>
             </div>
@@ -122,4 +134,3 @@ export default function TermsPage() {
       </footer>
     </div>
   );
-}

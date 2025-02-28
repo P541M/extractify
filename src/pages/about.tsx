@@ -1,8 +1,14 @@
-// src/pages/about.tsx
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function AboutPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
@@ -23,16 +29,16 @@ export default function AboutPage() {
           </Link>
           <nav className="flex items-center space-x-6">
             <Link
-              href="/"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Home
-            </Link>
-            <Link
               href="/extract"
               className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
             >
               Extract
+            </Link>
+            <Link
+              href="/login"
+              className="bg-gradient-to-r from-primary to-blue-500 text-white px-5 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-md font-medium"
+            >
+              Dashboard
             </Link>
           </nav>
         </div>
@@ -41,22 +47,54 @@ export default function AboutPage() {
       {/* About Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold text-white mb-6">
-            About Extractify
-          </h1>
-          <p className="text-gray-300 mb-4">
-            Extractify is a tool designed to simplify the process of extracting
-            code from GitHub repositories. Whether you're working on
-            documentation, analysis, or sharing code snippets, Extractify makes
-            it easy to access and manage code from both public and private
-            repositories.
-          </p>
-          <p className="text-gray-300 mb-4">
-            Our mission is to provide developers with a seamless and efficient
-            way to work with GitHub codebases, enhancing productivity and
-            collaboration.
-          </p>
-          <p className="text-gray-300">Built with love in Toronto, Ontario.</p>
+          <div
+            className={`bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-xl ${
+              mounted ? "animate-fade-in" : "opacity-0"
+            }`}
+          >
+            <h1 className="text-4xl font-bold text-white mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              About Extractify
+            </h1>
+            <div className="space-y-6 text-gray-300">
+              <p className="text-lg leading-relaxed">
+                Extractify is a developer tool designed to streamline your
+                workflow by providing effortless code extraction from GitHub
+                repositories. Whether you're documenting projects, analyzing
+                codebases, or sharing snippets, our platform offers a seamless
+                experience for both public and private repositories.
+              </p>
+
+              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">
+                <h2 className="text-2xl font-semibold text-white mb-3">
+                  Key Features
+                </h2>
+                <ul className="list-disc pl-6 space-y-3">
+                  <li>
+                    GitHub OAuth integration with fine-grained access control
+                  </li>
+                  <li>Smart code parsing with syntax preservation</li>
+                  <li>
+                    Customizable output formatting (line numbers, file
+                    structure)
+                  </li>
+                  <li>Secure cloud storage for your extraction history</li>
+                  <li>Cross-repository search and aggregation</li>
+                </ul>
+              </div>
+
+              <div className="mt-8 border-t border-gray-700 pt-8">
+                <h2 className="text-2xl font-semibold text-white mb-4">
+                  Our Philosophy
+                </h2>
+                <p className="text-lg leading-relaxed">
+                  We believe in empowering developers with tools that enhance
+                  productivity without compromising security. Extractify is
+                  built with privacy-by-design principles, ensuring your code
+                  remains yours throughout the process.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
 
