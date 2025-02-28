@@ -10,7 +10,6 @@ export default function LoginPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
-  // Redirect to /extract if already signed in
   useEffect(() => {
     if (status === "authenticated") {
       router.push("/extract");
@@ -54,13 +53,18 @@ export default function LoginPage() {
             >
               Home
             </Link>
+            <Link
+              href="/about"
+              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
+            >
+              About
+            </Link>
           </nav>
         </div>
       </header>
 
-      {/* Login Section with improved visual design */}
+      {/* Login Section */}
       <main className="flex-1 flex items-center justify-center px-4 py-16 relative">
-        {/* Decorative background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-16 -right-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-secondary/5 rounded-full blur-3xl"></div>
@@ -124,25 +128,25 @@ export default function LoginPage() {
           <div className="text-center text-gray-400 text-sm">
             <p>By continuing, you agree to Extractify's</p>
             <div className="flex justify-center space-x-2 mt-1">
-              <a
-                href="#"
+              <Link
+                href="/terms"
                 className="text-primary hover:text-blue-400 transition-colors duration-300"
               >
                 Terms of Service
-              </a>
+              </Link>
               <span>&</span>
-              <a
-                href="#"
+              <Link
+                href="/privacy"
                 className="text-primary hover:text-blue-400 transition-colors duration-300"
               >
                 Privacy Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Enhanced Footer */}
+      {/* Footer */}
       <footer className="bg-gray-900 py-6 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -160,30 +164,24 @@ export default function LoginPage() {
               </span>
             </div>
             <div className="flex space-x-6 mb-4 md:mb-0">
-              <a
-                href="#"
+              <Link
+                href="/about"
                 className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 About
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
-                Blog
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/privacy"
                 className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 Privacy
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/terms"
                 className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 Terms
-              </a>
+              </Link>
             </div>
             <div className="text-gray-400 text-sm">
               © {new Date().getFullYear()} Extractify. All rights reserved.

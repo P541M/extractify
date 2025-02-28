@@ -14,7 +14,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Enhanced header with subtle animation */}
+      {/* Header */}
       <header className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-3 group">
@@ -31,6 +31,12 @@ export default function LandingPage() {
             </span>
           </Link>
           <nav className="flex items-center space-x-6">
+            <Link
+              href="/about"
+              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
+            >
+              About
+            </Link>
             {session ? (
               <>
                 <Link
@@ -58,7 +64,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero section with animated gradient background */}
+      {/* Hero Section */}
       <section className="relative bg-gray-900 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/10 animate-gradient"></div>
@@ -123,6 +129,7 @@ export default function LandingPage() {
               </Link>
             )}
           </div>
+          {/* Rest of the hero section remains unchanged */}
           <div className="lg:w-1/2 relative">
             <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700 transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
               <div className="bg-gray-900 px-4 py-2 flex items-center space-x-2">
@@ -202,15 +209,13 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-
-            {/* Abstract code visualization elements */}
             <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-secondary/10 rounded-full blur-2xl"></div>
             <div className="absolute -top-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
           </div>
         </div>
       </section>
 
-      {/* Features section with hover animations */}
+      {/* Features Section */}
       <section className="py-20 bg-gray-900 relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -222,7 +227,6 @@ export default function LandingPage() {
             repositories
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-gray-600 group">
               <div className="w-14 h-14 bg-primary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
                 <Image
@@ -241,8 +245,6 @@ export default function LandingPage() {
                 few clicks. Easy to use and incredibly fast.
               </p>
             </div>
-
-            {/* Feature 2 */}
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-gray-600 group">
               <div className="w-14 h-14 bg-secondary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-secondary/30 group-hover:scale-110">
                 <Image
@@ -261,8 +263,6 @@ export default function LandingPage() {
                 private repositories with secure OAuth flow.
               </p>
             </div>
-
-            {/* Feature 3 */}
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-gray-600 group">
               <div className="w-14 h-14 bg-accent/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-accent/30 group-hover:scale-110">
                 <Image
@@ -285,7 +285,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Call to action with animated gradient */}
+      {/* Call to Action */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-background"></div>
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -328,7 +328,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Enhanced footer with better spacing */}
+      {/* Footer */}
       <footer className="bg-gray-900 py-12 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -346,30 +346,24 @@ export default function LandingPage() {
               </span>
             </div>
             <div className="flex space-x-8 mb-6 md:mb-0">
-              <a
-                href="#"
+              <Link
+                href="/about"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
               >
                 About
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
-              >
-                Blog
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/privacy"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
               >
                 Privacy
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/terms"
                 className="text-gray-400 hover:text-white transition-colors duration-300"
               >
                 Terms
-              </a>
+              </Link>
             </div>
             <div className="text-center md:text-right text-gray-400">
               <p>
