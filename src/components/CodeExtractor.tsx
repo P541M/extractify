@@ -138,8 +138,8 @@ export default function CodeExtractor({
             </button>
           </div>
           <p className="mt-2 text-sm text-gray-400">
-            Public repositories work for all users. Private repositories require
-            your GitHub account access.
+            Extract code from any repository you have access to using your
+            GitHub account.
           </p>
         </form>
       </div>

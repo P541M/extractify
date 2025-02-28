@@ -333,7 +333,12 @@ export default function ExtractPage() {
         onDrop={handleDrop}
       />
 
-      <div className="flex-1">
+      {/* Updated container for CodeExtractor with dynamic left margin */}
+      <div
+        className={`flex-1 transition-all duration-300 ${
+          sidebarOpen ? "ml-64" : "ml-0"
+        }`}
+      >
         <CodeExtractor
           repoUrl={repoUrl}
           setRepoUrl={setRepoUrl}
