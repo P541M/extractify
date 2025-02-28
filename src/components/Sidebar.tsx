@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import RepoItem from "./RepoItem";
 
 interface Repo {
@@ -26,6 +28,7 @@ interface SidebarProps {
   onDragStart: (index: number) => void;
   onDragOver: (e: React.DragEvent<HTMLLIElement>) => void;
   onDrop: (index: number) => void;
+  onAddNewRepo: () => void;
 }
 
 export default function Sidebar({
@@ -41,6 +44,7 @@ export default function Sidebar({
   onDragStart,
   onDragOver,
   onDrop,
+  onAddNewRepo,
 }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -59,26 +63,21 @@ export default function Sidebar({
           sidebarOpen ? "opacity-100" : "opacity-0"
         }`}
       >
+        {/* Sidebar Header with clickable logo */}
         <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-white"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
+              <Image
+                src="/file.svg"
+                alt="Extractify Logo"
+                fill
+                className="object-contain"
+              />
             </div>
-            <h2 className="ml-3 text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h2 className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Extractify
             </h2>
-          </div>
+          </Link>
           <button
             onClick={toggleSidebar}
             aria-label="Close sidebar"
@@ -97,6 +96,16 @@ export default function Sidebar({
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />
             </svg>
+          </button>
+        </div>
+
+        {/* New "Add New Repo" Button (subtle styling) */}
+        <div className="mb-4">
+          <button
+            onClick={onAddNewRepo}
+            className="w-full py-2 border border-gray-700 rounded-lg text-sm text-gray-400 hover:text-gray-300 hover:border-gray-600 transition-colors"
+          >
+            + Add New Repo
           </button>
         </div>
 

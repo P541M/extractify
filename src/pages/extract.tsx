@@ -339,6 +339,11 @@ export default function ExtractPage() {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onAddNewRepo={() => {
+          // Reset the extractor to a blank state
+          setRepoUrl("");
+          setResultText("");
+        }}
       />
 
       <div
