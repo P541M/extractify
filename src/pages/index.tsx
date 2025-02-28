@@ -228,7 +228,7 @@ export default function LandingPage() {
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-gray-600 group">
-              <div className="w-14 h-14 bg-primary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
+              <div className="w-14 h-14 bg-primary/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
                 <Image
                   src="/file.svg"
                   alt="Code Files"
@@ -246,7 +246,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-gray-600 group">
-              <div className="w-14 h-14 bg-secondary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-secondary/30 group-hover:scale-110">
+              <div className="w-14 h-14 bg-secondary/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-secondary group-hover:scale-110">
                 <Image
                   src="/globe.svg"
                   alt="GitHub"
@@ -264,7 +264,7 @@ export default function LandingPage() {
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-gray-600 group">
-              <div className="w-14 h-14 bg-accent/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-accent/30 group-hover:scale-110">
+              <div className="w-14 h-14 bg-accent/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-accent group-hover:scale-110">
                 <Image
                   src="/window.svg"
                   alt="Output"
