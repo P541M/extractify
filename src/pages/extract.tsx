@@ -288,8 +288,13 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen bg-background flex relative">
-      {/* Floating profile menu */}
-      <ProfileMenu session={session} />
+      {/* Floating profile menu with settings */}
+      <ProfileMenu
+        session={session}
+        includeLineNumbers={includeLineNumbers}
+        autoExtract={autoExtract}
+        updateSetting={updateSetting}
+      />
 
       {/* If sidebar is closed, show a hamburger button to open it */}
       {!sidebarOpen && (
