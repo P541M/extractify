@@ -2,17 +2,23 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const { data: session } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Enhanced header */}
-      <header className="bg-gray-800 shadow-md">
+      {/* Enhanced header with subtle animation */}
+      <header className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="relative w-8 h-8">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
               <Image
                 src="/file.svg"
                 alt="Extractify Logo"
@@ -20,7 +26,7 @@ export default function LandingPage() {
                 className="object-contain"
               />
             </div>
-            <span className="text-2xl font-semibold text-white">
+            <span className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Extractify
             </span>
           </Link>
@@ -29,13 +35,13 @@ export default function LandingPage() {
               <>
                 <Link
                   href="/extract"
-                  className="text-muted hover:text-primary transition-colors"
+                  className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
                 >
                   Extract
                 </Link>
                 <button
                   onClick={() => signOut()}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                  className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md border border-gray-700 hover:border-gray-600"
                 >
                   Sign Out
                 </button>
@@ -43,7 +49,7 @@ export default function LandingPage() {
             ) : (
               <Link
                 href="/login"
-                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                className="bg-primary hover:bg-blue-600 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md font-medium"
               >
                 Sign In
               </Link>
@@ -52,16 +58,25 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero section with gradient background */}
+      {/* Hero section with animated gradient background */}
       <section className="relative bg-gray-900 overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-background"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/10 animate-gradient"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center">
+        <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-primary/5 rounded-full blur-2xl"></div>
+        <div className="absolute -top-16 -right-16 w-64 h-64 bg-secondary/5 rounded-full blur-2xl"></div>
+
+        <div
+          className={`relative max-w-7xl mx-auto px-4 py-24 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center ${
+            mounted ? "animate-fade-in" : "opacity-0"
+          }`}
+        >
           <div className="lg:w-1/2 lg:pr-12 mb-10 lg:mb-0">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-white leading-tight">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-white leading-tight animate-slide-up">
               Extract Code from GitHub{" "}
-              <span className="text-primary">Effortlessly</span>
+              <span className="bg-gradient-to-r from-primary via-blue-400 to-secondary bg-clip-text text-transparent">
+                Effortlessly
+              </span>
             </h1>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Quickly extract and explore code from public or private GitHub
@@ -71,12 +86,12 @@ export default function LandingPage() {
             {session ? (
               <Link
                 href="/extract"
-                className="inline-flex items-center bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors text-lg shadow-lg hover:shadow-xl"
+                className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Start Extracting</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 ml-2"
+                  className="h-5 w-5 ml-2 transition-transform duration-300 group-hover:translate-x-1"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -90,12 +105,12 @@ export default function LandingPage() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors text-lg shadow-lg hover:shadow-xl"
+                className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Sign In with GitHub</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 ml-2"
+                  className="h-5 w-5 ml-2 transition-transform duration-300 group-hover:translate-x-1"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -109,12 +124,12 @@ export default function LandingPage() {
             )}
           </div>
           <div className="lg:w-1/2 relative">
-            <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
-              <div className="bg-gray-700 px-4 py-2 flex items-center space-x-2">
+            <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700 transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+              <div className="bg-gray-900 px-4 py-2 flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-red-400"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
-                <div className="ml-2 text-sm text-gray-300">
+                <div className="ml-2 text-sm text-gray-300 font-medium">
                   Repository Code
                 </div>
               </div>
@@ -187,102 +202,137 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+
             {/* Abstract code visualization elements */}
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-secondary/10 rounded-full blur-xl"></div>
-            <div className="absolute -top-4 -left-4 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
+            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-secondary/10 rounded-full blur-2xl"></div>
+            <div className="absolute -top-6 -left-6 w-32 h-32 bg-primary/10 rounded-full blur-2xl"></div>
           </div>
         </div>
       </section>
 
-      {/* Features section */}
-      <section className="py-16 bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-white mb-12">
+      {/* Features section with hover animations */}
+      <section className="py-20 bg-gray-900 relative">
+        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <h2 className="text-3xl font-bold text-center text-white mb-4">
             Key Features
           </h2>
+          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+            Everything you need to extract and share code from GitHub
+            repositories
+          </p>
           <div className="grid md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-gray-700 rounded-xl p-6 shadow-lg">
-              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-gray-600 group">
+              <div className="w-14 h-14 bg-primary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary/30 group-hover:scale-110">
                 <Image
                   src="/file.svg"
                   alt="Code Files"
-                  width={24}
-                  height={24}
+                  width={28}
+                  height={28}
+                  className="transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-primary transition-colors duration-300">
                 Code Extraction
               </h3>
               <p className="text-gray-300">
                 Extract code from any repository you have access to with just a
-                few clicks.
+                few clicks. Easy to use and incredibly fast.
               </p>
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-gray-700 rounded-xl p-6 shadow-lg">
-              <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mb-4">
-                <Image src="/globe.svg" alt="GitHub" width={24} height={24} />
+            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-gray-600 group">
+              <div className="w-14 h-14 bg-secondary/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-secondary/30 group-hover:scale-110">
+                <Image
+                  src="/globe.svg"
+                  alt="GitHub"
+                  width={28}
+                  height={28}
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-secondary transition-colors duration-300">
                 GitHub Integration
               </h3>
               <p className="text-gray-300">
                 Seamless GitHub authentication for accessing both public and
-                private repositories.
+                private repositories with secure OAuth flow.
               </p>
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-gray-700 rounded-xl p-6 shadow-lg">
-              <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mb-4">
-                <Image src="/window.svg" alt="Output" width={24} height={24} />
+            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-gray-600 group">
+              <div className="w-14 h-14 bg-accent/20 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-accent/30 group-hover:scale-110">
+                <Image
+                  src="/window.svg"
+                  alt="Output"
+                  width={28}
+                  height={28}
+                  className="transition-transform duration-300 group-hover:scale-110"
+                />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
+              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-accent transition-colors duration-300">
                 Easy Export
               </h3>
               <p className="text-gray-300">
                 Copy or download extracted code with a single click for easy
-                sharing.
+                sharing and collaboration with your team.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Call to action */}
-      <section className="py-16 bg-gradient-to-tr from-background to-gray-800">
-        <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-6">
+      {/* Call to action with animated gradient */}
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-background"></div>
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-primary/5 to-transparent blur-3xl"></div>
+        <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-secondary/5 to-transparent blur-3xl"></div>
+
+        <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
+          <div className="inline-block mb-6 p-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full">
+            <div className="bg-gray-900 rounded-full px-4 py-1">
+              <span className="text-gray-300 text-sm font-medium">
+                Join hundreds of developers
+              </span>
+            </div>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
             Ready to Streamline Your Development?
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Join developers who use Extractify to improve their workflow
+          <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+            Join developers who use Extractify to improve their workflow and
+            save time
           </p>
           {session ? (
             <Link
               href="/extract"
-              className="inline-block bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors shadow-lg hover:shadow-xl"
+              className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
             >
               Go to Extractor
             </Link>
           ) : (
-            <Link
-              href="/login"
-              className="inline-block bg-primary text-white px-8 py-4 rounded-xl font-medium hover:bg-blue-500 transition-colors shadow-lg hover:shadow-xl"
-            >
-              Get Started for Free
-            </Link>
+            <div className="space-y-4">
+              <Link
+                href="/login"
+                className="inline-block bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
+              >
+                Get Started for Free
+              </Link>
+              <p className="text-gray-400 text-sm">No credit card required</p>
+            </div>
           )}
         </div>
       </section>
 
-      {/* Enhanced footer */}
-      <footer className="bg-gray-900 py-8">
+      {/* Enhanced footer with better spacing */}
+      <footer className="bg-gray-900 py-12 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
+            <div className="flex items-center mb-6 md:mb-0">
               <div className="relative w-6 h-6 mr-2">
                 <Image
                   src="/file.svg"
@@ -291,11 +341,37 @@ export default function LandingPage() {
                   className="object-contain"
                 />
               </div>
-              <span className="text-lg font-semibold text-white">
+              <span className="text-lg font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Extractify
               </span>
             </div>
-            <div className="text-center md:text-right text-muted">
+            <div className="flex space-x-8 mb-6 md:mb-0">
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                About
+              </a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                Blog
+              </a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                Privacy
+              </a>
+              <a
+                href="#"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                Terms
+              </a>
+            </div>
+            <div className="text-center md:text-right text-gray-400">
               <p>
                 © {new Date().getFullYear()} Extractify. All rights reserved.
               </p>
