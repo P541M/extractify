@@ -205,7 +205,7 @@ export default function LandingPage() {
                 </div>
                 <div className="flex">
                   <span className="text-gray-500 w-8 inline-block select-none">11</span>
-                  <span className="text-white">}</span>
+                  <span className="text-white">&rbrace;</span>
                 </div>
               </div>
             </div>
