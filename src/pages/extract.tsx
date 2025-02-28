@@ -12,9 +12,9 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import ExtractHeader from "../components/ExtractHeader";
 import Sidebar from "../components/Sidebar";
 import CodeExtractor from "../components/CodeExtractor";
+import ProfileMenu from "../components/ProfileMenu";
 
 interface GitTreeItem {
   path: string;
@@ -44,56 +44,11 @@ export default function ExtractPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
   const [autoExtract, setAutoExtract] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
   const [openMenuRepoId, setOpenMenuRepoId] = useState<string | null>(null);
+  const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
 
   const { data: session, status } = useSession();
   const router = useRouter();
-  const settingsRef = useRef<HTMLDivElement>(null);
-  const toggleButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Effects
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        openMenuRepoId &&
-        !(event.target as HTMLElement).closest(".menu") &&
-        !(event.target as HTMLElement).closest(".three-dot-button")
-      ) {
-        setOpenMenuRepoId(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openMenuRepoId]);
-
-  useEffect(() => {
-    const storedLineNumbers = localStorage.getItem("includeLineNumbers");
-    const storedAutoExtract = localStorage.getItem("autoExtract");
-    if (storedLineNumbers !== null) {
-      setIncludeLineNumbers(storedLineNumbers === "true");
-    }
-    if (storedAutoExtract !== null) {
-      setAutoExtract(storedAutoExtract === "true");
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      if (
-        settingsRef.current &&
-        !settingsRef.current.contains(e.target as Node) &&
-        toggleButtonRef.current &&
-        !toggleButtonRef.current.contains(e.target as Node)
-      ) {
-        setShowSettings(false);
-      }
-    };
-    document.addEventListener("mousedown", handleMouseDown);
-    return () => document.removeEventListener("mousedown", handleMouseDown);
-  }, []);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -332,35 +287,48 @@ export default function ExtractPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative">
-      <ExtractHeader
+    <div className="min-h-screen bg-background flex relative">
+      {/* Floating profile menu */}
+      <ProfileMenu session={session} />
+
+      {/* If sidebar is closed, show a hamburger button to open it */}
+      {!sidebarOpen && (
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="fixed top-4 left-4 z-50 text-gray-400 hover:text-primary transition-colors"
+          aria-label="Open sidebar"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      )}
+
+      <Sidebar
         sidebarOpen={sidebarOpen}
         toggleSidebar={() => setSidebarOpen((prev) => !prev)}
-        session={session}
-        showSettings={showSettings}
-        setShowSettings={setShowSettings}
-        toggleButtonRef={toggleButtonRef}
-        settingsRef={settingsRef}
-        includeLineNumbers={includeLineNumbers}
-        autoExtract={autoExtract}
-        updateSetting={updateSetting}
+        starredRepos={starredRepos}
+        repoList={repoList}
+        onRepoClick={handleRepoClick}
+        onDeleteRepo={handleDeleteRepo}
+        onToggleStar={toggleStar}
+        openMenuRepoId={openMenuRepoId}
+        setOpenMenuRepoId={setOpenMenuRepoId}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
       />
 
-      <div className="flex flex-1">
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          starredRepos={starredRepos}
-          repoList={repoList}
-          onRepoClick={handleRepoClick}
-          onDeleteRepo={handleDeleteRepo}
-          onToggleStar={toggleStar}
-          openMenuRepoId={openMenuRepoId}
-          setOpenMenuRepoId={setOpenMenuRepoId}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        />
-
+      <div className="flex-1">
         <CodeExtractor
           repoUrl={repoUrl}
           setRepoUrl={setRepoUrl}
