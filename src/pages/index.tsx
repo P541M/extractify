@@ -234,7 +234,7 @@ export default function LandingPage() {
                   alt="Code Files"
                   width={28}
                   height={28}
-                  className="transition-transform duration-300 group-hover:scale-110"
+                  className="transition-transform duration-300 group-hover:scale-110 filter brightness-0 invert"
                 />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-primary transition-colors duration-300">
@@ -252,7 +252,7 @@ export default function LandingPage() {
                   alt="GitHub"
                   width={28}
                   height={28}
-                  className="transition-transform duration-300 group-hover:scale-110"
+                  className="transition-transform duration-300 group-hover:scale-110 filter brightness-0 invert"
                 />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-secondary transition-colors duration-300">
@@ -270,7 +270,7 @@ export default function LandingPage() {
                   alt="Output"
                   width={28}
                   height={28}
-                  className="transition-transform duration-300 group-hover:scale-110"
+                  className="transition-transform duration-300 group-hover:scale-110 filter brightness-0 invert"
                 />
               </div>
               <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-accent transition-colors duration-300">
