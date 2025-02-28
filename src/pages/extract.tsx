@@ -12,8 +12,20 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
-import Link from "next/link";
-import Image from "next/image";
+import ExtractHeader from "../components/ExtractHeader";
+import Sidebar from "../components/Sidebar";
+import CodeExtractor from "../components/CodeExtractor";
+
+interface GitTreeItem {
+  path: string;
+  mode: string;
+  type: "blob" | "tree";
+  sha: string;
+  size?: number;
+  url: string;
+}
+
+const DEBUG = process.env.DEBUG_LOGGING === "true";
 
 export default function ExtractPage() {
   // State Variables
@@ -46,17 +58,15 @@ export default function ExtractPage() {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         openMenuRepoId &&
-        !event.target.closest(".menu") &&
-        !event.target.closest(".three-dot-button")
+        !(event.target as HTMLElement).closest(".menu") &&
+        !(event.target as HTMLElement).closest(".three-dot-button")
       ) {
         setOpenMenuRepoId(null);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenuRepoId]);
 
   useEffect(() => {
@@ -321,412 +331,48 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
-  // JSX Return
   return (
     <div className="min-h-screen bg-background flex flex-col relative">
-      {/* Header */}
-      <header className="bg-gray-800 shadow-sm p-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSidebarOpen((prev) => !prev)}
-            className="text-muted hover:text-primary transition-colors"
-            aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-          >
-            {sidebarOpen ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            )}
-          </button>
-          <Link href="/" className="text-xl font-semibold text-white">
-            Extractify
-          </Link>
-        </div>
-        <div className="relative">
-          <button
-            ref={toggleButtonRef}
-            onClick={() => setShowSettings((prev) => !prev)}
-            className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-600 hover:bg-gray-500 transition-colors overflow-hidden"
-            aria-label="Account settings"
-          >
-            {session?.user?.image ? (
-              <Image
-                src={session.user.image}
-                alt="Profile"
-                width={32}
-                height={32}
-                className="object-cover"
-              />
-            ) : (
-              <span className="text-white text-sm">A</span>
-            )}
-          </button>
-          {showSettings && (
-            <div
-              ref={settingsRef}
-              className="absolute right-0 mt-2 w-64 bg-gray-700 rounded-lg shadow-lg p-4 z-10"
-            >
-              <h3 className="text-white font-semibold mb-2">Settings</h3>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted">Include line numbers</span>
-                <input
-                  type="checkbox"
-                  checked={includeLineNumbers}
-                  onChange={(e) =>
-                    updateSetting("includeLineNumbers", e.target.checked)
-                  }
-                />
-              </div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted">
-                  Auto extract on click
-                </span>
-                <input
-                  type="checkbox"
-                  checked={autoExtract}
-                  onChange={(e) =>
-                    updateSetting("autoExtract", e.target.checked)
-                  }
-                />
-              </div>
-              <div className="mt-4">
-                <button
-                  onClick={() => signOut()}
-                  className="w-full bg-secondary text-white px-3 py-2 rounded-lg hover:bg-green-400 transition-colors text-sm"
-                >
-                  Sign Out
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <ExtractHeader
+        sidebarOpen={sidebarOpen}
+        toggleSidebar={() => setSidebarOpen((prev) => !prev)}
+        session={session}
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+        toggleButtonRef={toggleButtonRef}
+        settingsRef={settingsRef}
+        includeLineNumbers={includeLineNumbers}
+        autoExtract={autoExtract}
+        updateSetting={updateSetting}
+      />
 
       <div className="flex flex-1">
-        {/* Sidebar with conditional width */}
-        <aside
-          className={`${
-            sidebarOpen ? "w-64" : "w-0"
-          } bg-gray-800 shadow-lg transition-all duration-300 overflow-hidden`}
-        >
-          <div className="p-4">
-            {/* Starred Repos Section */}
-            {starredRepos.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-sm font-semibold text-white mb-2">
-                  Starred Repositories
-                </h3>
-                <ul className="space-y-2">
-                  {starredRepos.map((repo, index) => (
-                    <li
-                      key={repo.id}
-                      className="flex items-center group"
-                      draggable
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        e.currentTarget.classList.add("bg-gray-700");
-                      }}
-                      onDragLeave={(e) =>
-                        e.currentTarget.classList.remove("bg-gray-700")
-                      }
-                      onDrop={(e) => {
-                        e.currentTarget.classList.remove("bg-gray-700");
-                        handleDrop(index);
-                      }}
-                    >
-                      <div
-                        className="w-4 h-8 flex items-center justify-center mr-2 cursor-move text-gray-400 hover:text-primary transition-colors"
-                        role="button"
-                        aria-label="Drag to reorder"
-                        tabIndex={0}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-                        </svg>
-                      </div>
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          starredRepos={starredRepos}
+          repoList={repoList}
+          onRepoClick={handleRepoClick}
+          onDeleteRepo={handleDeleteRepo}
+          onToggleStar={toggleStar}
+          openMenuRepoId={openMenuRepoId}
+          setOpenMenuRepoId={setOpenMenuRepoId}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+        />
 
-                      <div className="flex-1 relative overflow-hidden">
-                        <button
-                          onClick={() => handleRepoClick(repo.url)}
-                          className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
-                          title={repo.url}
-                        >
-                          <span className="block overflow-hidden text-clip whitespace-nowrap">
-                            {repo.url.replace("https://github.com/", "")}
-                          </span>
-                        </button>
-                        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
-                      </div>
-
-                      <div className="ml-2 relative">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenuRepoId(
-                              openMenuRepoId === repo.id ? null : repo.id
-                            );
-                          }}
-                          className="p-1 text-gray-400 hover:text-blue-400 three-dot-button"
-                          aria-label="More options"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle cx="12" cy="5" r="1.5" />
-                            <circle cx="12" cy="12" r="1.5" />
-                            <circle cx="12" cy="19" r="1.5" />
-                          </svg>
-                        </button>
-                        {openMenuRepoId === repo.id && (
-                          <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10 menu">
-                            <button
-                              onClick={() => toggleStar(repo, false)}
-                              className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
-                            >
-                              Unstar
-                            </button>
-                            <button
-                              onClick={(e) =>
-                                handleDeleteRepo(
-                                  e,
-                                  repo.id,
-                                  repo.url,
-                                  repo.starred
-                                )
-                              }
-                              className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <hr className="border-gray-600 my-4" />
-
-            <div>
-              <h3 className="text-sm font-semibold text-white mb-2">
-                Recent Repositories
-              </h3>
-              <ul className="space-y-2">
-                {repoList.map((repo) => (
-                  <li key={repo.id} className="flex items-center relative">
-                    <div className="flex-1 relative overflow-hidden">
-                      <button
-                        onClick={() => handleRepoClick(repo.url)}
-                        className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
-                        title={repo.url}
-                      >
-                        <span className="block overflow-hidden text-clip whitespace-nowrap">
-                          {repo.url.replace("https://github.com/", "")}
-                        </span>
-                      </button>
-                      <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-800 to-transparent pointer-events-none"></div>
-                    </div>
-
-                    <div className="ml-2 relative">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenMenuRepoId(
-                            openMenuRepoId === repo.id ? null : repo.id
-                          );
-                        }}
-                        className="p-1 text-gray-400 hover:text-blue-400 three-dot-button"
-                        aria-label="More options"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle cx="12" cy="5" r="1.5" />
-                          <circle cx="12" cy="12" r="1.5" />
-                          <circle cx="12" cy="19" r="1.5" />
-                        </svg>
-                      </button>
-                      {openMenuRepoId === repo.id && (
-                        <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10 menu">
-                          <button
-                            onClick={() => toggleStar(repo, true)}
-                            className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
-                          >
-                            Star
-                          </button>
-                          <button
-                            onClick={(e) =>
-                              handleDeleteRepo(
-                                e,
-                                repo.id,
-                                repo.url,
-                                repo.starred
-                              )
-                            }
-                            className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center p-8 max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="w-full mb-6">
-            <label htmlFor="repoUrl" className="block text-sm text-muted mb-2">
-              Enter GitHub Repository URL (Public or Private)
-            </label>
-            <div className="flex gap-2">
-              <input
-                id="repoUrl"
-                type="text"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="flex-1 p-3 bg-gray-700 text-foreground rounded-lg border border-gray-600 focus:outline-none focus:border-primary transition-colors"
-                placeholder="e.g., https://github.com/user/repo (private repos require access)"
-                required
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-primary text-white px-4 py-3 rounded-lg hover:bg-blue-500 transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                {loading ? (
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
-                ) : null}
-                {loading ? "Extracting..." : "Extract"}
-              </button>
-            </div>
-          </form>
-
-          {loading && (
-            <div className="w-full mb-6 animate-fade-in">
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div
-                  className="bg-primary h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                ></div>
-              </div>
-              <p className="text-muted text-sm mt-2">
-                {progress < 30
-                  ? "Connecting to GitHub..."
-                  : progress < 60
-                  ? "Fetching files..."
-                  : "Processing..."}
-              </p>
-            </div>
-          )}
-
-          {error && (
-            <p className="text-red-400 mb-4 animate-fade-in w-full">{error}</p>
-          )}
-
-          {resultText && (
-            <div className="w-full animate-slide-up bg-gray-700 rounded-lg p-4">
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-semibold text-white">
-                  Extracted Code
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleCopy}
-                    className="bg-secondary text-white px-3 py-1 rounded-lg hover:bg-green-400 transition-colors text-sm"
-                  >
-                    Copy
-                  </button>
-                  <a
-                    href={`data:text/plain;charset=utf-8,${encodeURIComponent(
-                      resultText
-                    )}`}
-                    download="code.txt"
-                    onClick={handleDownload}
-                    className="bg-accent text-white px-3 py-1 rounded-lg hover:bg-yellow-300 transition-colors text-sm"
-                  >
-                    Download
-                  </a>
-                </div>
-              </div>
-              <pre className="w-full p-4 bg-gray-800 text-foreground rounded-lg border border-gray-600 overflow-auto max-h-96 font-mono text-sm">
-                {resultText}
-              </pre>
-              {successMessage && (
-                <p className="mt-3 text-secondary font-medium animate-fade-in">
-                  {successMessage}
-                </p>
-              )}
-            </div>
-          )}
-        </main>
+        <CodeExtractor
+          repoUrl={repoUrl}
+          setRepoUrl={setRepoUrl}
+          loading={loading}
+          progress={progress}
+          resultText={resultText}
+          error={error}
+          successMessage={successMessage}
+          handleSubmit={handleSubmit}
+          handleCopy={handleCopy}
+          handleDownload={handleDownload}
+        />
       </div>
     </div>
   );
