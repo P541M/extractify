@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+// src/pages/extract.tsx
+import { useState, useEffect } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
@@ -43,7 +44,8 @@ export default function ExtractPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
-  const [autoExtract, setAutoExtract] = useState(false);
+  // Set autoExtract default to true
+  const [autoExtract, setAutoExtract] = useState(true);
   const [openMenuRepoId, setOpenMenuRepoId] = useState<string | null>(null);
   const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
 
@@ -56,6 +58,14 @@ export default function ExtractPage() {
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
+  }, []);
+
+  // Load persisted autoExtract preference from localStorage
+  useEffect(() => {
+    const storedAutoExtract = localStorage.getItem("autoExtract");
+    if (storedAutoExtract !== null) {
+      setAutoExtract(storedAutoExtract === "true");
+    }
   }, []);
 
   useEffect(() => {
@@ -288,7 +298,6 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen bg-background flex relative">
-      {/* Floating profile menu with settings */}
       <ProfileMenu
         session={session}
         includeLineNumbers={includeLineNumbers}
@@ -296,7 +305,6 @@ export default function ExtractPage() {
         updateSetting={updateSetting}
       />
 
-      {/* If sidebar is closed, show a hamburger button to open it */}
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
@@ -333,7 +341,6 @@ export default function ExtractPage() {
         onDrop={handleDrop}
       />
 
-      {/* Updated container for CodeExtractor with dynamic left margin */}
       <div
         className={`flex-1 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-0"
