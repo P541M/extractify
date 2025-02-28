@@ -1,6 +1,6 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { db } from "../firebase/firebase";
 import {
@@ -17,23 +17,11 @@ import Sidebar from "../components/Sidebar";
 import CodeExtractor from "../components/CodeExtractor";
 import ProfileMenu from "../components/ProfileMenu";
 
-interface GitTreeItem {
-  path: string;
-  mode: string;
-  type: "blob" | "tree";
-  sha: string;
-  size?: number;
-  url: string;
-}
-
-const DEBUG = process.env.DEBUG_LOGGING === "true";
-
 export default function ExtractPage() {
-  // src/pages/extract.tsx
   // State Variables
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<
-    Array<{ id: string; url: string; starred: boolean }>
+    Array<{ id: string; url: string; starred: boolean; order?: number }>
   >([]);
   const [starredRepos, setStarredRepos] = useState<
     Array<{ id: string; url: string; starred: boolean; order?: number }>
@@ -45,7 +33,6 @@ export default function ExtractPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [includeLineNumbers, setIncludeLineNumbers] = useState(false);
-  // Set autoExtract default to true
   const [autoExtract, setAutoExtract] = useState(true);
   const [openMenuRepoId, setOpenMenuRepoId] = useState<string | null>(null);
   const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
@@ -88,7 +75,12 @@ export default function ExtractPage() {
           starred: boolean;
           order?: number;
         }> = [];
-        const recent: Array<{ id: string; url: string; starred: boolean }> = [];
+        const recent: Array<{
+          id: string;
+          url: string;
+          starred: boolean;
+          order?: number;
+        }> = [];
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const repo = {
@@ -106,7 +98,7 @@ export default function ExtractPage() {
         starred.sort((a, b) => (a.order || 0) - (b.order || 0));
         setStarredRepos(starred);
         setRepoList(recent);
-      } catch (err: any) {
+      } catch (err: Error) {
         console.error("Error fetching repos:", err.message);
       }
     };
@@ -153,7 +145,7 @@ export default function ExtractPage() {
           setSelectedBranch(data.branches[0]);
         }
       }
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Error fetching branches:", err.message);
       setBranches([]);
     }
@@ -190,7 +182,7 @@ export default function ExtractPage() {
       if (!res.ok || data.error)
         setError(data.error || "Failed to fetch repository code.");
       else setResultText(data.code);
-    } catch (err: any) {
+    } catch (err: Error) {
       setProgress(0);
       setError(err.message || "Something went wrong");
     }
@@ -218,22 +210,21 @@ export default function ExtractPage() {
           starred: false,
         });
         setRepoList((prev) => [
-          { id: docRef.id, url: repoUrl, starred: false },
+          { id: docRef.id, url: repoUrl, starred: false, order: 0 },
           ...prev,
         ]);
-      } catch (err: any) {
+      } catch (err: Error) {
         console.error("Error saving repo:", err.message);
       }
       if (autoExtract) {
         await fetchRepo(repoUrl);
-        // After extraction, fetch branches
         await fetchBranches(repoUrl);
       }
     }
   };
 
   const handleRepoClick = async (url: string, forceFetch: boolean = false) => {
-    let clickedRepo =
+    const clickedRepo =
       repoList.find((repo) => repo.url === url) ||
       starredRepos.find((repo) => repo.url === url);
     if (!clickedRepo) return;
@@ -253,14 +244,13 @@ export default function ExtractPage() {
           clickedRepo,
           ...prev.filter((repo) => repo.url !== url),
         ]);
-      } catch (err: any) {
+      } catch (err: Error) {
         console.error("Error updating repo order:", err.message);
       }
     }
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
-      // After extraction, fetch branches
       await fetchBranches(url);
     }
   };
@@ -281,7 +271,7 @@ export default function ExtractPage() {
       }
       setRepoUrl("");
       setOpenMenuRepoId(null);
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Error deleting repo:", err.message);
       setError("Failed to delete repository from history.");
     }
@@ -303,7 +293,7 @@ export default function ExtractPage() {
         setRepoList((prev) => [{ ...repo, starred: false }, ...prev]);
       }
       setOpenMenuRepoId(null);
-    } catch (err: any) {
+    } catch (err: Error) {
       console.error("Error updating star status:", err.message);
     }
   };
@@ -326,7 +316,7 @@ export default function ExtractPage() {
     updated.forEach(async (repo, idx) => {
       try {
         await updateDoc(doc(db, "repositories", repo.id), { order: idx });
-      } catch (err: any) {
+      } catch (err: Error) {
         console.error("Error updating repo order:", err.message);
       }
     });
@@ -337,7 +327,7 @@ export default function ExtractPage() {
       await navigator.clipboard.writeText(resultText);
       setSuccessMessage("Copied to clipboard!");
       setTimeout(() => setSuccessMessage(""), 3000);
-    } catch (err) {
+    } catch (err: Error) {
       setError("Failed to copy code.");
     }
   };
@@ -391,7 +381,6 @@ export default function ExtractPage() {
         onDragOver={handleDragOver}
         onDrop={handleDrop}
         onAddNewRepo={() => {
-          // Reset the extractor to a blank state
           setRepoUrl("");
           setResultText("");
           setBranches([]);
