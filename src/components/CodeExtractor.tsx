@@ -38,6 +38,15 @@ export default function CodeExtractor({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const getRepoName = (url: string) => {
+    const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (match && match[1] && match[2]) {
+      const repoName = match[2].replace(/\.git$/, "");
+      return `${match[1]}/${repoName}`;
+    }
+    return "Unknown Repo";
+  };
+
   return (
     <main
       className={`flex-1 flex flex-col items-center p-8 max-w-4xl mx-auto w-full ${
@@ -149,7 +158,7 @@ export default function CodeExtractor({
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-medium text-white">Extraction Progress</h3>
             <span className="text-sm font-medium text-primary">
-              {progress}%
+              {Math.round(progress)}%
             </span>
           </div>
           <div className="w-full bg-gray-900 rounded-full h-3 overflow-hidden">
@@ -235,7 +244,7 @@ export default function CodeExtractor({
                   <polyline points="16 18 22 12 16 6"></polyline>
                   <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-                Extracted Code
+                Extracted Code ({getRepoName(repoUrl)})
               </h2>
               {successMessage && (
                 <p className="text-sm text-green-400 mt-1 animate-fade-in">
