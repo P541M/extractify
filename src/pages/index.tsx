@@ -129,7 +129,7 @@ export default function LandingPage() {
               </Link>
             )}
           </div>
-          {/* Rest of the hero section remains unchanged */}
+          {/* Code Widget */}
           <div className="lg:w-1/2 relative">
             <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700 transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
               <div className="bg-gray-900 px-4 py-2 flex items-center space-x-2">
@@ -137,75 +137,75 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
                 <div className="ml-2 text-sm text-gray-300 font-medium">
-                  Repository Code
+                  Extractify Magic
                 </div>
               </div>
               <div className="p-4 text-sm font-mono text-gray-300 overflow-hidden">
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    1
-                  </span>
+                  <span className="text-gray-500 w-8 inline-block select-none">1</span>
                   <span className="text-blue-400">import</span>
-                  <span className="text-white"> React </span>
+                  <span className="text-white"> {`{ useEffect, useState }`} </span>
                   <span className="text-blue-400">from</span>
-                  <span className="text-white"> </span>
-                  <span className="text-green-400">'react'</span>
-                  <span className="text-white">;</span>
+                  <span className="text-white"> 'react';</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    2
-                  </span>
+                  <span className="text-gray-500 w-8 inline-block select-none">2</span>
+                  <span className="text-white"></span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    3
-                  </span>
-                  <span className="text-blue-400">function</span>
-                  <span className="text-yellow-400"> ExtractCode</span>
-                  <span className="text-white">() {`{`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">3</span>
+                  <span className="text-blue-400">export default function</span>
+                  <span className="text-white"> ExtractifyMagic() </span>
+                  <span className="text-white">{`{`}</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    4
-                  </span>
-                  <span className="text-white pl-4">...</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">4</span>
+                  <span className="text-blue-400">  const</span>
+                  <span className="text-white"> [message, setMessage] </span>
+                  <span className="text-blue-400">=</span>
+                  <span className="text-white"> useState(</span>
+                  <span className="text-green-400">'Extracting code...'</span>
+                  <span className="text-white">);</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    5
-                  </span>
-                  <span className="text-white pl-4">{`return (`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">5</span>
+                  <span className="text-white"></span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    6
-                  </span>
-                  <span className="text-white pl-8">{`<div>`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">6</span>
+                  <span className="text-blue-400">  useEffect</span>
+                  <span className="text-white">(</span>
+                  <span className="text-white">() => {`{`}</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    7
-                  </span>
-                  <span className="text-white pl-12">{`<h1>Extract Code</h1>`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">7</span>
+                  <span className="text-blue-400">    const</span>
+                  <span className="text-white"> timer </span>
+                  <span className="text-blue-400">=</span>
+                  <span className="text-white"> setTimeout(</span>
+                  <span className="text-white">() => setMessage(</span>
+                  <span className="text-green-400">'✨ Extraction Complete!'</span>
+                  <span className="text-white">), 2000);</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    8
-                  </span>
-                  <span className="text-white pl-8">{`</div>`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">8</span>
+                  <span className="text-blue-400">    return</span>
+                  <span className="text-white"> () =&gt; clearTimeout(timer);</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    9
-                  </span>
-                  <span className="text-white pl-4">{`);`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">9</span>
+                  <span className="text-white">  {`}, []);`}</span>
                 </div>
                 <div className="flex">
-                  <span className="text-gray-500 w-8 inline-block select-none">
-                    10
-                  </span>
-                  <span className="text-white">{`}`}</span>
+                  <span className="text-gray-500 w-8 inline-block select-none">10</span>
+                  <span className="text-blue-400">  return</span>
+                  <span className="text-white"> &lt;h1 className="text-3xl font-bold"&gt;</span>
+                  <span className="text-green-400">{`{message}`}</span>
+                  <span className="text-white">&lt;/h1&gt;;</span>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-500 w-8 inline-block select-none">11</span>
+                  <span className="text-white">}</span>
                 </div>
               </div>
             </div>
@@ -223,8 +223,7 @@ export default function LandingPage() {
             Key Features
           </h2>
           <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
-            Everything you need to extract and share code from GitHub
-            repositories
+            Everything you need to extract and share code from GitHub repositories
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-gray-600 group">
@@ -241,8 +240,7 @@ export default function LandingPage() {
                 Code Extraction
               </h3>
               <p className="text-gray-300">
-                Extract code from any repository you have access to with just a
-                few clicks. Easy to use and incredibly fast.
+                Extract code from any repository you have access to with just a few clicks. Easy to use and incredibly fast.
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-gray-600 group">
@@ -259,8 +257,7 @@ export default function LandingPage() {
                 GitHub Integration
               </h3>
               <p className="text-gray-300">
-                Seamless GitHub authentication for accessing both public and
-                private repositories with secure OAuth flow.
+                Seamless GitHub authentication for accessing both public and private repositories with secure OAuth flow.
               </p>
             </div>
             <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-gray-600 group">
@@ -277,8 +274,7 @@ export default function LandingPage() {
                 Easy Export
               </h3>
               <p className="text-gray-300">
-                Copy or download extracted code with a single click for easy
-                sharing and collaboration with your team.
+                Copy or download extracted code with a single click for easy sharing and collaboration with your team.
               </p>
             </div>
           </div>
@@ -304,8 +300,7 @@ export default function LandingPage() {
             Ready to Streamline Your Development?
           </h2>
           <p className="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
-            Join developers who use Extractify to improve their workflow and
-            save time
+            Join developers who use Extractify to improve their workflow and save time
           </p>
           {session ? (
             <Link
