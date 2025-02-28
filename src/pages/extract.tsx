@@ -29,6 +29,7 @@ interface GitTreeItem {
 const DEBUG = process.env.DEBUG_LOGGING === "true";
 
 export default function ExtractPage() {
+  // src/pages/extract.tsx
   // State Variables
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<
@@ -48,6 +49,11 @@ export default function ExtractPage() {
   const [autoExtract, setAutoExtract] = useState(true);
   const [openMenuRepoId, setOpenMenuRepoId] = useState<string | null>(null);
   const [draggedRepoIndex, setDraggedRepoIndex] = useState<number | null>(null);
+
+  // Branch-related state
+  const [branches, setBranches] = useState<string[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<string>("");
+  const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -126,7 +132,36 @@ export default function ExtractPage() {
     if (key === "autoExtract") setAutoExtract(value);
   };
 
-  const fetchRepo = async (url: string) => {
+  // Function to fetch branches
+  const fetchBranches = async (url: string) => {
+    setLoadingBranches(true);
+    try {
+      const res = await fetch("/api/branches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repoUrl: url }),
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        console.error(data.error || "Failed to fetch branches.");
+        setBranches([]);
+      } else {
+        setBranches(data.branches || []);
+        if (data.branches && data.branches.length > 0) {
+          setSelectedBranch(data.branches[0]);
+        }
+      }
+    } catch (err: any) {
+      console.error("Error fetching branches:", err.message);
+      setBranches([]);
+    }
+    setLoadingBranches(false);
+  };
+
+  // Updated fetchRepo function to include branch parameter
+  const fetchRepo = async (url: string, branch?: string) => {
     setLoading(true);
     setError("");
     setResultText("");
@@ -140,7 +175,11 @@ export default function ExtractPage() {
       const res = await fetch("/api/extract", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl: url, includeLineNumbers }),
+        body: JSON.stringify({
+          repoUrl: url,
+          includeLineNumbers,
+          branch: branch,
+        }),
         credentials: "include",
       });
 
@@ -156,6 +195,12 @@ export default function ExtractPage() {
       setError(err.message || "Something went wrong");
     }
     setTimeout(() => setLoading(false), 500);
+  };
+
+  // Handle branch selection
+  const handleBranchSelect = async (branch: string) => {
+    setSelectedBranch(branch);
+    await fetchRepo(repoUrl, branch);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -179,7 +224,11 @@ export default function ExtractPage() {
       } catch (err: any) {
         console.error("Error saving repo:", err.message);
       }
-      await fetchRepo(repoUrl);
+      if (autoExtract) {
+        await fetchRepo(repoUrl);
+        // After extraction, fetch branches
+        await fetchBranches(repoUrl);
+      }
     }
   };
 
@@ -211,6 +260,8 @@ export default function ExtractPage() {
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
+      // After extraction, fetch branches
+      await fetchBranches(url);
     }
   };
 
@@ -343,6 +394,7 @@ export default function ExtractPage() {
           // Reset the extractor to a blank state
           setRepoUrl("");
           setResultText("");
+          setBranches([]);
         }}
       />
 
@@ -362,6 +414,10 @@ export default function ExtractPage() {
           handleSubmit={handleSubmit}
           handleCopy={handleCopy}
           handleDownload={handleDownload}
+          branches={branches}
+          selectedBranch={selectedBranch}
+          onBranchSelect={handleBranchSelect}
+          loadingBranches={loadingBranches}
         />
       </div>
     </div>

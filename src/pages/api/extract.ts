@@ -15,6 +15,12 @@ interface GitTreeItem {
   url: string;
 }
 
+interface ExtractRequest {
+  repoUrl: string;
+  includeLineNumbers?: boolean;
+  branch?: string;
+}
+
 const DEBUG = process.env.DEBUG_LOGGING === "true";
 
 export default async function handler(
@@ -41,7 +47,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { repoUrl, includeLineNumbers } = req.body;
+  const { repoUrl, includeLineNumbers, branch } = req.body as ExtractRequest;
   if (!repoUrl) {
     return res.status(400).json({ error: "Repository URL is required" });
   }
@@ -69,7 +75,7 @@ export default async function handler(
       console.error("Repo fetch error:", errorResp);
       if (repoInfoRes.status === 403) {
         return res.status(403).json({
-          error: "You don’t have permission to access this repository.",
+          error: "You don't have permission to access this repository.",
         });
       } else if (repoInfoRes.status === 404) {
         return res.status(404).json({
@@ -89,9 +95,11 @@ export default async function handler(
       );
     }
 
-    const defaultBranch = repoInfo.default_branch || "main";
+    // Use the specified branch or fall back to the default branch
+    const branchToUse = branch || repoInfo.default_branch || "main";
+
     const treeRes = await fetch(
-      `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${defaultBranch}?recursive=1`,
+      `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${branchToUse}?recursive=1`,
       { headers: githubHeaders }
     );
     if (!treeRes.ok) {
@@ -99,7 +107,7 @@ export default async function handler(
       console.error("Tree fetch error:", errorResp);
       if (treeRes.status === 403) {
         return res.status(403).json({
-          error: "You don’t have permission to access this repository’s tree.",
+          error: "You don't have permission to access this repository's tree.",
         });
       }
       return res.status(treeRes.status).json({
@@ -154,7 +162,7 @@ export default async function handler(
         combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code: [Document content omitted]\n\n`;
       } else {
         const fileRes = await fetch(
-          `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${defaultBranch}`,
+          `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${branchToUse}`,
           { headers: githubHeaders }
         );
         if (fileRes.ok) {

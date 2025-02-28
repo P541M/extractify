@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import BranchSelector from "./BranchSelector";
 
 interface CodeExtractorProps {
   repoUrl: string;
@@ -11,6 +12,10 @@ interface CodeExtractorProps {
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleCopy: () => Promise<void>;
   handleDownload: () => void;
+  branches: string[];
+  selectedBranch: string;
+  onBranchSelect: (branch: string) => void;
+  loadingBranches: boolean;
 }
 
 export default function CodeExtractor({
@@ -24,6 +29,10 @@ export default function CodeExtractor({
   handleSubmit,
   handleCopy,
   handleDownload,
+  branches,
+  selectedBranch,
+  onBranchSelect,
+  loadingBranches,
 }: CodeExtractorProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -226,6 +235,16 @@ export default function CodeExtractor({
         </div>
       )}
 
+      {/* Branch selector component */}
+      {branches.length > 1 && resultText && !loading && (
+        <BranchSelector
+          branches={branches}
+          selectedBranch={selectedBranch}
+          onBranchSelect={onBranchSelect}
+          isLoading={loadingBranches}
+        />
+      )}
+
       {resultText && (
         <div className="w-full animate-fade-in bg-gray-800 rounded-xl shadow-xl border border-gray-700 overflow-hidden">
           <div className="bg-gray-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-700">
@@ -244,7 +263,8 @@ export default function CodeExtractor({
                   <polyline points="16 18 22 12 16 6"></polyline>
                   <polyline points="8 6 2 12 8 18"></polyline>
                 </svg>
-                Extracted Code ({getRepoName(repoUrl)})
+                Extracted Code ({getRepoName(repoUrl)}
+                {selectedBranch && ` - ${selectedBranch} branch`})
               </h2>
               {successMessage && (
                 <p className="text-sm text-green-400 mt-1 animate-fade-in">
@@ -301,6 +321,7 @@ export default function CodeExtractor({
                   </>
                 )}
               </button>
+
               <a
                 href={`data:text/plain;charset=utf-8,${encodeURIComponent(
                   resultText
