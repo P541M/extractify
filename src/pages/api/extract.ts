@@ -63,7 +63,7 @@ export default async function handler(
     if (!match) {
       return res.status(400).json({ error: "Invalid GitHub URL" });
     }
-    const [_, owner, repo] = match;
+    const [, owner, repo] = match;
     const cleanRepo = repo.replace(/\.git$/, "");
 
     const repoInfoRes = await fetch(

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function LoginPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-gray-400 text-sm">
-            <p>By continuing, you agree to Extractify's</p>
+            <p>By continuing, you agree to Extractify&apos;s</p>
             <div className="flex justify-center space-x-2 mt-1">
               <Link
                 href="/terms"

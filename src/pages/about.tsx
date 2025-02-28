@@ -59,9 +59,9 @@ export default function AboutPage() {
               <p className="text-lg leading-relaxed">
                 Extractify is a developer tool designed to streamline your
                 workflow by providing effortless code extraction from GitHub
-                repositories. Whether you're documenting projects, analyzing
-                codebases, or sharing snippets, our platform offers a seamless
-                experience for both public and private repositories.
+                repositories. Whether you&apos; re documenting projects,
+                analyzing codebases, or sharing snippets, our platform offers a
+                seamless experience for both public and private repositories.
               </p>
 
               <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600">

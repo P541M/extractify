@@ -3,7 +3,13 @@ import { signOut } from "next-auth/react";
 import { useState, useRef, useEffect } from "react";
 
 interface ProfileMenuProps {
-  session: any;
+  session: {
+    user?: {
+      name?: string;
+      email?: string;
+      image?: string;
+    };
+  } | null;
   includeLineNumbers: boolean;
   autoExtract: boolean;
   updateSetting: (

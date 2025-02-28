@@ -39,7 +39,7 @@ export default async function handler(
     if (!match) {
       return res.status(400).json({ error: "Invalid GitHub URL" });
     }
-    const [_, owner, repo] = match;
+    const [, owner, repo] = match;
     const cleanRepo = repo.replace(/\.git$/, "");
 
     // Get repository branches
@@ -56,7 +56,9 @@ export default async function handler(
     }
 
     const branchesData = await branchesRes.json();
-    const branches = branchesData.map((branch: any) => branch.name);
+    const branches = branchesData.map(
+      (branch: { name: string }) => branch.name
+    );
 
     res.status(200).json({ branches });
   } catch (error: unknown) {

@@ -355,8 +355,8 @@ export default function CodeExtractor({
           </div>
           <div className="bg-gray-900/50 px-6 py-3 border-t border-gray-700">
             <p className="text-xs text-gray-400">
-              This extracted code may be subject to the original repository's
-              license and copyright terms.
+              This extracted code may be subject to the original
+              repository&apos;s license and copyright terms.
             </p>
           </div>
         </div>
