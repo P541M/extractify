@@ -54,7 +54,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`w-64 bg-gray-900 border-r border-gray-800 shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-40 transform ${
+      className={`w-64 bg-gray-900 border-r border-gray-800 shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-50 transform ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -126,7 +126,10 @@ export default function Sidebar({
         {/* Scrollable Repository Sections - With Relative Wrapper for Fade Effects */}
         <div className="relative flex-1 overflow-hidden">
           {/* Top fade effect */}
-          <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"></div>
+          <div
+            className="absolute top-0 left-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"
+            style={{ right: "10px" }}
+          ></div>
 
           {/* Actual scrollable content */}
           <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 px-5 pb-5">
@@ -136,8 +139,6 @@ export default function Sidebar({
                 mounted ? "animate-fade-in" : "opacity-0"
               } mb-6 pt-4`}
             >
-              {" "}
-              {/* Added pt-4 for some spacing below the top fade */}
               {starredRepos.length > 0 && (
                 <>
                   <div className="flex items-center mb-3">
@@ -227,7 +228,10 @@ export default function Sidebar({
           </div>
 
           {/* Bottom fade effect */}
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none"></div>
+          <div
+            className="absolute bottom-0 left-0 h-12 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none"
+            style={{ right: "10px" }}
+          ></div>
         </div>
       </div>
     </aside>
