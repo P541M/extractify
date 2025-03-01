@@ -16,15 +16,28 @@ import {
 import Sidebar from "../components/Sidebar";
 import CodeExtractor from "../components/CodeExtractor";
 import ProfileMenu from "../components/ProfileMenu";
+import { checkRepoAccess } from "../lib/api"; // Import the access check function
 
 export default function ExtractPage() {
   // State Variables
   const [repoUrl, setRepoUrl] = useState("");
   const [repoList, setRepoList] = useState<
-    Array<{ id: string; url: string; starred: boolean; order?: number }>
+    Array<{
+      id: string;
+      url: string;
+      starred: boolean;
+      order?: number;
+      hasAccess?: boolean;
+    }>
   >([]);
   const [starredRepos, setStarredRepos] = useState<
-    Array<{ id: string; url: string; starred: boolean; order?: number }>
+    Array<{
+      id: string;
+      url: string;
+      starred: boolean;
+      order?: number;
+      hasAccess?: boolean;
+    }>
   >([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -70,7 +83,6 @@ export default function ExtractPage() {
 
       try {
         console.log("Fetching repos for GitHub user ID:", session.githubUserId);
-        // Get user-specific repositories collection
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
@@ -228,11 +240,9 @@ export default function ExtractPage() {
 
         // Update the repo access status if provided in response
         if (data.hasAccess === false && session?.githubUserId) {
-          // Find the repo in either starred or recent lists
           const repoInStarred = starredRepos.find((repo) => repo.url === url);
           const repoInRecent = repoList.find((repo) => repo.url === url);
 
-          // Update the access status in Firebase and in state
           if (repoInStarred) {
             const userReposCollectionName = getUserRepositoriesCollection(
               session.githubUserId
@@ -269,11 +279,9 @@ export default function ExtractPage() {
 
         // If we successfully accessed the repo, make sure its status reflects that
         if (data.hasAccess === true && session?.githubUserId) {
-          // Find the repo in either starred or recent lists
           const repoInStarred = starredRepos.find((repo) => repo.url === url);
           const repoInRecent = repoList.find((repo) => repo.url === url);
 
-          // Update the access status in Firebase and in state if needed
           if (repoInStarred && repoInStarred.hasAccess === false) {
             const userReposCollectionName = getUserRepositoriesCollection(
               session.githubUserId
@@ -322,7 +330,7 @@ export default function ExtractPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!repoUrl || !session.githubUserId) return;
+    if (!repoUrl || !session?.githubUserId) return;
 
     const existsInRecent = repoList.find((repo) => repo.url === repoUrl);
     const existsInStarred = starredRepos.find((repo) => repo.url === repoUrl);
@@ -330,26 +338,24 @@ export default function ExtractPage() {
     if (existsInRecent || existsInStarred) {
       await handleRepoClick(repoUrl, true);
     } else {
+      // Check access immediately
+      const hasAccess = await checkRepoAccess(repoUrl, session.accessToken);
+      const userReposCollectionName = getUserRepositoriesCollection(
+        session.githubUserId
+      );
+      const userReposCollectionRef = collection(db, userReposCollectionName);
+
       try {
         console.log("Adding new repository:", repoUrl);
         console.log("GitHub User ID:", session.githubUserId);
-
-        // Use user-specific collection
-        const userReposCollectionName = getUserRepositoriesCollection(
-          session.githubUserId
-        );
         console.log("Collection name:", userReposCollectionName);
 
-        const userReposCollectionRef = collection(db, userReposCollectionName);
-        console.log("Adding document to collection...");
-
-        // When adding a new repo in handleSubmit
         const newRepo = {
           url: repoUrl,
           createdAt: new Date(),
           starred: false,
           githubUserId: session.githubUserId,
-          hasAccess: true, // Default to true until proven otherwise
+          hasAccess: hasAccess, // Set based on immediate access check
         };
 
         console.log("Document data:", newRepo);
@@ -358,7 +364,13 @@ export default function ExtractPage() {
         console.log("Document added with ID:", docRef.id);
 
         setRepoList((prev) => [
-          { id: docRef.id, url: repoUrl, starred: false, order: 0 },
+          {
+            id: docRef.id,
+            url: repoUrl,
+            starred: false,
+            order: 0,
+            hasAccess: hasAccess,
+          },
           ...prev,
         ]);
 
@@ -370,9 +382,12 @@ export default function ExtractPage() {
         );
       }
 
-      if (autoExtract) {
+      if (hasAccess && autoExtract) {
         await fetchRepo(repoUrl);
         await fetchBranches(repoUrl);
+      } else if (!hasAccess) {
+        setError("You don't have access to this repository.");
+        setIsAccessError(true);
       }
     }
   };
@@ -394,11 +409,9 @@ export default function ExtractPage() {
           session.githubUserId
         );
 
-        // Delete the old document
         console.log("Deleting document:", clickedRepo.id);
         await deleteDoc(doc(db, userReposCollectionName, clickedRepo.id));
 
-        // Add the new document
         console.log("Adding document with updated timestamp");
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const docRef = await addDoc(userReposCollectionRef, {
@@ -407,6 +420,7 @@ export default function ExtractPage() {
           starred: clickedRepo.starred,
           order: clickedRepo.order || 0,
           githubUserId: session.githubUserId,
+          hasAccess: clickedRepo.hasAccess, // Preserve access status
         });
 
         console.log("New document ID:", docRef.id);
@@ -441,7 +455,6 @@ export default function ExtractPage() {
 
     try {
       console.log("Deleting repository:", repoId);
-      // Use user-specific collection
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
@@ -467,14 +480,19 @@ export default function ExtractPage() {
   };
 
   const toggleStar = async (
-    repo: { id: string; url: string; starred: boolean; order?: number },
+    repo: {
+      id: string;
+      url: string;
+      starred: boolean;
+      order?: number;
+      hasAccess?: boolean;
+    },
     newStarred: boolean
   ) => {
     if (!session.githubUserId) return;
 
     try {
       console.log("Toggling star status:", { repo, newStarred });
-      // Use user-specific collection
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
@@ -520,7 +538,6 @@ export default function ExtractPage() {
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
 
-    // Update order in Firebase for each repo
     updated.forEach(async (repo, idx) => {
       try {
         console.log("Updating repo order:", { repo, newOrder: idx });
@@ -546,7 +563,6 @@ export default function ExtractPage() {
       setSuccessMessage("Copied to clipboard!");
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch {
-      // No need to capture the error variable if we're not using it
       setError("Failed to copy code.");
     }
   };
@@ -556,10 +572,17 @@ export default function ExtractPage() {
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
+  const handleAddNewRepo = () => {
+    setRepoUrl("");
+    setError(""); // Clear any error messages
+    setIsAccessError(false); // Clear access error state
+    setResultText("");
+    setBranches([]);
+  };
+
   return (
     <div className="min-h-screen bg-background flex relative">
       <ProfileMenu
-        // Fix the Session type issue using type casting
         // @ts-expect-error Session type incompatibility
         session={session}
         includeLineNumbers={includeLineNumbers}
@@ -599,11 +622,7 @@ export default function ExtractPage() {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        onAddNewRepo={() => {
-          setRepoUrl("");
-          setResultText("");
-          setBranches([]);
-        }}
+        onAddNewRepo={handleAddNewRepo} // Updated to use the new handler
       />
       <div
         className={`flex-1 transition-all duration-300 ${
