@@ -71,7 +71,6 @@ export default function CodeExtractor({
           single document.
         </p>
       </div>
-
       <div className="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 mb-8">
         <form onSubmit={handleSubmit} className="w-full">
           <label
@@ -161,7 +160,6 @@ export default function CodeExtractor({
           </p>
         </form>
       </div>
-
       {loading && (
         <div className="w-full mb-8 animate-fade-in bg-gray-800 rounded-xl p-6 border border-gray-700">
           <div className="flex items-center justify-between mb-2">
@@ -207,7 +205,6 @@ export default function CodeExtractor({
           </p>
         </div>
       )}
-
       {error && (
         <div className="w-full mb-8 animate-fade-in bg-red-900/20 rounded-xl p-6 border border-red-700/50">
           <div className="flex items-start">
@@ -234,7 +231,6 @@ export default function CodeExtractor({
           </div>
         </div>
       )}
-
       {/* Branch selector component */}
       {branches.length > 1 && resultText && !loading && (
         <BranchSelector
@@ -244,7 +240,6 @@ export default function CodeExtractor({
           isLoading={loadingBranches}
         />
       )}
-
       {resultText && (
         <div className="w-full animate-fade-in bg-gray-800 rounded-xl shadow-xl border border-gray-700 overflow-hidden">
           <div className="bg-gray-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-700">

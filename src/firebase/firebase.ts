@@ -11,10 +11,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
 // Helper function to get the collection path for user repositories
+// We'll use a consistent format that doesn't rely on Firebase Auth
 export const getUserRepositoriesCollection = (githubId: string | number) => {
-  return `user_repositories_${githubId}`;
+  return `github_user_repositories_${githubId}`;
 };

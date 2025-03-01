@@ -4,13 +4,13 @@ import "next-auth";
 declare module "next-auth" {
   interface Session {
     accessToken?: string;
-    githubUserId?: string | number;
+    githubUserId?: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    githubUserId?: string | number;
+    githubUserId?: string;
     accessToken?: string;
   }
 }

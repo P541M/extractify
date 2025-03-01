@@ -40,6 +40,7 @@ export default function ExtractPage() {
   const [branches, setBranches] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
+
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -61,17 +62,26 @@ export default function ExtractPage() {
 
   useEffect(() => {
     const fetchRepos = async () => {
-      if (!session?.githubUserId) return;
+      if (!session?.githubUserId) {
+        console.log("No GitHub user ID found in session", session);
+        return;
+      }
 
       try {
+        console.log("Fetching repos for GitHub user ID:", session.githubUserId);
         // Get user-specific repositories collection
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
+        console.log("Collection name:", userReposCollectionName);
+
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const q = query(userReposCollectionRef, orderBy("createdAt", "desc"));
 
+        console.log("Executing Firestore query...");
         const querySnapshot = await getDocs(q);
+        console.log("Query complete. Documents found:", querySnapshot.size);
+
         const starred: Array<{
           id: string;
           url: string;
@@ -93,6 +103,9 @@ export default function ExtractPage() {
             starred: data.starred || false,
             order: data.order || 0,
           };
+
+          console.log("Found repository:", repo);
+
           if (repo.starred) {
             starred.push(repo);
           } else {
@@ -103,6 +116,11 @@ export default function ExtractPage() {
         starred.sort((a, b) => (a.order || 0) - (b.order || 0));
         setStarredRepos(starred);
         setRepoList(recent);
+
+        console.log("Repositories loaded:", {
+          starred: starred.length,
+          recent: recent.length,
+        });
       } catch (err: unknown) {
         console.error(
           "Error fetching repos:",
@@ -218,29 +236,43 @@ export default function ExtractPage() {
       await handleRepoClick(repoUrl, true);
     } else {
       try {
+        console.log("Adding new repository:", repoUrl);
+        console.log("GitHub User ID:", session.githubUserId);
+
         // Use user-specific collection
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
-        const userReposCollectionRef = collection(db, userReposCollectionName);
+        console.log("Collection name:", userReposCollectionName);
 
-        const docRef = await addDoc(userReposCollectionRef, {
+        const userReposCollectionRef = collection(db, userReposCollectionName);
+        console.log("Adding document to collection...");
+
+        const newRepo = {
           url: repoUrl,
           createdAt: new Date(),
           starred: false,
           githubUserId: session.githubUserId, // Store user ID with each repo for extra security
-        });
+        };
+
+        console.log("Document data:", newRepo);
+
+        const docRef = await addDoc(userReposCollectionRef, newRepo);
+        console.log("Document added with ID:", docRef.id);
 
         setRepoList((prev) => [
           { id: docRef.id, url: repoUrl, starred: false, order: 0 },
           ...prev,
         ]);
+
+        console.log("Repository added to state");
       } catch (err: unknown) {
         console.error(
           "Error saving repo:",
           err instanceof Error ? err.message : String(err)
         );
       }
+
       if (autoExtract) {
         await fetchRepo(repoUrl);
         await fetchBranches(repoUrl);
@@ -260,14 +292,17 @@ export default function ExtractPage() {
       setRepoList([clickedRepo, ...updatedRecent]);
 
       try {
+        console.log("Updating repository order:", url);
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
 
         // Delete the old document
+        console.log("Deleting document:", clickedRepo.id);
         await deleteDoc(doc(db, userReposCollectionName, clickedRepo.id));
 
         // Add the new document
+        console.log("Adding document with updated timestamp");
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const docRef = await addDoc(userReposCollectionRef, {
           url: url,
@@ -277,6 +312,7 @@ export default function ExtractPage() {
           githubUserId: session.githubUserId,
         });
 
+        console.log("New document ID:", docRef.id);
         clickedRepo.id = docRef.id;
         setRepoList((prev) => [
           clickedRepo,
@@ -289,6 +325,7 @@ export default function ExtractPage() {
         );
       }
     }
+
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
@@ -306,17 +343,21 @@ export default function ExtractPage() {
     if (!session.githubUserId) return;
 
     try {
+      console.log("Deleting repository:", repoId);
       // Use user-specific collection
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
+
       await deleteDoc(doc(db, userReposCollectionName, repoId));
+      console.log("Repository deleted from Firestore");
 
       if (starred) {
         setStarredRepos((prev) => prev.filter((repo) => repo.id !== repoId));
       } else {
         setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
       }
+
       setRepoUrl("");
       setOpenMenuRepoId(null);
     } catch (err: unknown) {
@@ -335,13 +376,17 @@ export default function ExtractPage() {
     if (!session.githubUserId) return;
 
     try {
+      console.log("Toggling star status:", { repo, newStarred });
       // Use user-specific collection
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
+
       await updateDoc(doc(db, userReposCollectionName, repo.id), {
         starred: newStarred,
       });
+
+      console.log("Star status updated in Firestore");
 
       if (newStarred) {
         setRepoList((prev) => prev.filter((r) => r.id !== repo.id));
@@ -350,6 +395,7 @@ export default function ExtractPage() {
         setStarredRepos((prev) => prev.filter((r) => r.id !== repo.id));
         setRepoList((prev) => [{ ...repo, starred: false }, ...prev]);
       }
+
       setOpenMenuRepoId(null);
     } catch (err: unknown) {
       console.error(
@@ -373,15 +419,18 @@ export default function ExtractPage() {
     const updated = Array.from(starredRepos);
     const [moved] = updated.splice(draggedRepoIndex, 1);
     updated.splice(index, 0, moved);
+
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
 
     // Update order in Firebase for each repo
     updated.forEach(async (repo, idx) => {
       try {
+        console.log("Updating repo order:", { repo, newOrder: idx });
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
+
         await updateDoc(doc(db, userReposCollectionName, repo.id), {
           order: idx,
         });
