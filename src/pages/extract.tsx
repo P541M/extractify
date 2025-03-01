@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { db } from "../firebase/firebase";
+import { db, getUserRepositoriesCollection } from "../firebase/firebase";
 import {
   collection,
   addDoc,
@@ -61,11 +61,16 @@ export default function ExtractPage() {
 
   useEffect(() => {
     const fetchRepos = async () => {
+      if (!session?.githubUserId) return;
+
       try {
-        const q = query(
-          collection(db, "repositories"),
-          orderBy("createdAt", "desc")
+        // Get user-specific repositories collection
+        const userReposCollectionName = getUserRepositoriesCollection(
+          session.githubUserId
         );
+        const userReposCollectionRef = collection(db, userReposCollectionName);
+        const q = query(userReposCollectionRef, orderBy("createdAt", "desc"));
+
         const querySnapshot = await getDocs(q);
         const starred: Array<{
           id: string;
@@ -79,6 +84,7 @@ export default function ExtractPage() {
           starred: boolean;
           order?: number;
         }> = [];
+
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const repo = {
@@ -93,6 +99,7 @@ export default function ExtractPage() {
             recent.push(repo);
           }
         });
+
         starred.sort((a, b) => (a.order || 0) - (b.order || 0));
         setStarredRepos(starred);
         setRepoList(recent);
@@ -103,7 +110,8 @@ export default function ExtractPage() {
         );
       }
     };
-    if (session) fetchRepos();
+
+    if (session?.githubUserId) fetchRepos();
   }, [session]);
 
   if (status === "loading") {
@@ -201,18 +209,28 @@ export default function ExtractPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!repoUrl) return;
+    if (!repoUrl || !session.githubUserId) return;
+
     const existsInRecent = repoList.find((repo) => repo.url === repoUrl);
     const existsInStarred = starredRepos.find((repo) => repo.url === repoUrl);
+
     if (existsInRecent || existsInStarred) {
       await handleRepoClick(repoUrl, true);
     } else {
       try {
-        const docRef = await addDoc(collection(db, "repositories"), {
+        // Use user-specific collection
+        const userReposCollectionName = getUserRepositoriesCollection(
+          session.githubUserId
+        );
+        const userReposCollectionRef = collection(db, userReposCollectionName);
+
+        const docRef = await addDoc(userReposCollectionRef, {
           url: repoUrl,
           createdAt: new Date(),
           starred: false,
+          githubUserId: session.githubUserId, // Store user ID with each repo for extra security
         });
+
         setRepoList((prev) => [
           { id: docRef.id, url: repoUrl, starred: false, order: 0 },
           ...prev,
@@ -234,18 +252,31 @@ export default function ExtractPage() {
     const clickedRepo =
       repoList.find((repo) => repo.url === url) ||
       starredRepos.find((repo) => repo.url === url);
-    if (!clickedRepo) return;
+
+    if (!clickedRepo || !session.githubUserId) return;
+
     if (!clickedRepo.starred) {
       const updatedRecent = repoList.filter((repo) => repo.url !== url);
       setRepoList([clickedRepo, ...updatedRecent]);
+
       try {
-        await deleteDoc(doc(db, "repositories", clickedRepo.id));
-        const docRef = await addDoc(collection(db, "repositories"), {
+        const userReposCollectionName = getUserRepositoriesCollection(
+          session.githubUserId
+        );
+
+        // Delete the old document
+        await deleteDoc(doc(db, userReposCollectionName, clickedRepo.id));
+
+        // Add the new document
+        const userReposCollectionRef = collection(db, userReposCollectionName);
+        const docRef = await addDoc(userReposCollectionRef, {
           url: url,
           createdAt: new Date(),
           starred: clickedRepo.starred,
           order: clickedRepo.order || 0,
+          githubUserId: session.githubUserId,
         });
+
         clickedRepo.id = docRef.id;
         setRepoList((prev) => [
           clickedRepo,
@@ -272,8 +303,15 @@ export default function ExtractPage() {
     starred: boolean
   ) => {
     e.stopPropagation();
+    if (!session.githubUserId) return;
+
     try {
-      await deleteDoc(doc(db, "repositories", repoId));
+      // Use user-specific collection
+      const userReposCollectionName = getUserRepositoriesCollection(
+        session.githubUserId
+      );
+      await deleteDoc(doc(db, userReposCollectionName, repoId));
+
       if (starred) {
         setStarredRepos((prev) => prev.filter((repo) => repo.id !== repoId));
       } else {
@@ -294,10 +332,17 @@ export default function ExtractPage() {
     repo: { id: string; url: string; starred: boolean; order?: number },
     newStarred: boolean
   ) => {
+    if (!session.githubUserId) return;
+
     try {
-      await updateDoc(doc(db, "repositories", repo.id), {
+      // Use user-specific collection
+      const userReposCollectionName = getUserRepositoriesCollection(
+        session.githubUserId
+      );
+      await updateDoc(doc(db, userReposCollectionName, repo.id), {
         starred: newStarred,
       });
+
       if (newStarred) {
         setRepoList((prev) => prev.filter((r) => r.id !== repo.id));
         setStarredRepos((prev) => [...prev, { ...repo, starred: true }]);
@@ -323,15 +368,23 @@ export default function ExtractPage() {
   };
 
   const handleDrop = async (index: number) => {
-    if (draggedRepoIndex === null) return;
+    if (draggedRepoIndex === null || !session.githubUserId) return;
+
     const updated = Array.from(starredRepos);
     const [moved] = updated.splice(draggedRepoIndex, 1);
     updated.splice(index, 0, moved);
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
+
+    // Update order in Firebase for each repo
     updated.forEach(async (repo, idx) => {
       try {
-        await updateDoc(doc(db, "repositories", repo.id), { order: idx });
+        const userReposCollectionName = getUserRepositoriesCollection(
+          session.githubUserId
+        );
+        await updateDoc(doc(db, userReposCollectionName, repo.id), {
+          order: idx,
+        });
       } catch (err: unknown) {
         console.error(
           "Error updating repo order:",

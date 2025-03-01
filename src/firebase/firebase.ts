@@ -13,3 +13,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+
+// Helper function to get the collection path for user repositories
+export const getUserRepositoriesCollection = (githubId: string | number) => {
+  return `user_repositories_${githubId}`;
+};

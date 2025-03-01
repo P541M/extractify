@@ -12,15 +12,26 @@ export default NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, profile }) {
+      // Store the GitHub user ID in the token
+      if (profile) {
+        token.githubUserId = profile.id;
+      }
+
+      // Add GitHub access token to the JWT
       if (account) {
         token.accessToken = account.access_token;
       }
+
       return token;
     },
     async session({ session, token }) {
-      // Now TypeScript knows that session.accessToken exists
+      // Add the GitHub access token to the session
       session.accessToken = token.accessToken as string | undefined;
+
+      // Add the GitHub user ID to the session
+      session.githubUserId = token.githubUserId;
+
       return session;
     },
   },
