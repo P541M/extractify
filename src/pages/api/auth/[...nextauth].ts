@@ -19,9 +19,9 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
+      // Add proper type assertion
       session.accessToken = token.accessToken as string | undefined;
       return session;
     },
   },
-  debug: true, // Enable debug mode for detailed logs
 });
