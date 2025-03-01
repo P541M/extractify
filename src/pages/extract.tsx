@@ -142,7 +142,12 @@ export default function ExtractPage() {
       } else {
         setBranches(data.branches || []);
         if (data.branches && data.branches.length > 0) {
-          setSelectedBranch(data.branches[0]);
+          const preferredBranch = data.branches.includes("main")
+            ? "main"
+            : data.branches.includes("master")
+            ? "master"
+            : data.branches[0];
+          setSelectedBranch(preferredBranch);
         }
       }
     } catch (err: unknown) {
