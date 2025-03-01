@@ -1,9 +1,11 @@
+// src/pages/api/extract.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getToken } from "next-auth/jwt";
 
 interface Data {
   code?: string;
   error?: string;
+  hasAccess?: boolean; // New field to indicate access status
 }
 
 interface GitTreeItem {
@@ -63,6 +65,7 @@ export default async function handler(
     if (!match) {
       return res.status(400).json({ error: "Invalid GitHub URL" });
     }
+
     const [, owner, repo] = match;
     const cleanRepo = repo.replace(/\.git$/, "");
 
@@ -70,24 +73,30 @@ export default async function handler(
       `https://api.github.com/repos/${owner}/${cleanRepo}`,
       { headers: githubHeaders }
     );
+
     if (!repoInfoRes.ok) {
       const errorResp = await repoInfoRes.json();
       console.error("Repo fetch error:", errorResp);
+
       if (repoInfoRes.status === 403) {
         return res.status(403).json({
           error: "You don't have permission to access this repository.",
+          hasAccess: false, // Mark as no access
         });
       } else if (repoInfoRes.status === 404) {
         return res.status(404).json({
           error: "Repository not found or you lack access.",
+          hasAccess: false, // Mark as no access
         });
       }
-      return res
-        .status(repoInfoRes.status)
-        .json({ error: errorResp.message || "Failed to fetch repo info" });
-    }
-    const repoInfo = await repoInfoRes.json();
 
+      return res.status(repoInfoRes.status).json({
+        error: errorResp.message || "Failed to fetch repo info",
+        hasAccess: false, // Mark as no access
+      });
+    }
+
+    const repoInfo = await repoInfoRes.json();
     if (DEBUG) {
       console.log(
         "Repository visibility:",
@@ -102,20 +111,25 @@ export default async function handler(
       `https://api.github.com/repos/${owner}/${cleanRepo}/git/trees/${branchToUse}?recursive=1`,
       { headers: githubHeaders }
     );
+
     if (!treeRes.ok) {
       const errorResp = await treeRes.json();
       console.error("Tree fetch error:", errorResp);
+
       if (treeRes.status === 403) {
         return res.status(403).json({
           error: "You don't have permission to access this repository's tree.",
+          hasAccess: false, // Mark as no access
         });
       }
+
       return res.status(treeRes.status).json({
         error: errorResp.message || "Failed to fetch repository tree",
+        hasAccess: false, // Mark as no access
       });
     }
-    const treeData = await treeRes.json();
 
+    const treeData = await treeRes.json();
     const files: GitTreeItem[] = (treeData.tree as GitTreeItem[])
       .filter((item) => item.type === "blob")
       .filter((file) => file.path !== "package-lock.json");
@@ -165,17 +179,20 @@ export default async function handler(
           `https://api.github.com/repos/${owner}/${cleanRepo}/contents/${file.path}?ref=${branchToUse}`,
           { headers: githubHeaders }
         );
+
         if (fileRes.ok) {
           const fileData = await fileRes.json();
           let content = Buffer.from(fileData.content, "base64").toString(
             "utf8"
           );
+
           if (includeLineNumbers) {
             content = content
               .split("\n")
               .map((line, index) => `${index + 1}: ${line}`)
               .join("\n");
           }
+
           combinedCode += `\nFile name: ${fileName}\nFile path: ${file.path}\nFile Code:\n${content}\n\n`;
         } else {
           console.error(`Failed to fetch file ${file.path}: ${fileRes.status}`);
@@ -184,11 +201,11 @@ export default async function handler(
       }
     }
 
-    res.status(200).json({ code: combinedCode });
+    res.status(200).json({ code: combinedCode, hasAccess: true });
   } catch (error: unknown) {
     console.error("API error:", error);
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: message, hasAccess: false });
   }
 }

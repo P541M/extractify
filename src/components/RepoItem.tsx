@@ -1,10 +1,22 @@
 interface RepoItemProps {
-  repo: { id: string; url: string; starred: boolean; order?: number };
+  repo: {
+    id: string;
+    url: string;
+    starred: boolean;
+    order?: number;
+    hasAccess?: boolean; // New prop to track access status
+  };
   onClick: (url: string) => void;
   onMenuToggle: (repoId: string) => void;
   isMenuOpen: boolean;
   onToggleStar: (
-    repo: { id: string; url: string; starred: boolean; order?: number },
+    repo: {
+      id: string;
+      url: string;
+      starred: boolean;
+      order?: number;
+      hasAccess?: boolean;
+    },
     newStarred: boolean
   ) => void;
   onDelete: (
@@ -60,12 +72,40 @@ export default function RepoItem({
       <div className="flex-1 relative overflow-hidden">
         <button
           onClick={() => onClick(repo.url)}
-          className="text-left text-gray-400 hover:text-blue-400 py-1 w-full"
+          className={`text-left py-1 w-full ${
+            repo.hasAccess === false
+              ? "text-red-400 hover:text-red-300"
+              : "text-gray-400 hover:text-blue-400"
+          }`}
           title={repo.url}
         >
-          <span className="block overflow-hidden text-clip whitespace-nowrap">
-            {repo.url.replace("https://github.com/", "")}
-          </span>
+          <div className="flex items-center repo-access-tooltip">
+            <span className="block overflow-hidden text-clip whitespace-nowrap">
+              {repo.url.replace("https://github.com/", "")}
+            </span>
+            {repo.hasAccess === false && (
+              <>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 ml-1 flex-shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                <div className="tooltip-text">
+                  You don&apos;t have access to this repository. It may be
+                  private or deleted.
+                </div>
+              </>
+            )}
+          </div>
         </button>
         <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none"></div>
       </div>

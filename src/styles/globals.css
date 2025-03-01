@@ -128,3 +128,52 @@ body {
     background-position: 100% 50%;
   }
 }
+
+/* Add these styles to your globals.css file */
+
+/* Tooltip styling for repository access indication */
+.repo-access-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.repo-access-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.repo-access-tooltip .tooltip-text {
+  visibility: hidden;
+  width: max-content;
+  max-width: 200px;
+  background-color: #2d3748;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 12px;
+  position: absolute;
+  z-index: 100;
+  left: 0;
+  top: 100%;
+  margin-top: 8px;
+  font-size: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #4a5568;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(5px);
+}
+
+/* Arrow for tooltip */
+.repo-access-tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #2d3748 transparent;
+}

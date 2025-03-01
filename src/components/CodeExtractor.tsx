@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import BranchSelector from "./BranchSelector";
+import AccessDeniedError from "./AccessDeniedError";
 
 interface CodeExtractorProps {
   repoUrl: string;
@@ -16,6 +17,7 @@ interface CodeExtractorProps {
   selectedBranch: string;
   onBranchSelect: (branch: string) => void;
   loadingBranches: boolean;
+  hasAccessError?: boolean; // New prop to specifically identify access errors
 }
 
 export default function CodeExtractor({
@@ -33,6 +35,7 @@ export default function CodeExtractor({
   selectedBranch,
   onBranchSelect,
   loadingBranches,
+  hasAccessError = false, // Default to false
 }: CodeExtractorProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -205,7 +208,12 @@ export default function CodeExtractor({
           </p>
         </div>
       )}
-      {error && (
+      {/* If it's an access error, show the special AccessDeniedError component */}
+      {error && hasAccessError && (
+        <AccessDeniedError repoUrl={repoUrl} errorMessage={error} />
+      )}
+      {/* For other types of errors, show the standard error display */}
+      {error && !hasAccessError && (
         <div className="w-full mb-8 animate-fade-in bg-red-900/20 rounded-xl p-6 border border-red-700/50">
           <div className="flex items-start">
             <svg
@@ -316,7 +324,6 @@ export default function CodeExtractor({
                   </>
                 )}
               </button>
-
               <a
                 href={`data:text/plain;charset=utf-8,${encodeURIComponent(
                   resultText

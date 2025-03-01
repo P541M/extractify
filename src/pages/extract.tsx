@@ -40,6 +40,7 @@ export default function ExtractPage() {
   const [branches, setBranches] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
+  const [isAccessError, setIsAccessError] = useState(false);
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -74,7 +75,6 @@ export default function ExtractPage() {
           session.githubUserId
         );
         console.log("Collection name:", userReposCollectionName);
-
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const q = query(userReposCollectionRef, orderBy("createdAt", "desc"));
 
@@ -87,12 +87,15 @@ export default function ExtractPage() {
           url: string;
           starred: boolean;
           order?: number;
+          hasAccess?: boolean;
         }> = [];
+
         const recent: Array<{
           id: string;
           url: string;
           starred: boolean;
           order?: number;
+          hasAccess?: boolean;
         }> = [];
 
         querySnapshot.forEach((docSnap) => {
@@ -102,10 +105,10 @@ export default function ExtractPage() {
             url: data.url,
             starred: data.starred || false,
             order: data.order || 0,
+            hasAccess: data.hasAccess !== undefined ? data.hasAccess : true, // Default to true if not specified
           };
 
           console.log("Found repository:", repo);
-
           if (repo.starred) {
             starred.push(repo);
           } else {
@@ -192,9 +195,12 @@ export default function ExtractPage() {
     setError("");
     setResultText("");
     setProgress(0);
+    setIsAccessError(false); // Reset access error state
+
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + Math.random() * 5, 90));
     }, 300);
+
     try {
       const res = await fetch("/api/extract", {
         method: "POST",
@@ -206,16 +212,105 @@ export default function ExtractPage() {
         }),
         credentials: "include",
       });
+
       clearInterval(progressInterval);
       setProgress(100);
+
       const data = await res.json();
-      if (!res.ok || data.error)
+
+      if (!res.ok || data.error) {
         setError(data.error || "Failed to fetch repository code.");
-      else setResultText(data.code);
+
+        // Check if this is an access error
+        if (data.hasAccess === false) {
+          setIsAccessError(true);
+        }
+
+        // Update the repo access status if provided in response
+        if (data.hasAccess === false && session?.githubUserId) {
+          // Find the repo in either starred or recent lists
+          const repoInStarred = starredRepos.find((repo) => repo.url === url);
+          const repoInRecent = repoList.find((repo) => repo.url === url);
+
+          // Update the access status in Firebase and in state
+          if (repoInStarred) {
+            const userReposCollectionName = getUserRepositoriesCollection(
+              session.githubUserId
+            );
+            await updateDoc(
+              doc(db, userReposCollectionName, repoInStarred.id),
+              {
+                hasAccess: false,
+              }
+            );
+
+            setStarredRepos((prevRepos) =>
+              prevRepos.map((repo) =>
+                repo.url === url ? { ...repo, hasAccess: false } : repo
+              )
+            );
+          } else if (repoInRecent) {
+            const userReposCollectionName = getUserRepositoriesCollection(
+              session.githubUserId
+            );
+            await updateDoc(doc(db, userReposCollectionName, repoInRecent.id), {
+              hasAccess: false,
+            });
+
+            setRepoList((prevRepos) =>
+              prevRepos.map((repo) =>
+                repo.url === url ? { ...repo, hasAccess: false } : repo
+              )
+            );
+          }
+        }
+      } else {
+        setResultText(data.code);
+
+        // If we successfully accessed the repo, make sure its status reflects that
+        if (data.hasAccess === true && session?.githubUserId) {
+          // Find the repo in either starred or recent lists
+          const repoInStarred = starredRepos.find((repo) => repo.url === url);
+          const repoInRecent = repoList.find((repo) => repo.url === url);
+
+          // Update the access status in Firebase and in state if needed
+          if (repoInStarred && repoInStarred.hasAccess === false) {
+            const userReposCollectionName = getUserRepositoriesCollection(
+              session.githubUserId
+            );
+            await updateDoc(
+              doc(db, userReposCollectionName, repoInStarred.id),
+              {
+                hasAccess: true,
+              }
+            );
+
+            setStarredRepos((prevRepos) =>
+              prevRepos.map((repo) =>
+                repo.url === url ? { ...repo, hasAccess: true } : repo
+              )
+            );
+          } else if (repoInRecent && repoInRecent.hasAccess === false) {
+            const userReposCollectionName = getUserRepositoriesCollection(
+              session.githubUserId
+            );
+            await updateDoc(doc(db, userReposCollectionName, repoInRecent.id), {
+              hasAccess: true,
+            });
+
+            setRepoList((prevRepos) =>
+              prevRepos.map((repo) =>
+                repo.url === url ? { ...repo, hasAccess: true } : repo
+              )
+            );
+          }
+        }
+      }
     } catch (err: unknown) {
       setProgress(0);
       setError(err instanceof Error ? err.message : "Something went wrong");
     }
+
     setTimeout(() => setLoading(false), 500);
   };
 
@@ -248,11 +343,13 @@ export default function ExtractPage() {
         const userReposCollectionRef = collection(db, userReposCollectionName);
         console.log("Adding document to collection...");
 
+        // When adding a new repo in handleSubmit
         const newRepo = {
           url: repoUrl,
           createdAt: new Date(),
           starred: false,
-          githubUserId: session.githubUserId, // Store user ID with each repo for extra security
+          githubUserId: session.githubUserId,
+          hasAccess: true, // Default to true until proven otherwise
         };
 
         console.log("Document data:", newRepo);
@@ -528,6 +625,7 @@ export default function ExtractPage() {
           selectedBranch={selectedBranch}
           onBranchSelect={handleBranchSelect}
           loadingBranches={loadingBranches}
+          hasAccessError={isAccessError} // Pass the access error state
         />
       </div>
     </div>

@@ -8,6 +8,7 @@ interface Repo {
   url: string;
   starred: boolean;
   order?: number;
+  hasAccess?: boolean; // Added new field
 }
 
 interface SidebarProps {
