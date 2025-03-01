@@ -1,4 +1,4 @@
-// pages/api/auth/[...nextauth].ts
+// src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 
@@ -19,9 +19,10 @@ export default NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Add proper type assertion
+      // Now TypeScript knows that session.accessToken exists
       session.accessToken = token.accessToken as string | undefined;
       return session;
     },
   },
+  debug: process.env.NODE_ENV === "development",
 });
