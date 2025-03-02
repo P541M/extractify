@@ -1,6 +1,14 @@
 // src/pages/api/auth/[...nextauth].ts
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
+import { Profile } from "next-auth";
+
+// Add missing id property to Profile type
+declare module "next-auth" {
+  interface Profile {
+    id?: string | number;
+  }
+}
 
 export default NextAuth({
   providers: [
@@ -14,7 +22,7 @@ export default NextAuth({
   callbacks: {
     async jwt({ token, account, profile }) {
       // Store the GitHub user ID in the token
-      if (profile) {
+      if (profile && profile.id) {
         // Ensure the GitHub user ID is stored as a string
         token.githubUserId = profile.id.toString();
       }
