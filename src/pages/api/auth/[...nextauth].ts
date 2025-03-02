@@ -8,6 +8,11 @@ declare module "next-auth" {
   interface Profile {
     id?: string | number;
   }
+
+  interface Session {
+    accessToken?: string;
+    githubUserId?: string;
+  }
 }
 
 export default NextAuth({
@@ -19,6 +24,10 @@ export default NextAuth({
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: "jwt", // Explicitly set JWT strategy
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   callbacks: {
     async jwt({ token, account, profile }) {
       // Store the GitHub user ID in the token
