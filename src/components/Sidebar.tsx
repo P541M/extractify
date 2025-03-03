@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import RepoItem from "./RepoItem";
-
 interface Repo {
   id: string;
   url: string;
@@ -10,7 +9,6 @@ interface Repo {
   order?: number;
   hasAccess?: boolean; // Added new field
 }
-
 interface SidebarProps {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
@@ -31,7 +29,6 @@ interface SidebarProps {
   onDrop: (index: number) => void;
   onAddNewRepo: () => void;
 }
-
 export default function Sidebar({
   sidebarOpen,
   toggleSidebar,
@@ -48,11 +45,9 @@ export default function Sidebar({
   onAddNewRepo,
 }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
-
   return (
     <aside
       className={`w-64 bg-gray-900 border-r border-gray-800 shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-50 transform ${
@@ -84,7 +79,7 @@ export default function Sidebar({
             <button
               onClick={toggleSidebar}
               aria-label="Close sidebar"
-              className="text-gray-400 hover:text-primary transition-colors"
+              className="text-gray-400 hover:text-primary rounded-md p-1.5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,12 +91,11 @@ export default function Sidebar({
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
+                <path d="M19 12H5" />
+                <path d="M12 19l-7-7 7-7" />
               </svg>
             </button>
           </div>
-
           {/* New "Add New Repo" Button (subtle styling) */}
           <div className="mb-4">
             <button
@@ -111,7 +105,6 @@ export default function Sidebar({
               + Add New Repo
             </button>
           </div>
-
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-700"></div>
@@ -123,7 +116,6 @@ export default function Sidebar({
             </div>
           </div>
         </div>
-
         {/* Scrollable Repository Sections - With Relative Wrapper for Fade Effects */}
         <div className="relative flex-1 overflow-hidden">
           {/* Top fade effect */}
@@ -131,7 +123,6 @@ export default function Sidebar({
             className="absolute top-0 left-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"
             style={{ right: "10px" }}
           ></div>
-
           {/* Actual scrollable content */}
           <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 px-5 pb-5">
             {/* Starred Repositories */}
@@ -177,7 +168,6 @@ export default function Sidebar({
                 </>
               )}
             </div>
-
             {/* Recent Repositories */}
             <div className={`${mounted ? "animate-fade-in" : "opacity-0"}`}>
               <div className="flex items-center mb-3">
@@ -227,7 +217,6 @@ export default function Sidebar({
               </ul>
             </div>
           </div>
-
           {/* Bottom fade effect */}
           <div
             className="absolute bottom-0 left-0 h-12 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none"
