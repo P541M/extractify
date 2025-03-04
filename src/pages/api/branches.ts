@@ -16,7 +16,7 @@ export default async function handler(
     const token = await getToken({
       req,
       secret: process.env.NEXTAUTH_SECRET,
-      secureCookie: process.env.NODE_ENV === "production", // Only use secure cookies in production
+      secureCookie: process.env.NODE_ENV === "production",
     });
 
     if (DEBUG) {
