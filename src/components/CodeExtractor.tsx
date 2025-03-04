@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BranchSelector from "./BranchSelector";
 import AccessDeniedError from "./AccessDeniedError";
+import { useSession } from "next-auth/react";
 
 interface CodeExtractorProps {
   repoUrl: string;
@@ -39,6 +40,7 @@ export default function CodeExtractor({
 }: CodeExtractorProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     setMounted(true);
@@ -59,6 +61,14 @@ export default function CodeExtractor({
     return "Unknown Repo";
   };
 
+  // Function to get time-based greeting
+  const getTimeBasedGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
     <main
       className={`flex-1 flex flex-col items-center p-8 max-w-4xl mx-auto w-full ${
@@ -67,11 +77,12 @@ export default function CodeExtractor({
     >
       <div className="w-full mb-10">
         <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          Code Extractor
+          {getTimeBasedGreeting()}
+          {session?.user?.name ? `, ${session.user.name}` : ""}!
         </h1>
         <p className="text-gray-300">
-          Enter a GitHub repository URL to extract all the code files into a
-          single document.
+          Let&apos;s extract some code! What GitHub repository would you like to
+          explore today?
         </p>
       </div>
       <div className="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 mb-8">
