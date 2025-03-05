@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import BranchSelector from "./BranchSelector";
 import AccessDeniedError from "./AccessDeniedError";
 import { useSession } from "next-auth/react";
-
 interface CodeExtractorProps {
   repoUrl: string;
   setRepoUrl: (url: string) => void;
@@ -20,7 +19,6 @@ interface CodeExtractorProps {
   loadingBranches: boolean;
   hasAccessError?: boolean;
 }
-
 export default function CodeExtractor({
   repoUrl,
   setRepoUrl,
@@ -41,17 +39,14 @@ export default function CodeExtractor({
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
-
   useEffect(() => {
     setMounted(true);
   }, []);
-
   const handleCopyWithFeedback = async () => {
     await handleCopy();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
-
   const getRepoName = (url: string) => {
     const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
     if (match && match[1] && match[2]) {
@@ -60,7 +55,6 @@ export default function CodeExtractor({
     }
     return "Unknown Repo";
   };
-
   // Function to get time-based greeting
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
@@ -68,7 +62,6 @@ export default function CodeExtractor({
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
-
   return (
     <main
       className={`flex-1 flex flex-col items-center justify-center min-h-screen p-8 ${
@@ -88,7 +81,7 @@ export default function CodeExtractor({
             </p>
           </div>
         )}
-        <div className="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 mb-8">
+        <div className="w-full bg-card rounded-xl p-6 shadow-lg border border-border mb-8">
           <form onSubmit={handleSubmit} className="w-full">
             <label
               htmlFor="repoUrl"
@@ -117,7 +110,7 @@ export default function CodeExtractor({
                   type="text"
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
-                  className="w-full p-3 pl-10 bg-gray-900 text-foreground rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  className="w-full p-3 pl-10 bg-background text-foreground rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="e.g., https://github.com/user/repo"
                   required
                 />
@@ -125,7 +118,7 @@ export default function CodeExtractor({
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-primary to-blue-500 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-70 flex items-center gap-2 font-medium shadow-md hover:shadow-primary/20 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all disabled:opacity-70 flex items-center gap-2 font-medium shadow-md hover:shadow-primary/20 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
@@ -178,16 +171,16 @@ export default function CodeExtractor({
           </form>
         </div>
         {loading && (
-          <div className="w-full mb-8 animate-fade-in bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <div className="w-full mb-8 animate-fade-in bg-card rounded-xl p-6 border border-border">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-medium text-white">Extraction Progress</h3>
               <span className="text-sm font-medium text-primary">
                 {Math.round(progress)}%
               </span>
             </div>
-            <div className="w-full bg-gray-900 rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-background rounded-full h-3 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-primary to-blue-500 h-3 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
@@ -263,8 +256,8 @@ export default function CodeExtractor({
           />
         )}
         {resultText && (
-          <div className="w-full animate-fade-in bg-gray-800 rounded-xl shadow-xl border border-gray-700 overflow-hidden">
-            <div className="bg-gray-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-700">
+          <div className="w-full animate-fade-in bg-card rounded-xl shadow-xl border border-border overflow-hidden">
+            <div className="bg-background px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border">
               <div className="mb-4 sm:mb-0">
                 <h2 className="text-lg font-semibold text-white flex items-center">
                   <svg
@@ -293,7 +286,7 @@ export default function CodeExtractor({
                 <button
                   onClick={handleCopyWithFeedback}
                   className={`${
-                    copied ? "bg-green-600" : "bg-gray-700 hover:bg-gray-600"
+                    copied ? "bg-green-600" : "bg-card-hover hover:bg-border"
                   } text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center`}
                 >
                   {copied ? (
@@ -344,7 +337,7 @@ export default function CodeExtractor({
                   )}`}
                   download="extracted-code.txt"
                   onClick={handleDownload}
-                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center"
+                  className="bg-card-hover hover:bg-border text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center"
                 >
                   <svg
                     className="h-4 w-4 mr-1.5"
@@ -365,11 +358,11 @@ export default function CodeExtractor({
               </div>
             </div>
             <div className="p-6">
-              <pre className="w-full p-4 bg-gray-900 text-gray-300 rounded-lg border border-gray-700 overflow-auto max-h-96 font-mono text-sm shadow-inner">
+              <pre className="w-full p-4 bg-background text-gray-300 rounded-lg border border-border overflow-auto max-h-96 font-mono text-sm shadow-inner">
                 {resultText}
               </pre>
             </div>
-            <div className="bg-gray-900/50 px-6 py-3 border-t border-gray-700">
+            <div className="bg-background/50 px-6 py-3 border-t border-border">
               <p className="text-xs text-gray-400">
                 This extracted code may be subject to the original
                 repository&apos;s license and copyright terms.

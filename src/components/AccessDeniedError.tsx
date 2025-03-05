@@ -1,10 +1,8 @@
 import React from "react";
-
 interface AccessDeniedErrorProps {
   repoUrl: string;
   errorMessage: string;
 }
-
 export default function AccessDeniedError({
   repoUrl,
   errorMessage,
@@ -19,9 +17,7 @@ export default function AccessDeniedError({
     }
     return { owner: "Unknown", repo: "Unknown" };
   };
-
   const { owner, repo } = getRepoDetails(repoUrl);
-
   return (
     <div className="w-full bg-red-900/20 rounded-xl p-6 border border-red-700/50 animate-fade-in">
       <div className="flex items-start">
@@ -42,7 +38,6 @@ export default function AccessDeniedError({
         <div>
           <h3 className="font-bold text-xl text-red-400 mb-2">Access Denied</h3>
           <p className="text-red-200 mb-4">{errorMessage}</p>
-
           <div className="bg-red-900/30 rounded-lg p-4 border border-red-700/30 mb-4">
             <h4 className="font-medium text-white mb-2">Repository Details</h4>
             <ul className="space-y-1 text-red-200">
@@ -58,8 +53,7 @@ export default function AccessDeniedError({
               </li>
             </ul>
           </div>
-
-          <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+          <div className="bg-card rounded-lg p-4 border border-border">
             <h4 className="font-medium text-white mb-2">Possible Solutions</h4>
             <ul className="list-disc list-inside space-y-2 text-gray-300">
               <li>

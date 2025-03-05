@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
+      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
@@ -36,7 +36,7 @@ export default function AboutPage() {
             </Link>
             <Link
               href="/login"
-              className="bg-gradient-to-r from-primary to-blue-500 text-white px-5 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-md font-medium"
+              className="bg-gradient-to-r from-primary to-secondary text-white px-5 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 hover:shadow-md font-medium"
             >
               Dashboard
             </Link>
@@ -48,7 +48,7 @@ export default function AboutPage() {
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <div
-            className={`bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-xl ${
+            className={`bg-card rounded-xl p-8 border border-border shadow-xl ${
               mounted ? "animate-fade-in" : "opacity-0"
             }`}
           >
@@ -74,7 +74,7 @@ export default function AboutPage() {
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 mb-10">
-              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
+              <div className="bg-background/50 p-6 rounded-lg border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
                   <svg
                     className="w-6 h-6 text-primary"
@@ -101,7 +101,7 @@ export default function AboutPage() {
                 </p>
               </div>
 
-              <div className="bg-gray-700/30 p-6 rounded-lg border border-gray-600 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
+              <div className="bg-background/50 p-6 rounded-lg border border-border hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mb-4">
                   <svg
                     className="w-6 h-6 text-secondary"
@@ -130,7 +130,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-gray-900 to-gray-800 p-8 rounded-xl border border-gray-700 mb-10">
+            <div className="bg-gradient-to-r from-background to-card-hover p-8 rounded-xl border border-border mb-10">
               <h2 className="text-2xl font-semibold text-white mb-6">
                 Key Features
               </h2>
@@ -249,7 +249,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="bg-gray-700/20 p-8 rounded-xl border border-gray-700">
+            <div className="bg-background/50 p-8 rounded-xl border border-border">
               <h2 className="text-2xl font-semibold text-white mb-4">
                 Get Started Today
               </h2>
@@ -261,13 +261,13 @@ export default function AboutPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/extract"
-                  className="bg-gradient-to-r from-primary to-blue-500 text-white px-6 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 hover:shadow-lg font-medium text-center"
+                  className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 hover:shadow-lg font-medium text-center"
                 >
                   Try Extractify Now
                 </Link>
                 <Link
                   href="/login"
-                  className="bg-gray-700 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-all duration-300 hover:shadow-lg font-medium text-center"
+                  className="bg-card-hover text-white px-6 py-3 rounded-lg hover:bg-card-hover/80 transition-all duration-300 hover:shadow-lg font-medium text-center border border-border"
                 >
                   Sign In with GitHub
                 </Link>
@@ -278,7 +278,7 @@ export default function AboutPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-6 border-t border-gray-800">
+      <footer className="bg-card py-6 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">

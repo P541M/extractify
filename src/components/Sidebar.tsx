@@ -50,7 +50,7 @@ export default function Sidebar({
   }, []);
   return (
     <aside
-      className={`w-64 bg-gray-900 border-r border-gray-800 shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-50 transform ${
+      className={`w-64 bg-card border-r border-border shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-50 transform ${
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -100,17 +100,17 @@ export default function Sidebar({
           <div className="mb-4">
             <button
               onClick={onAddNewRepo}
-              className="w-full py-2 border border-gray-700 rounded-lg text-sm text-gray-400 hover:text-gray-300 hover:border-gray-600 transition-colors"
+              className="w-full py-2 border border-border rounded-lg text-sm text-gray-400 hover:text-gray-300 hover:border-border-light transition-colors"
             >
               + Add New Repo
             </button>
           </div>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-700"></div>
+              <div className="w-full border-t border-border"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-gray-900 px-2 text-xs text-gray-500">
+              <span className="bg-card px-2 text-xs text-gray-500">
                 REPOSITORIES
               </span>
             </div>
@@ -120,11 +120,11 @@ export default function Sidebar({
         <div className="relative flex-1 overflow-hidden">
           {/* Top fade effect */}
           <div
-            className="absolute top-0 left-0 h-8 bg-gradient-to-b from-gray-900 to-transparent pointer-events-none z-10"
+            className="absolute top-0 left-0 h-8 bg-gradient-to-b from-card to-transparent pointer-events-none z-10"
             style={{ right: "10px" }}
           ></div>
           {/* Actual scrollable content */}
-          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 px-5 pb-5">
+          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background px-5 pb-5">
             {/* Starred Repositories */}
             <div
               className={`${
@@ -136,7 +136,7 @@ export default function Sidebar({
                   <div className="flex items-center mb-3">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-yellow-400 mr-2"
+                      className="h-4 w-4 text-accent mr-2"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
@@ -204,7 +204,7 @@ export default function Sidebar({
                   ))
                 ) : (
                   <div className="text-center py-6 px-3">
-                    <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div className="bg-background rounded-lg p-4 border border-border">
                       <p className="text-gray-400 text-sm">
                         No recent repositories
                       </p>
@@ -219,7 +219,7 @@ export default function Sidebar({
           </div>
           {/* Bottom fade effect */}
           <div
-            className="absolute bottom-0 left-0 h-12 bg-gradient-to-t from-gray-900 to-transparent pointer-events-none"
+            className="absolute bottom-0 left-0 h-12 bg-gradient-to-t from-card to-transparent pointer-events-none"
             style={{ right: "10px" }}
           ></div>
         </div>

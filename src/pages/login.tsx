@@ -31,7 +31,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
+      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
@@ -71,12 +71,12 @@ export default function LoginPage() {
         </div>
 
         <div
-          className={`relative p-8 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 max-w-md w-full transition-all duration-500 ${
+          className={`relative p-8 bg-card rounded-xl shadow-2xl border border-border max-w-md w-full transition-all duration-500 ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
           <div className="text-center mb-6">
-            <div className="mx-auto w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+            <div className="mx-auto w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
               <Image
                 src="/file.svg"
                 alt="Extractify Logo"
@@ -96,7 +96,7 @@ export default function LoginPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-10 blur-lg rounded-lg"></div>
               <button
                 onClick={() => signIn("github", { callbackUrl: "/extract" })}
-                className="w-full relative bg-gray-900 border border-gray-700 text-white px-6 py-4 rounded-lg font-medium hover:border-gray-600 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex items-center justify-center group"
+                className="w-full relative bg-background border border-border text-white px-6 py-4 rounded-lg font-medium hover:border-border-light transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex items-center justify-center group"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -130,14 +130,14 @@ export default function LoginPage() {
             <div className="flex justify-center space-x-2 mt-1">
               <Link
                 href="/terms"
-                className="text-primary hover:text-blue-400 transition-colors duration-300"
+                className="text-primary hover:text-secondary transition-colors duration-300"
               >
                 Terms of Service
               </Link>
               <span>&</span>
               <Link
                 href="/privacy"
-                className="text-primary hover:text-blue-400 transition-colors duration-300"
+                className="text-primary hover:text-secondary transition-colors duration-300"
               >
                 Privacy Policy
               </Link>
@@ -147,7 +147,7 @@ export default function LoginPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-6 border-t border-gray-800">
+      <footer className="bg-card py-6 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center mb-4 md:mb-0">

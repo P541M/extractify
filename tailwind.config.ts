@@ -1,6 +1,5 @@
 // tailwind.config.ts
 import type { Config } from "tailwindcss";
-
 export default {
   darkMode: "class",
   content: [
@@ -11,12 +10,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "#1F2937",
+        background: "#121212", // Dark background
         foreground: "#F9FAFB",
-        primary: "#3B82F6", // Softer blue
-        secondary: "#34D399", // Softer green
-        accent: "#FBBF24", // Warm yellow for highlights
+        primary: "#6366F1", // Purple accent color
+        secondary: "#8B5CF6", // Secondary purple
+        accent: "#EC4899", // Pink accent
         muted: "#6B7280", // Gray for secondary text
+        card: "#1E1E1E", // Card background
+        "card-hover": "#252525", // Card hover state
+        border: "#333333", // Border color
+        "border-light": "#444444", // Lighter border color
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"], // Modern, friendly font
@@ -50,9 +53,9 @@ export default {
         },
       },
       boxShadow: {
-        glow: "0 0 15px 2px rgba(59, 130, 246, 0.3)",
-        "glow-success": "0 0 15px 2px rgba(52, 211, 153, 0.3)",
-        "glow-warning": "0 0 15px 2px rgba(251, 191, 36, 0.3)",
+        glow: "0 0 15px 2px rgba(99, 102, 241, 0.3)",
+        "glow-success": "0 0 15px 2px rgba(139, 92, 246, 0.3)",
+        "glow-warning": "0 0 15px 2px rgba(236, 72, 153, 0.3)",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

@@ -49,7 +49,7 @@ export default function ProfileMenu({
         <button
           ref={toggleButtonRef}
           onClick={() => setShowSettings(!showSettings)}
-          className="w-10 h-10 rounded-full border border-transparent hover:border-gray-400 transition-colors"
+          className="w-10 h-10 rounded-full border border-transparent hover:border-border-light transition-colors"
           aria-label="Account settings"
         >
           {session?.user?.image ? (
@@ -69,7 +69,7 @@ export default function ProfileMenu({
         {showSettings && (
           <div
             ref={settingsRef}
-            className="absolute right-0 mt-2 w-72 bg-gray-800 rounded-xl shadow-lg p-5 border border-gray-700"
+            className="absolute right-0 mt-2 w-72 bg-card rounded-xl shadow-lg p-5 border border-border"
           >
             <h3 className="text-white font-semibold mb-4 flex items-center">
               <svg
@@ -91,7 +91,7 @@ export default function ProfileMenu({
             </h3>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-2 border-b border-gray-700">
+              <div className="flex items-center justify-between py-2 border-b border-border">
                 <div>
                   <span className="text-sm text-white font-medium">
                     Include line numbers
@@ -109,11 +109,11 @@ export default function ProfileMenu({
                       updateSetting("includeLineNumbers", e.target.checked)
                     }
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-background peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
 
-              <div className="flex items-center justify-between py-2 border-b border-gray-700">
+              <div className="flex items-center justify-between py-2 border-b border-border">
                 <div>
                   <span className="text-sm text-white font-medium">
                     Auto extract on click
@@ -131,13 +131,13 @@ export default function ProfileMenu({
                       updateSetting("autoExtract", e.target.checked)
                     }
                   />
-                  <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-background peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
             </div>
 
             {session?.user?.name && (
-              <div className="mt-4 pt-4 border-t border-gray-700">
+              <div className="mt-4 pt-4 border-t border-border">
                 <div className="flex items-center mb-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
                     {session.user.image ? (
@@ -171,7 +171,7 @@ export default function ProfileMenu({
             <div className="mt-4">
               <button
                 onClick={() => signOut()}
-                className="w-full bg-gradient-to-r from-primary to-blue-500 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium shadow-md hover:shadow-primary/20 flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 font-medium shadow-md hover:shadow-primary/20 flex items-center justify-center space-x-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

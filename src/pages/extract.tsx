@@ -150,7 +150,10 @@ export default function ExtractPage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted">Loading...</p>
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-t-4 border-primary border-solid rounded-full animate-spin"></div>
+          <p className="text-gray-300 mt-4 font-medium">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -592,7 +595,7 @@ export default function ExtractPage() {
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
-          className="fixed top-4 left-4 z-50 bg-gray-800 text-gray-400 hover:text-primary p-2 rounded-md transition-colors shadow-md border border-gray-700 hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/40"
+          className="fixed top-4 left-4 z-50 bg-card text-gray-400 hover:text-primary p-2 rounded-md transition-colors shadow-md border border-border hover:border-border-light focus:outline-none focus:ring-2 focus:ring-primary/40"
           aria-label="Open sidebar"
         >
           <svg

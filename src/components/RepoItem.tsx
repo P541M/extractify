@@ -75,7 +75,7 @@ export default function RepoItem({
           className={`text-left py-1 w-full ${
             repo.hasAccess === false
               ? "text-red-400 hover:text-red-300"
-              : "text-gray-400 hover:text-blue-400"
+              : "text-gray-400 hover:text-primary"
           }`}
           title={repo.url}
         >
@@ -107,7 +107,7 @@ export default function RepoItem({
             )}
           </div>
         </button>
-        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none"></div>
       </div>
       <div className="ml-2 relative">
         <button
@@ -115,7 +115,7 @@ export default function RepoItem({
             e.stopPropagation();
             onMenuToggle(repo.id);
           }}
-          className="p-1 text-gray-400 hover:text-blue-400 three-dot-button"
+          className="p-1 text-gray-400 hover:text-primary three-dot-button"
           aria-label="More options"
         >
           <svg
@@ -131,25 +131,25 @@ export default function RepoItem({
           </svg>
         </button>
         {isMenuOpen && (
-          <div className="absolute right-0 top-full mt-1 w-32 bg-gray-700 rounded-lg shadow-lg z-10 menu">
+          <div className="absolute right-0 top-full mt-1 w-32 bg-card-hover rounded-lg shadow-lg z-10 menu border border-border">
             {repo.starred ? (
               <button
                 onClick={() => onToggleStar(repo, false)}
-                className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
+                className="w-full text-left text-gray-400 hover:text-primary px-3 py-2 text-sm"
               >
                 Unstar
               </button>
             ) : (
               <button
                 onClick={() => onToggleStar(repo, true)}
-                className="w-full text-left text-gray-400 hover:text-blue-400 px-3 py-2 text-sm"
+                className="w-full text-left text-gray-400 hover:text-primary px-3 py-2 text-sm"
               >
                 Star
               </button>
             )}
             <button
               onClick={(e) => onDelete(e, repo.id, repo.url, repo.starred)}
-              className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm"
+              className="w-full text-left text-gray-400 hover:text-red-400 px-3 py-2 text-sm border-t border-border"
             >
               Delete
             </button>

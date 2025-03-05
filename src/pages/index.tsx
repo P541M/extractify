@@ -15,7 +15,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <header className="bg-gray-900 shadow-lg border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
+      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
@@ -47,7 +47,7 @@ export default function LandingPage() {
                 </Link>
                 <button
                   onClick={() => signOut()}
-                  className="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md border border-gray-700 hover:border-gray-600"
+                  className="bg-card hover:bg-card-hover text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md border border-border hover:border-border-light"
                 >
                   Sign Out
                 </button>
@@ -55,7 +55,7 @@ export default function LandingPage() {
             ) : (
               <Link
                 href="/login"
-                className="bg-primary hover:bg-blue-600 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md font-medium"
+                className="bg-primary hover:opacity-90 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md font-medium"
               >
                 Sign In
               </Link>
@@ -65,7 +65,7 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative bg-gray-900 overflow-hidden">
+      <section className="relative bg-card overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/10 animate-gradient"></div>
         </div>
@@ -80,7 +80,7 @@ export default function LandingPage() {
           <div className="lg:w-1/2 lg:pr-12 mb-10 lg:mb-0">
             <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-white leading-tight animate-slide-up">
               Extract Code from GitHub{" "}
-              <span className="bg-gradient-to-r from-primary via-blue-400 to-secondary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
                 Effortlessly
               </span>
             </h1>
@@ -92,7 +92,7 @@ export default function LandingPage() {
             {session ? (
               <Link
                 href="/extract"
-                className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
+                className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Start Extracting</span>
                 <svg
@@ -111,7 +111,7 @@ export default function LandingPage() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
+                className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Sign In with GitHub</span>
                 <svg
@@ -131,8 +131,8 @@ export default function LandingPage() {
           </div>
           {/* Code Widget */}
           <div className="lg:w-1/2 relative">
-            <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700 transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
-              <div className="bg-gray-900 px-4 py-2 flex items-center space-x-2">
+            <div className="bg-card rounded-xl shadow-2xl overflow-hidden border border-border transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
+              <div className="bg-background px-4 py-2 flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-red-400"></div>
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
@@ -145,12 +145,12 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     1
                   </span>
-                  <span className="text-blue-400">import</span>
+                  <span className="text-primary">import</span>
                   <span className="text-white">
                     {" "}
                     {`{ useEffect, useState }`}{" "}
                   </span>
-                  <span className="text-blue-400">from</span>
+                  <span className="text-primary">from</span>
                   <span className="text-white"> &apos;react&apos;;</span>
                 </div>
                 <div className="flex">
@@ -163,7 +163,7 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     3
                   </span>
-                  <span className="text-blue-400">export default function</span>
+                  <span className="text-primary">export default function</span>
                   <span className="text-white"> ExtractifyMagic() </span>
                   <span className="text-white">{`{`}</span>
                 </div>
@@ -171,11 +171,11 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     4
                   </span>
-                  <span className="text-blue-400"> const</span>
+                  <span className="text-primary"> const</span>
                   <span className="text-white"> [message, setMessage] </span>
-                  <span className="text-blue-400">=</span>
+                  <span className="text-primary">=</span>
                   <span className="text-white"> useState(</span>
-                  <span className="text-green-400">
+                  <span className="text-secondary">
                     &apos;Extracting code...&apos;
                   </span>
                   <span className="text-white">);</span>
@@ -190,7 +190,7 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     6
                   </span>
-                  <span className="text-blue-400"> useEffect</span>
+                  <span className="text-primary"> useEffect</span>
                   <span className="text-white">(</span>
                   <span className="text-white">() =&gt; {`{`}</span>
                 </div>
@@ -198,12 +198,12 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     7
                   </span>
-                  <span className="text-blue-400"> const</span>
+                  <span className="text-primary"> const</span>
                   <span className="text-white"> timer </span>
-                  <span className="text-blue-400">=</span>
+                  <span className="text-primary">=</span>
                   <span className="text-white"> setTimeout(</span>
                   <span className="text-white">() =&gt; setMessage(</span>
-                  <span className="text-green-400">
+                  <span className="text-accent">
                     &apos;✨ Extraction Complete!&apos;
                   </span>
                   <span className="text-white">), 2000);</span>
@@ -212,7 +212,7 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     8
                   </span>
-                  <span className="text-blue-400"> return</span>
+                  <span className="text-primary"> return</span>
                   <span className="text-white">
                     {" "}
                     () =&gt; clearTimeout(timer);
@@ -228,12 +228,12 @@ export default function LandingPage() {
                   <span className="text-gray-500 w-8 inline-block select-none">
                     10
                   </span>
-                  <span className="text-blue-400"> return</span>
+                  <span className="text-primary"> return</span>
                   <span className="text-white">
                     {" "}
                     &lt;h1 className=&apos;text-3xl font-bold&apos;&gt;
                   </span>
-                  <span className="text-green-400">{`{message}`}</span>
+                  <span className="text-secondary">{`{message}`}</span>
                   <span className="text-white">&lt;/h1&gt;;</span>
                 </div>
                 <div className="flex">
@@ -251,7 +251,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gray-900 relative">
+      <section className="py-20 bg-card relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <h2 className="text-3xl font-bold text-center text-white mb-4">
@@ -262,7 +262,7 @@ export default function LandingPage() {
             repositories
           </p>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-gray-600 group">
+            <div className="bg-card-hover rounded-xl p-8 shadow-lg border border-border transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-border-light group">
               <div className="w-14 h-14 bg-primary/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
                 <Image
                   src="/file.svg"
@@ -280,7 +280,7 @@ export default function LandingPage() {
                 few clicks. Easy to use and incredibly fast.
               </p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-gray-600 group">
+            <div className="bg-card-hover rounded-xl p-8 shadow-lg border border-border transition-all duration-300 hover:shadow-xl hover:shadow-secondary/5 hover:-translate-y-1 hover:border-border-light group">
               <div className="w-14 h-14 bg-secondary/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-secondary group-hover:scale-110">
                 <Image
                   src="/globe.svg"
@@ -298,7 +298,7 @@ export default function LandingPage() {
                 private repositories with secure OAuth flow.
               </p>
             </div>
-            <div className="bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-700 transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-gray-600 group">
+            <div className="bg-card-hover rounded-xl p-8 shadow-lg border border-border transition-all duration-300 hover:shadow-xl hover:shadow-accent/5 hover:-translate-y-1 hover:border-border-light group">
               <div className="w-14 h-14 bg-accent/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-accent group-hover:scale-110">
                 <Image
                   src="/window.svg"
@@ -322,14 +322,14 @@ export default function LandingPage() {
 
       {/* Call to Action */}
       <section className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-background"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-card to-background"></div>
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-primary/5 to-transparent blur-3xl"></div>
         <div className="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-secondary/5 to-transparent blur-3xl"></div>
 
         <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
           <div className="inline-block mb-6 p-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full">
-            <div className="bg-gray-900 rounded-full px-4 py-1">
+            <div className="bg-card rounded-full px-4 py-1">
               <span className="text-gray-300 text-sm font-medium">
                 Join hundreds of developers
               </span>
@@ -345,7 +345,7 @@ export default function LandingPage() {
           {session ? (
             <Link
               href="/extract"
-              className="inline-flex items-center bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
+              className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
             >
               Go to Extractor
             </Link>
@@ -353,7 +353,7 @@ export default function LandingPage() {
             <div className="space-y-4">
               <Link
                 href="/login"
-                className="inline-block bg-gradient-to-r from-primary to-blue-500 text-white px-8 py-4 rounded-xl font-medium hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
+                className="inline-block bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
               >
                 Get Started for Free
               </Link>
@@ -364,11 +364,11 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-12 border-t border-gray-800">
+      <footer className="bg-card py-6 border-t border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-6 md:mb-0">
-              <div className="relative w-6 h-6 mr-2">
+            <div className="flex items-center mb-4 md:mb-0">
+              <div className="relative w-5 h-5 mr-2">
                 <Image
                   src="/file.svg"
                   alt="Extractify Logo"
@@ -380,31 +380,28 @@ export default function LandingPage() {
                 Extractify
               </span>
             </div>
-            <div className="flex space-x-8 mb-6 md:mb-0">
+            <div className="flex space-x-6 mb-4 md:mb-0">
               <Link
                 href="/about"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
+                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 About
               </Link>
               <Link
                 href="/privacy"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
+                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 Privacy
               </Link>
               <Link
                 href="/terms"
-                className="text-gray-400 hover:text-white transition-colors duration-300"
+                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
               >
                 Terms
               </Link>
             </div>
-            <div className="text-center md:text-right text-gray-400">
-              <p>
-                © {new Date().getFullYear()} Extractify. All rights reserved.
-              </p>
-              <p className="text-sm mt-1">Built with Next.js and TailwindCSS</p>
+            <div className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} Extractify. All rights reserved.
             </div>
           </div>
         </div>

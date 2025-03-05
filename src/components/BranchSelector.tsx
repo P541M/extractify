@@ -1,12 +1,10 @@
 import React from "react";
-
 interface BranchSelectorProps {
   branches: string[];
   selectedBranch: string;
   onBranchSelect: (branch: string) => void;
   isLoading: boolean;
 }
-
 export default function BranchSelector({
   branches,
   selectedBranch,
@@ -14,9 +12,8 @@ export default function BranchSelector({
   isLoading,
 }: BranchSelectorProps) {
   if (branches.length <= 1 || isLoading) return null;
-
   return (
-    <div className="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 mb-8 animate-fade-in">
+    <div className="w-full bg-card rounded-xl p-6 shadow-lg border border-border mb-8 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
         <div className="mb-4 sm:mb-0">
           <h3 className="font-medium text-white flex items-center">
@@ -43,7 +40,7 @@ export default function BranchSelector({
         </div>
         <div className="relative w-full sm:w-auto">
           <select
-            className="bg-gray-900 text-white rounded-lg p-2 pl-4 pr-8 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full appearance-none"
+            className="bg-background text-white rounded-lg p-2 pl-4 pr-8 border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-full appearance-none"
             value={selectedBranch}
             onChange={(e) => onBranchSelect(e.target.value)}
             aria-label="Select branch"
