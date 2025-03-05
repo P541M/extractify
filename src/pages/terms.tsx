@@ -407,7 +407,9 @@ export default function TermsPage() {
                     please contact us at:
                   </p>
                   <p className="text-gray-300 mt-2">
-                    <span className="text-primary">legal@extractify.com</span>
+                    <span className="text-primary">
+                      videna.psalmeleazar@gmail.com
+                    </span>
                   </p>
                 </div>
               </section>

@@ -266,7 +266,9 @@ export default function PrivacyPage() {
                     repository history at any time through the application
                     interface. If you wish to completely delete your account and
                     all associated data, please contact us at{" "}
-                    <span className="text-primary">privacy@extractify.com</span>
+                    <span className="text-primary">
+                      videna.psalmeleazar@gmail.com
+                    </span>
                     .
                   </p>
                 </div>
@@ -308,7 +310,9 @@ export default function PrivacyPage() {
                   </ul>
                   <p className="text-gray-300 mt-4">
                     To exercise these rights, please contact us at{" "}
-                    <span className="text-primary">privacy@extractify.com</span>
+                    <span className="text-primary">
+                      videna.psalmeleazar@gmail.com
+                    </span>
                     .
                   </p>
                 </div>
@@ -375,7 +379,9 @@ export default function PrivacyPage() {
                     data practices, please contact us at:
                   </p>
                   <p className="text-gray-300 mt-2">
-                    <span className="text-primary">privacy@extractify.com</span>
+                    <span className="text-primary">
+                      videna.psalmeleazar@gmail.com
+                    </span>
                   </p>
                 </div>
               </section>
