@@ -35,7 +35,7 @@ export default function BranchSelector({
             Other Branches
           </h3>
           <p className="text-sm text-gray-400 mt-1">
-            Main branch extracted. Extract code from other branches:
+            Are there any other branches? If so, extract the code from them.
           </p>
         </div>
         <div className="relative w-full sm:w-auto">
