@@ -76,16 +76,18 @@ export default function CodeExtractor({
       }`}
     >
       <div className="max-w-4xl w-full mx-auto flex flex-col items-center">
-        <div className="w-full mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
-            {getTimeBasedGreeting()}
-            {session?.user?.name ? `, ${session.user.name}` : ""}!
-          </h1>
-          <p className="text-gray-300 text-center">
-            Let&apos;s extract some code! What GitHub repository would you like
-            to explore today?
-          </p>
-        </div>
+        {!resultText && !repoUrl && (
+          <div className="w-full mb-10">
+            <h1 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
+              {getTimeBasedGreeting()}
+              {session?.user?.name ? `, ${session.user.name}` : ""}!
+            </h1>
+            <p className="text-gray-300 text-center">
+              Let&apos;s extract some code! What GitHub repository would you
+              like to explore today?
+            </p>
+          </div>
+        )}
         <div className="w-full bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700 mb-8">
           <form onSubmit={handleSubmit} className="w-full">
             <label
