@@ -1,4 +1,3 @@
-// src/components/Navbar.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
@@ -11,6 +10,7 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const router = useRouter();
 
   // Handle scroll effect
@@ -32,7 +32,12 @@ export default function Navbar() {
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
         setIsMenuOpen(false);
       }
     };
@@ -76,16 +81,20 @@ export default function Navbar() {
           {/* Mobile menu button */}
           <div className="flex md:hidden">
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              ref={buttonRef}
+              onClick={(e) => {
+                e.stopPropagation(); // Stop event propagation
+                setIsMenuOpen(!isMenuOpen);
+              }}
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-primary/10 focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all duration-200"
               aria-expanded={isMenuOpen}
             >
               <span className="sr-only">Open main menu</span>
-              {/* Animated hamburger icon */}
+              {/* Fixed hamburger icon animation */}
               <div className="w-6 h-6 flex flex-col justify-center items-center">
                 <span
                   className={`bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-                    isMenuOpen ? "rotate-45 translate-y-1" : "-translate-y-0.5"
+                    isMenuOpen ? "rotate-45 translate-y-1" : "-translate-y-1"
                   }`}
                 ></span>
                 <span
@@ -95,7 +104,7 @@ export default function Navbar() {
                 ></span>
                 <span
                   className={`bg-current block transition-all duration-300 ease-out h-0.5 w-6 rounded-sm ${
-                    isMenuOpen ? "-rotate-45 -translate-y-1" : "translate-y-0.5"
+                    isMenuOpen ? "-rotate-45 -translate-y-1" : "translate-y-1"
                   }`}
                 ></span>
               </div>
@@ -192,13 +201,13 @@ export default function Navbar() {
             )}
           </nav>
         </div>
-        {/* Mobile menu, show/hide based on menu state */}
+        {/* Mobile menu - fixed to address the thick navbar issue */}
         <div
           ref={menuRef}
-          className={`md:hidden transition-all duration-300 ease-in-out transform ${
+          className={`md:hidden transition-all duration-300 ease-in-out absolute left-0 right-0 px-4 transform ${
             isMenuOpen
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 -translate-y-4 pointer-events-none"
+              ? "opacity-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden"
           }`}
         >
           <div className="px-4 pt-4 pb-5 space-y-3 bg-card-hover rounded-xl mt-2 border border-border shadow-xl animate-fade-in">
