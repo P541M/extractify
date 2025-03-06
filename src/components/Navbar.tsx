@@ -22,10 +22,8 @@ export default function Navbar() {
         setScrolled(false);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     setMounted(true);
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -38,7 +36,6 @@ export default function Navbar() {
         setIsMenuOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -63,11 +60,7 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 group">
-              <div
-                className={`relative w-8 h-8 transition-all duration-500 ${
-                  mounted ? "rotate-0" : "-rotate-90"
-                } group-hover:scale-110`}
-              >
+              <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
                 <Image
                   src="/file.svg"
                   alt="Extractify Logo"
@@ -80,7 +73,6 @@ export default function Navbar() {
               </span>
             </Link>
           </div>
-
           {/* Mobile menu button */}
           <div className="flex md:hidden">
             <button
@@ -109,7 +101,6 @@ export default function Navbar() {
               </div>
             </button>
           </div>
-
           {/* Desktop navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
@@ -201,7 +192,6 @@ export default function Navbar() {
             )}
           </nav>
         </div>
-
         {/* Mobile menu, show/hide based on menu state */}
         <div
           ref={menuRef}
