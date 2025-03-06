@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Footer from "../components/Footer";
 
 export default function PrivacyPage() {
   const [mounted, setMounted] = useState(false);
@@ -391,48 +392,7 @@ export default function PrivacyPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card py-6 border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center mb-4 md:mb-0">
-              <div className="relative w-5 h-5 mr-2">
-                <Image
-                  src="/file.svg"
-                  alt="Extractify Logo"
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <span className="text-lg font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                Extractify
-              </span>
-            </div>
-            <div className="flex space-x-6 mb-4 md:mb-0">
-              <Link
-                href="/about"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
-                About
-              </Link>
-              <Link
-                href="/privacy"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="text-gray-400 hover:text-white transition-colors duration-300 text-sm"
-              >
-                Terms
-              </Link>
-            </div>
-            <div className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} Extractify. All rights reserved.
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
