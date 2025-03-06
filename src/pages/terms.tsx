@@ -1,7 +1,6 @@
-import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 export default function TermsPage() {
   const [mounted, setMounted] = useState(false);
@@ -13,37 +12,7 @@ export default function TermsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
-              <Image
-                src="/file.svg"
-                alt="Extractify Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Extractify
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6">
-            <Link
-              href="/extract"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Extract
-            </Link>
-            <Link
-              href="/login"
-              className="bg-gradient-to-r from-primary to-secondary text-white px-5 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 hover:shadow-md font-medium"
-            >
-              Dashboard
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Terms Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">

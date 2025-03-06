@@ -1,10 +1,11 @@
-// src/pages/login.tsx
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+
 export default function LoginPage() {
   const { status } = useSession();
   const router = useRouter();
@@ -31,37 +32,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
-              <Image
-                src="/file.svg"
-                alt="Extractify Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Extractify
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6">
-            <Link
-              href="/"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Home
-            </Link>
-            <Link
-              href="/about"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              About
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Login Section */}
       <main className="flex-1 flex items-center justify-center px-4 py-16 relative">
@@ -69,7 +40,6 @@ export default function LoginPage() {
           <div className="absolute -top-16 -right-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-secondary/5 rounded-full blur-3xl"></div>
         </div>
-
         <div
           className={`relative p-8 bg-card rounded-xl shadow-2xl border border-border max-w-md w-full transition-all duration-500 ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
@@ -90,7 +60,6 @@ export default function LoginPage() {
               Sign in to access your Extractify account
             </p>
           </div>
-
           <div className="space-y-4 mb-6">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-10 blur-lg rounded-lg"></div>
@@ -124,7 +93,6 @@ export default function LoginPage() {
               </button>
             </div>
           </div>
-
           <div className="text-center text-gray-400 text-sm">
             <p>By continuing, you agree to Extractify&apos;s</p>
             <div className="flex justify-center space-x-2 mt-1">

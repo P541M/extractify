@@ -1,9 +1,9 @@
-// src/pages/index.tsx
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 export default function LandingPage() {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
@@ -19,54 +19,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
-              <Image
-                src="/file.svg"
-                alt="Extractify Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Extractify
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6">
-            <Link
-              href="/about"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              About
-            </Link>
-            {session ? (
-              <>
-                <Link
-                  href="/extract"
-                  className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-                >
-                  Extract
-                </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="bg-card hover:bg-card-hover text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md border border-border hover:border-border-light"
-                >
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="bg-primary hover:opacity-90 text-white px-5 py-2 rounded-lg transition-all duration-300 hover:shadow-md font-medium"
-              >
-                Sign In
-              </Link>
-            )}
-          </nav>
-        </div>
-      </header>
+      <Navbar />
       {/* Hero Section */}
       <section className="relative bg-card overflow-hidden">
         <div className="absolute inset-0">

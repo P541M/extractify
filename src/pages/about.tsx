@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 export default function AboutPage() {
   const [mounted, setMounted] = useState(false);
@@ -13,37 +13,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
-      <header className="bg-card shadow-lg border-b border-border sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
-              <Image
-                src="/file.svg"
-                alt="Extractify Logo"
-                fill
-                className="object-contain"
-              />
-            </div>
-            <span className="text-2xl font-bold text-white bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Extractify
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6">
-            <Link
-              href="/extract"
-              className="text-gray-300 hover:text-primary transition-colors duration-300 font-medium"
-            >
-              Extract
-            </Link>
-            <Link
-              href="/login"
-              className="bg-gradient-to-r from-primary to-secondary text-white px-5 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 hover:shadow-md font-medium"
-            >
-              Dashboard
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Navbar />
 
       {/* About Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
@@ -73,7 +43,6 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-
             <div className="grid md:grid-cols-2 gap-8 mb-10">
               <div className="bg-background/50 p-6 rounded-lg border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
@@ -101,7 +70,6 @@ export default function AboutPage() {
                   great code and getting meaningful AI assistance.
                 </p>
               </div>
-
               <div className="bg-background/50 p-6 rounded-lg border border-border hover:border-secondary/50 transition-all duration-300 hover:shadow-lg">
                 <div className="w-12 h-12 bg-secondary/20 rounded-lg flex items-center justify-center mb-4">
                   <svg
@@ -131,6 +99,7 @@ export default function AboutPage() {
               </div>
             </div>
 
+            {/* Rest of the content remains the same */}
             <div className="bg-gradient-to-r from-background to-card-hover p-8 rounded-xl border border-border mb-10">
               <h2 className="text-2xl font-semibold text-white mb-6">
                 Key Features
@@ -163,7 +132,6 @@ export default function AboutPage() {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center mr-4">
                     <svg
@@ -191,7 +159,6 @@ export default function AboutPage() {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mr-4">
                     <svg
@@ -219,7 +186,6 @@ export default function AboutPage() {
                     </p>
                   </div>
                 </div>
-
                 <div className="flex items-start">
                   <div className="flex-shrink-0 w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center mr-4">
                     <svg
@@ -249,7 +215,6 @@ export default function AboutPage() {
                 </div>
               </div>
             </div>
-
             <div className="bg-background/50 p-8 rounded-xl border border-border">
               <h2 className="text-2xl font-semibold text-white mb-4">
                 Get Started Today
