@@ -48,7 +48,7 @@ export default function LoginPage() {
           <div className="text-center mb-6">
             <div className="mx-auto w-16 h-16 bg-background rounded-full flex items-center justify-center mb-4">
               <Image
-                src="/file.svg"
+                src="/logo.svg"
                 alt="Extractify Logo"
                 width={32}
                 height={32}

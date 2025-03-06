@@ -66,7 +66,7 @@ export default function Sidebar({
             <Link href="/" className="flex items-center space-x-3 group">
               <div className="relative w-8 h-8 transition-transform duration-300 group-hover:scale-110">
                 <Image
-                  src="/file.svg"
+                  src="/logo.svg"
                   alt="Extractify Logo"
                   fill
                   className="object-contain"

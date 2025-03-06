@@ -17,7 +17,7 @@ export default function Footer() {
             >
               <div className="relative w-7 h-7 transition-transform duration-300 group-hover:scale-110">
                 <Image
-                  src="/file.svg"
+                  src="/logo.svg"
                   alt="Extractify Logo"
                   fill
                   className="object-contain"

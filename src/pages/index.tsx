@@ -349,7 +349,7 @@ export default function LandingPage() {
             <div className="bg-card-hover rounded-xl p-8 shadow-lg border border-border transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-border-light group">
               <div className="w-14 h-14 bg-primary/80 rounded-lg flex items-center justify-center mb-6 transition-all duration-300 group-hover:bg-primary group-hover:scale-110">
                 <Image
-                  src="/file.svg"
+                  src="/logo.svg"
                   alt="Code Files"
                   width={28}
                   height={28}
