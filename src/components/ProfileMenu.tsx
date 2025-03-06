@@ -89,7 +89,6 @@ export default function ProfileMenu({
               </svg>
               Settings
             </h3>
-
             <div className="space-y-4">
               <div className="flex items-center justify-between py-2 border-b border-border">
                 <div>
@@ -112,14 +111,13 @@ export default function ProfileMenu({
                   <div className="w-11 h-6 bg-background peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
               </div>
-
               <div className="flex items-center justify-between py-2 border-b border-border">
                 <div>
                   <span className="text-sm text-white font-medium">
                     Auto extract on click
                   </span>
                   <p className="text-xs text-gray-400 mt-1">
-                    Automatically extract code when clicking a file
+                    Automatically extract code when clicking a repo
                   </p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -135,9 +133,8 @@ export default function ProfileMenu({
                 </label>
               </div>
             </div>
-
             {session?.user?.name && (
-              <div className="mt-4 pt-4 border-t border-border">
+              <div className="mt-4 pt-4">
                 <div className="flex items-center mb-3">
                   <div className="w-8 h-8 rounded-full overflow-hidden mr-3">
                     {session.user.image ? (
@@ -167,7 +164,6 @@ export default function ProfileMenu({
                 </div>
               </div>
             )}
-
             <div className="mt-4">
               <button
                 onClick={() => signOut()}
