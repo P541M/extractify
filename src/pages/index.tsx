@@ -4,22 +4,20 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+
 export default function LandingPage() {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
-  const [animationStep, setAnimationStep] = useState(0);
+
   useEffect(() => {
     setMounted(true);
-    // Animation cycle for GitHub integration visualization
-    const animationInterval = setInterval(() => {
-      setAnimationStep((prev) => (prev + 1) % 4);
-    }, 2500);
-    return () => clearInterval(animationInterval);
   }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
       <Navbar />
+
       {/* Hero Section */}
       <section className="relative bg-card overflow-hidden">
         <div className="absolute inset-0">
@@ -93,18 +91,13 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
                 <div className="w-3 h-3 rounded-full bg-green-400"></div>
                 <div className="ml-2 text-sm text-gray-300 font-medium">
-                  How it Works!
+                  Extractify
                 </div>
               </div>
               <div className="p-6 relative h-72">
                 {/* GitHub Logo */}
-                {/* GitHub Logo */}
                 <div
-                  className={`absolute transition-all duration-700 ease-in-out ${
-                    animationStep === 0 || animationStep === 3
-                      ? "opacity-100 scale-100"
-                      : "opacity-40 scale-95"
-                  }`}
+                  className="absolute transition-all duration-700 ease-in-out opacity-100 scale-100"
                   style={{ left: "20%", top: "15%" }}
                 >
                   <svg
@@ -114,23 +107,14 @@ export default function LandingPage() {
                   >
                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                   </svg>
-                  <div
-                    className={`mt-2 text-center text-sm font-medium ${
-                      animationStep === 0 || animationStep === 3
-                        ? "text-primary"
-                        : "text-gray-400"
-                    }`}
-                  >
+                  <div className="mt-2 text-center text-sm font-medium text-primary">
                     GitHub
                   </div>
                 </div>
+
                 {/* Extractify Logo */}
                 <div
-                  className={`absolute transition-all duration-700 ease-in-out ${
-                    animationStep === 0 || animationStep === 3
-                      ? "opacity-100 scale-100"
-                      : "opacity-40 scale-95"
-                  }`}
+                  className="absolute transition-all duration-700 ease-in-out opacity-100 scale-100"
                   style={{ right: "20%", top: "15%" }}
                 >
                   <div className="bg-gradient-to-r from-primary to-secondary rounded-full p-3">
@@ -150,58 +134,22 @@ export default function LandingPage() {
                       <polyline points="10 9 9 9 8 9"></polyline>
                     </svg>
                   </div>
-                  <div
-                    className={`mt-2 text-center text-sm font-medium ${
-                      animationStep === 0 || animationStep === 3
-                        ? "text-primary"
-                        : "text-gray-400"
-                    }`}
-                  >
+                  <div className="mt-2 text-center text-sm font-medium text-primary">
                     Extractify
                   </div>
                 </div>
-                {/* Connection Lines with improved viewBox and positioning */}
+
+                {/* Connection Lines with continuous animation */}
                 <svg
                   className="absolute inset-0 w-full h-full"
                   viewBox="0 0 400 300"
                   fill="none"
                   preserveAspectRatio="xMidYMid meet"
                 >
-                  {/* GitHub to Extractify Authentication Line */}
+                  {/* GitHub to Extractify Line */}
                   <path
-                    className={`${
-                      animationStep >= 1 ? "opacity-100" : "opacity-0"
-                    } transition-opacity duration-500`}
                     d="M100 90 L300 90"
-                    stroke="url(#auth-gradient)"
-                    strokeWidth="3"
-                    strokeDasharray="6 3"
-                  />
-                  {/* Data Flow - GitHub to Extractify */}
-                  <path
-                    className={`${
-                      animationStep >= 2 ? "opacity-100" : "opacity-0"
-                    } transition-opacity duration-500`}
-                    d="M100 110 L300 110"
-                    stroke="url(#data-gradient)"
-                    strokeWidth="4"
-                    strokeDasharray="8 4"
-                  >
-                    <animate
-                      attributeName="stroke-dashoffset"
-                      from="24"
-                      to="-24"
-                      dur="1.5s"
-                      repeatCount="indefinite"
-                    />
-                  </path>
-                  {/* Connection to User */}
-                  <path
-                    className={`${
-                      animationStep >= 3 ? "opacity-100" : "opacity-0"
-                    } transition-opacity duration-500`}
-                    d="M300 130 L200 200 L100 130"
-                    stroke="url(#output-gradient)"
+                    stroke="url(#flow-gradient)"
                     strokeWidth="3"
                     strokeDasharray="6 3"
                   >
@@ -213,48 +161,55 @@ export default function LandingPage() {
                       repeatCount="indefinite"
                     />
                   </path>
-                  {/* Gradients */}
+
+                  {/* Extractify to User Line */}
+                  <path
+                    d="M300 110 L200 200 L100 110"
+                    stroke="url(#flow-gradient)"
+                    strokeWidth="3"
+                    strokeDasharray="6 3"
+                  >
+                    <animate
+                      attributeName="stroke-dashoffset"
+                      from="18"
+                      to="-18"
+                      dur="2s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+
+                  {/* Gradient for the flowing line */}
                   <defs>
                     <linearGradient
-                      id="auth-gradient"
+                      id="flow-gradient"
                       x1="0%"
                       y1="0%"
                       x2="100%"
                       y2="0%"
                     >
                       <stop offset="0%" stopColor="#6366F1" />
-                      <stop offset="100%" stopColor="#8B5CF6" />
-                    </linearGradient>
-                    <linearGradient
-                      id="data-gradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#8B5CF6" />
-                      <stop offset="100%" stopColor="#EC4899" />
-                    </linearGradient>
-                    <linearGradient
-                      id="output-gradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#EC4899" />
+                      <stop offset="50%" stopColor="#EC4899" />
                       <stop offset="100%" stopColor="#6366F1" />
+                      <animate
+                        attributeName="x1"
+                        from="-100%"
+                        to="100%"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
+                      <animate
+                        attributeName="x2"
+                        from="0%"
+                        to="200%"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
                     </linearGradient>
                   </defs>
                 </svg>
-                {/* User Icon - better positioned */}
-                <div
-                  className={`absolute left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-in-out ${
-                    animationStep === 3
-                      ? "bottom-16 opacity-100 scale-100"
-                      : "bottom-10 opacity-0 scale-90"
-                  }`}
-                >
+
+                {/* User Icon - always visible */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-in-out bottom-16 opacity-100 scale-100">
                   <div className="bg-accent rounded-full p-3 mx-auto w-12 h-12 flex items-center justify-center">
                     <svg
                       className="w-6 h-6 text-white"
@@ -273,59 +228,12 @@ export default function LandingPage() {
                     You
                   </div>
                 </div>
-                {/* Animation step indicators - better positioned */}
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-3">
-                  {[0, 1, 2, 3].map((step) => (
-                    <div
-                      key={step}
-                      className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                        animationStep === step ? "bg-primary" : "bg-gray-600"
-                      }`}
-                    ></div>
-                  ))}
-                </div>
-                {/* Animation step descriptions with improved positioning and spacing */}
-                <div className="absolute bottom-10 left-0 right-0 text-center h-6">
-                  <div
-                    className={`transition-all duration-300 ${
-                      animationStep === 0
-                        ? "opacity-100"
-                        : "opacity-0 absolute inset-0"
-                    }`}
-                  >
-                    <p className="text-sm text-gray-300">Connect with GitHub</p>
-                  </div>
-                  <div
-                    className={`transition-all duration-300 ${
-                      animationStep === 1
-                        ? "opacity-100"
-                        : "opacity-0 absolute inset-0"
-                    }`}
-                  >
-                    <p className="text-sm text-gray-300">
-                      Secure Authentication
-                    </p>
-                  </div>
-                  <div
-                    className={`transition-all duration-300 ${
-                      animationStep === 2
-                        ? "opacity-100"
-                        : "opacity-0 absolute inset-0"
-                    }`}
-                  >
-                    <p className="text-sm text-gray-300">
-                      Extract Repository Code
-                    </p>
-                  </div>
-                  <div
-                    className={`transition-all duration-300 ${
-                      animationStep === 3
-                        ? "opacity-100"
-                        : "opacity-0 absolute inset-0"
-                    }`}
-                  >
-                    <p className="text-sm text-gray-300">Ready to Use!</p>
-                  </div>
+
+                {/* Single description text instead of changing descriptions */}
+                <div className="absolute bottom-10 left-0 right-0 text-center">
+                  <p className="text-sm text-gray-300">
+                    Seamless Code Extraction
+                  </p>
                 </div>
               </div>
             </div>
@@ -334,6 +242,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
       {/* Features Section */}
       <section className="py-20 bg-card relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
@@ -403,6 +312,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
       {/* Call to Action */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-card to-background"></div>
@@ -444,6 +354,7 @@ export default function LandingPage() {
           )}
         </div>
       </section>
+
       {/* Footer */}
       <Footer />
     </div>
