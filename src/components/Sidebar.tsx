@@ -1,7 +1,10 @@
+// src/components/Sidebar.tsx
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import RepoItem from "./RepoItem";
+import SearchRepositories from "./SearchRepositories";
+
 interface Repo {
   id: string;
   url: string;
@@ -9,6 +12,7 @@ interface Repo {
   order?: number;
   hasAccess?: boolean; // Added new field
 }
+
 interface SidebarProps {
   sidebarOpen: boolean;
   toggleSidebar: () => void;
@@ -29,6 +33,7 @@ interface SidebarProps {
   onDrop: (index: number) => void;
   onAddNewRepo: () => void;
 }
+
 export default function Sidebar({
   sidebarOpen,
   toggleSidebar,
@@ -45,9 +50,14 @@ export default function Sidebar({
   onAddNewRepo,
 }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Combine starred and regular repos for search functionality
+  const allRepos = [...starredRepos, ...repoList];
+
   return (
     <aside
       className={`w-64 bg-card border-r border-border shadow-xl transition-transform duration-300 fixed h-full left-0 top-0 z-50 transform ${
@@ -96,7 +106,11 @@ export default function Sidebar({
               </svg>
             </button>
           </div>
-          {/* New "Add New Repo" Button (subtle styling) */}
+
+          {/* Search Repositories Component */}
+          <SearchRepositories allRepos={allRepos} onRepoClick={onRepoClick} />
+
+          {/* Add New Repo Button */}
           <div className="mb-4">
             <button
               onClick={onAddNewRepo}
@@ -105,6 +119,7 @@ export default function Sidebar({
               + Add New Repo
             </button>
           </div>
+
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border"></div>
@@ -116,6 +131,7 @@ export default function Sidebar({
             </div>
           </div>
         </div>
+
         {/* Scrollable Repository Sections - With Relative Wrapper for Fade Effects */}
         <div className="relative flex-1 overflow-hidden">
           {/* Top fade effect */}
@@ -123,6 +139,7 @@ export default function Sidebar({
             className="absolute top-0 left-0 h-8 bg-gradient-to-b from-card to-transparent pointer-events-none z-10"
             style={{ right: "10px" }}
           ></div>
+
           {/* Actual scrollable content */}
           <div className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-background px-5 pb-5">
             {/* Starred Repositories */}
@@ -168,6 +185,7 @@ export default function Sidebar({
                 </>
               )}
             </div>
+
             {/* Recent Repositories */}
             <div className={`${mounted ? "animate-fade-in" : "opacity-0"}`}>
               <div className="flex items-center mb-3">
@@ -217,6 +235,7 @@ export default function Sidebar({
               </ul>
             </div>
           </div>
+
           {/* Bottom fade effect */}
           <div
             className="absolute bottom-0 left-0 h-12 bg-gradient-to-t from-card to-transparent pointer-events-none"
