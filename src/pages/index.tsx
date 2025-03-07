@@ -84,7 +84,7 @@ export default function LandingPage() {
           </div>
 
           {/* GitHub Integration Visualization */}
-          <div className="lg:w-1/2 relative">
+          <div className="lg:w-1/2 relative hidden md:block">
             <div className="bg-card rounded-xl shadow-2xl overflow-hidden border border-border transform transition-all duration-500 hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1">
               <div className="bg-background px-4 py-2 flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-red-400"></div>
@@ -111,7 +111,6 @@ export default function LandingPage() {
                     GitHub
                   </div>
                 </div>
-
                 {/* Extractify Logo */}
                 <div
                   className="absolute transition-all duration-700 ease-in-out opacity-100 scale-100"
@@ -138,7 +137,6 @@ export default function LandingPage() {
                     Extractify
                   </div>
                 </div>
-
                 {/* Connection Lines with continuous animation */}
                 <svg
                   className="absolute inset-0 w-full h-full"
@@ -161,7 +159,6 @@ export default function LandingPage() {
                       repeatCount="indefinite"
                     />
                   </path>
-
                   {/* Extractify to User Line */}
                   <path
                     d="M300 110 L200 200 L100 110"
@@ -177,7 +174,6 @@ export default function LandingPage() {
                       repeatCount="indefinite"
                     />
                   </path>
-
                   {/* Gradient for the flowing line */}
                   <defs>
                     <linearGradient
@@ -207,7 +203,6 @@ export default function LandingPage() {
                     </linearGradient>
                   </defs>
                 </svg>
-
                 {/* User Icon - always visible */}
                 <div className="absolute left-1/2 transform -translate-x-1/2 transition-all duration-700 ease-in-out bottom-16 opacity-100 scale-100">
                   <div className="bg-accent rounded-full p-3 mx-auto w-12 h-12 flex items-center justify-center">
@@ -228,7 +223,6 @@ export default function LandingPage() {
                     You
                   </div>
                 </div>
-
                 {/* Single description text instead of changing descriptions */}
                 <div className="absolute bottom-10 left-0 right-0 text-center">
                   <p className="text-sm text-gray-300">
