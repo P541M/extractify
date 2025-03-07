@@ -54,7 +54,6 @@ export default function ExtractPage() {
   const [selectedBranch, setSelectedBranch] = useState<string>("");
   const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
   const [isAccessError, setIsAccessError] = useState(false);
-
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -80,7 +79,6 @@ export default function ExtractPage() {
         console.log("No GitHub user ID found in session", session);
         return;
       }
-
       try {
         console.log("Fetching repos for GitHub user ID:", session.githubUserId);
         const userReposCollectionName = getUserRepositoriesCollection(
@@ -89,11 +87,9 @@ export default function ExtractPage() {
         console.log("Collection name:", userReposCollectionName);
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const q = query(userReposCollectionRef, orderBy("createdAt", "desc"));
-
         console.log("Executing Firestore query...");
         const querySnapshot = await getDocs(q);
         console.log("Query complete. Documents found:", querySnapshot.size);
-
         const starred: Array<{
           id: string;
           url: string;
@@ -101,7 +97,6 @@ export default function ExtractPage() {
           order?: number;
           hasAccess?: boolean;
         }> = [];
-
         const recent: Array<{
           id: string;
           url: string;
@@ -109,7 +104,6 @@ export default function ExtractPage() {
           order?: number;
           hasAccess?: boolean;
         }> = [];
-
         querySnapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const repo = {
@@ -119,7 +113,6 @@ export default function ExtractPage() {
             order: data.order || 0,
             hasAccess: data.hasAccess !== undefined ? data.hasAccess : true, // Default to true if not specified
           };
-
           console.log("Found repository:", repo);
           if (repo.starred) {
             starred.push(repo);
@@ -127,11 +120,9 @@ export default function ExtractPage() {
             recent.push(repo);
           }
         });
-
         starred.sort((a, b) => (a.order || 0) - (b.order || 0));
         setStarredRepos(starred);
         setRepoList(recent);
-
         console.log("Repositories loaded:", {
           starred: starred.length,
           recent: recent.length,
@@ -143,7 +134,6 @@ export default function ExtractPage() {
         );
       }
     };
-
     if (session?.githubUserId) fetchRepos();
   }, [session]);
 
@@ -157,7 +147,6 @@ export default function ExtractPage() {
       </div>
     );
   }
-
   if (!session) return null;
 
   const updateSetting = (
@@ -211,11 +200,9 @@ export default function ExtractPage() {
     setResultText("");
     setProgress(0);
     setIsAccessError(false); // Reset access error state
-
     const progressInterval = setInterval(() => {
       setProgress((prev) => Math.min(prev + Math.random() * 5, 90));
     }, 300);
-
     try {
       const res = await fetch("/api/extract", {
         method: "POST",
@@ -227,25 +214,19 @@ export default function ExtractPage() {
         }),
         credentials: "include",
       });
-
       clearInterval(progressInterval);
       setProgress(100);
-
       const data = await res.json();
-
       if (!res.ok || data.error) {
         setError(data.error || "Failed to fetch repository code.");
-
         // Check if this is an access error
         if (data.hasAccess === false) {
           setIsAccessError(true);
         }
-
         // Update the repo access status if provided in response
         if (data.hasAccess === false && session?.githubUserId) {
           const repoInStarred = starredRepos.find((repo) => repo.url === url);
           const repoInRecent = repoList.find((repo) => repo.url === url);
-
           if (repoInStarred) {
             const userReposCollectionName = getUserRepositoriesCollection(
               session.githubUserId
@@ -256,7 +237,6 @@ export default function ExtractPage() {
                 hasAccess: false,
               }
             );
-
             setStarredRepos((prevRepos) =>
               prevRepos.map((repo) =>
                 repo.url === url ? { ...repo, hasAccess: false } : repo
@@ -269,7 +249,6 @@ export default function ExtractPage() {
             await updateDoc(doc(db, userReposCollectionName, repoInRecent.id), {
               hasAccess: false,
             });
-
             setRepoList((prevRepos) =>
               prevRepos.map((repo) =>
                 repo.url === url ? { ...repo, hasAccess: false } : repo
@@ -279,12 +258,10 @@ export default function ExtractPage() {
         }
       } else {
         setResultText(data.code);
-
         // If we successfully accessed the repo, make sure its status reflects that
         if (data.hasAccess === true && session?.githubUserId) {
           const repoInStarred = starredRepos.find((repo) => repo.url === url);
           const repoInRecent = repoList.find((repo) => repo.url === url);
-
           if (repoInStarred && repoInStarred.hasAccess === false) {
             const userReposCollectionName = getUserRepositoriesCollection(
               session.githubUserId
@@ -295,7 +272,6 @@ export default function ExtractPage() {
                 hasAccess: true,
               }
             );
-
             setStarredRepos((prevRepos) =>
               prevRepos.map((repo) =>
                 repo.url === url ? { ...repo, hasAccess: true } : repo
@@ -308,7 +284,6 @@ export default function ExtractPage() {
             await updateDoc(doc(db, userReposCollectionName, repoInRecent.id), {
               hasAccess: true,
             });
-
             setRepoList((prevRepos) =>
               prevRepos.map((repo) =>
                 repo.url === url ? { ...repo, hasAccess: true } : repo
@@ -321,7 +296,6 @@ export default function ExtractPage() {
       setProgress(0);
       setError(err instanceof Error ? err.message : "Something went wrong");
     }
-
     setTimeout(() => setLoading(false), 500);
   };
 
@@ -334,10 +308,8 @@ export default function ExtractPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!repoUrl || !session?.githubUserId) return;
-
     const existsInRecent = repoList.find((repo) => repo.url === repoUrl);
     const existsInStarred = starredRepos.find((repo) => repo.url === repoUrl);
-
     if (existsInRecent || existsInStarred) {
       await handleRepoClick(repoUrl, true);
     } else {
@@ -347,12 +319,10 @@ export default function ExtractPage() {
         session.githubUserId
       );
       const userReposCollectionRef = collection(db, userReposCollectionName);
-
       try {
         console.log("Adding new repository:", repoUrl);
         console.log("GitHub User ID:", session.githubUserId);
         console.log("Collection name:", userReposCollectionName);
-
         const newRepo = {
           url: repoUrl,
           createdAt: new Date(),
@@ -360,12 +330,9 @@ export default function ExtractPage() {
           githubUserId: session.githubUserId,
           hasAccess: hasAccess, // Set based on immediate access check
         };
-
         console.log("Document data:", newRepo);
-
         const docRef = await addDoc(userReposCollectionRef, newRepo);
         console.log("Document added with ID:", docRef.id);
-
         setRepoList((prev) => [
           {
             id: docRef.id,
@@ -376,7 +343,6 @@ export default function ExtractPage() {
           },
           ...prev,
         ]);
-
         console.log("Repository added to state");
       } catch (err: unknown) {
         console.error(
@@ -384,7 +350,6 @@ export default function ExtractPage() {
           err instanceof Error ? err.message : String(err)
         );
       }
-
       if (hasAccess && autoExtract) {
         await fetchRepo(repoUrl);
         await fetchBranches(repoUrl);
@@ -399,22 +364,17 @@ export default function ExtractPage() {
     const clickedRepo =
       repoList.find((repo) => repo.url === url) ||
       starredRepos.find((repo) => repo.url === url);
-
     if (!clickedRepo || !session.githubUserId) return;
-
     if (!clickedRepo.starred) {
       const updatedRecent = repoList.filter((repo) => repo.url !== url);
       setRepoList([clickedRepo, ...updatedRecent]);
-
       try {
         console.log("Updating repository order:", url);
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
-
         console.log("Deleting document:", clickedRepo.id);
         await deleteDoc(doc(db, userReposCollectionName, clickedRepo.id));
-
         console.log("Adding document with updated timestamp");
         const userReposCollectionRef = collection(db, userReposCollectionName);
         const docRef = await addDoc(userReposCollectionRef, {
@@ -425,7 +385,6 @@ export default function ExtractPage() {
           githubUserId: session.githubUserId,
           hasAccess: clickedRepo.hasAccess, // Preserve access status
         });
-
         console.log("New document ID:", docRef.id);
         clickedRepo.id = docRef.id;
         setRepoList((prev) => [
@@ -439,7 +398,6 @@ export default function ExtractPage() {
         );
       }
     }
-
     setRepoUrl(url);
     if (forceFetch || autoExtract) {
       await fetchRepo(url);
@@ -455,22 +413,18 @@ export default function ExtractPage() {
   ) => {
     e.stopPropagation();
     if (!session.githubUserId) return;
-
     try {
       console.log("Deleting repository:", repoId);
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
-
       await deleteDoc(doc(db, userReposCollectionName, repoId));
       console.log("Repository deleted from Firestore");
-
       if (starred) {
         setStarredRepos((prev) => prev.filter((repo) => repo.id !== repoId));
       } else {
         setRepoList((prev) => prev.filter((repo) => repo.id !== repoId));
       }
-
       setRepoUrl("");
       setOpenMenuRepoId(null);
     } catch (err: unknown) {
@@ -493,19 +447,15 @@ export default function ExtractPage() {
     newStarred: boolean
   ) => {
     if (!session.githubUserId) return;
-
     try {
       console.log("Toggling star status:", { repo, newStarred });
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
-
       await updateDoc(doc(db, userReposCollectionName, repo.id), {
         starred: newStarred,
       });
-
       console.log("Star status updated in Firestore");
-
       if (newStarred) {
         setRepoList((prev) => prev.filter((r) => r.id !== repo.id));
         setStarredRepos((prev) => [...prev, { ...repo, starred: true }]);
@@ -513,7 +463,6 @@ export default function ExtractPage() {
         setStarredRepos((prev) => prev.filter((r) => r.id !== repo.id));
         setRepoList((prev) => [{ ...repo, starred: false }, ...prev]);
       }
-
       setOpenMenuRepoId(null);
     } catch (err: unknown) {
       console.error(
@@ -533,21 +482,17 @@ export default function ExtractPage() {
 
   const handleDrop = async (index: number) => {
     if (draggedRepoIndex === null || !session.githubUserId) return;
-
     const updated = Array.from(starredRepos);
     const [moved] = updated.splice(draggedRepoIndex, 1);
     updated.splice(index, 0, moved);
-
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
-
     updated.forEach(async (repo, idx) => {
       try {
         console.log("Updating repo order:", { repo, newOrder: idx });
         const userReposCollectionName = getUserRepositoriesCollection(
           session.githubUserId
         );
-
         await updateDoc(doc(db, userReposCollectionName, repo.id), {
           order: idx,
         });
@@ -581,6 +526,14 @@ export default function ExtractPage() {
     setIsAccessError(false); // Clear access error state
     setResultText("");
     setBranches([]);
+  };
+
+  // Function to handle local file uploads
+  const handleLocalResultText = (resultText: string) => {
+    setResultText(resultText);
+    // Optional: add to the success message
+    setSuccessMessage("Local files extracted successfully!");
+    setTimeout(() => setSuccessMessage(""), 3000);
   };
 
   return (
@@ -649,7 +602,12 @@ export default function ExtractPage() {
           selectedBranch={selectedBranch}
           onBranchSelect={handleBranchSelect}
           loadingBranches={loadingBranches}
-          hasAccessError={isAccessError} // Pass the access error state
+          hasAccessError={isAccessError}
+          // New props for local file handling
+          setLoading={setLoading}
+          setProgress={setProgress}
+          setResultText={handleLocalResultText}
+          setError={setError}
         />
       </div>
     </div>

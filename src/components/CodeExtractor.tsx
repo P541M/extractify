@@ -1,7 +1,10 @@
+// src/components/CodeExtractor.tsx (updated)
 import React, { useState, useEffect } from "react";
 import BranchSelector from "./BranchSelector";
 import AccessDeniedError from "./AccessDeniedError";
+import LocalFileUploader from "./LocalFileUploader";
 import { useSession } from "next-auth/react";
+
 interface CodeExtractorProps {
   repoUrl: string;
   setRepoUrl: (url: string) => void;
@@ -18,7 +21,13 @@ interface CodeExtractorProps {
   onBranchSelect: (branch: string) => void;
   loadingBranches: boolean;
   hasAccessError?: boolean;
+  // New props for local file handling
+  setLoading: (loading: boolean) => void;
+  setProgress: (progress: number) => void;
+  setResultText: (text: string) => void;
+  setError: (error: string) => void;
 }
+
 export default function CodeExtractor({
   repoUrl,
   setRepoUrl,
@@ -35,18 +44,27 @@ export default function CodeExtractor({
   onBranchSelect,
   loadingBranches,
   hasAccessError = false,
+  // New props for local file handling
+  setLoading,
+  setProgress,
+  setResultText,
+  setError,
 }: CodeExtractorProps) {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState<"github" | "local">("github");
   const { data: session } = useSession();
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
   const handleCopyWithFeedback = async () => {
     await handleCopy();
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
   const getRepoName = (url: string) => {
     const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
     if (match && match[1] && match[2]) {
@@ -55,6 +73,7 @@ export default function CodeExtractor({
     }
     return "Unknown Repo";
   };
+
   // Function to get time-based greeting
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
@@ -62,6 +81,12 @@ export default function CodeExtractor({
     if (hour < 18) return "Good afternoon";
     return "Good evening";
   };
+
+  const handleLocalFilesProcessed = (resultText: string) => {
+    setResultText(resultText);
+    setError("");
+  };
+
   return (
     <main
       className={`flex-1 flex flex-col items-center justify-center min-h-screen p-8 ${
@@ -76,78 +101,73 @@ export default function CodeExtractor({
               {session?.user?.name ? `, ${session.user.name}` : ""}!
             </h1>
             <p className="text-gray-300 text-center">
-              Let&apos;s extract some code! What GitHub repository would you
-              like to explore today?
+              Let&apos;s extract some code! Choose your extraction method below.
             </p>
           </div>
         )}
+
+        {/* Tab selector */}
         <div className="w-full bg-card rounded-xl p-6 shadow-lg border border-border mb-8">
-          <form onSubmit={handleSubmit} className="w-full">
-            <label
-              htmlFor="repoUrl"
-              className="block text-sm font-medium text-gray-300 mb-2"
+          <div className="flex space-x-1 bg-background rounded-lg p-1 mb-4">
+            <button
+              onClick={() => setActiveTab("github")}
+              className={`flex items-center justify-center flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "github"
+                  ? "bg-primary text-white"
+                  : "text-gray-400 hover:text-white hover:bg-border"
+              }`}
             >
-              GitHub Repository URL
-            </label>
-            <div className="flex gap-3">
-              <div className="flex-1 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg
-                    className="h-5 w-5 text-gray-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                  </svg>
-                </div>
-                <input
-                  id="repoUrl"
-                  type="text"
-                  value={repoUrl}
-                  onChange={(e) => setRepoUrl(e.target.value)}
-                  className="w-full p-3 pl-10 bg-background text-foreground rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                  placeholder="e.g., https://github.com/user/repo"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all disabled:opacity-70 flex items-center gap-2 font-medium shadow-md hover:shadow-primary/20 disabled:cursor-not-allowed"
+              <svg
+                className="h-4 w-4 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                {loading ? (
-                  <>
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+              GitHub Repository
+            </button>
+            <button
+              onClick={() => setActiveTab("local")}
+              className={`flex items-center justify-center flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "local"
+                  ? "bg-secondary text-white"
+                  : "text-gray-400 hover:text-white hover:bg-border"
+              }`}
+            >
+              <svg
+                className="h-4 w-4 mr-2"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M20 11V13C20 17.4183 16.4183 21 12 21C7.58172 21 4 17.4183 4 13V11M12 3V17M12 3L7 8M12 3L17 8"></path>
+              </svg>
+              Local Project
+            </button>
+          </div>
+
+          {activeTab === "github" ? (
+            <form onSubmit={handleSubmit} className="w-full">
+              <label
+                htmlFor="repoUrl"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                GitHub Repository URL
+              </label>
+              <div className="flex gap-3">
+                <div className="flex-1 relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
-                    <span>Extracting</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="h-5 w-5"
+                      className="h-5 w-5 text-gray-400"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 24 24"
                       fill="none"
@@ -156,20 +176,88 @@ export default function CodeExtractor({
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
-                      <polyline points="9 10 4 15 9 20"></polyline>
-                      <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                      <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
                     </svg>
-                    <span>Extract Code</span>
-                  </>
-                )}
-              </button>
+                  </div>
+                  <input
+                    id="repoUrl"
+                    type="text"
+                    value={repoUrl}
+                    onChange={(e) => setRepoUrl(e.target.value)}
+                    className="w-full p-3 pl-10 bg-background text-foreground rounded-lg border border-border focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                    placeholder="e.g., https://github.com/user/repo"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all disabled:opacity-70 flex items-center gap-2 font-medium shadow-md hover:shadow-primary/20 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      <span>Extracting</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 10 4 15 9 20"></polyline>
+                        <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                      </svg>
+                      <span>Extract Code</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="mt-2 text-sm text-gray-400">
+                Extract code from any repository you have access to using your
+                GitHub account.
+              </p>
+            </form>
+          ) : (
+            <div className="w-full">
+              <LocalFileUploader
+                onFilesProcessed={handleLocalFilesProcessed}
+                setIsLoading={setLoading}
+                setProgress={setProgress}
+              />
+              <p className="mt-2 text-sm text-gray-400">
+                Extract code from local folders on your computer. Files are
+                processed in your browser and not uploaded to our servers.
+              </p>
             </div>
-            <p className="mt-2 text-sm text-gray-400">
-              Extract code from any repository you have access to using your
-              GitHub account.
-            </p>
-          </form>
+          )}
         </div>
+
         {loading && (
           <div className="w-full mb-8 animate-fade-in bg-card rounded-xl p-6 border border-border">
             <div className="flex items-center justify-between mb-2">
@@ -206,19 +294,25 @@ export default function CodeExtractor({
                 ></path>
               </svg>
               {progress < 30
-                ? "Connecting to GitHub repository..."
+                ? activeTab === "github"
+                  ? "Connecting to GitHub repository..."
+                  : "Reading folder structure..."
                 : progress < 60
-                ? "Fetching repository files..."
+                ? activeTab === "github"
+                  ? "Fetching repository files..."
+                  : "Processing files..."
                 : progress < 90
                 ? "Processing code files..."
                 : "Finalizing extraction..."}
             </p>
           </div>
         )}
+
         {/* If it's an access error, show the special AccessDeniedError component */}
         {error && hasAccessError && (
           <AccessDeniedError repoUrl={repoUrl} errorMessage={error} />
         )}
+
         {/* For other types of errors, show the standard error display */}
         {error && !hasAccessError && (
           <div className="w-full mb-8 animate-fade-in bg-red-900/20 rounded-xl p-6 border border-red-700/50">
@@ -246,15 +340,20 @@ export default function CodeExtractor({
             </div>
           </div>
         )}
-        {/* Branch selector component */}
-        {branches.length > 1 && resultText && !loading && (
-          <BranchSelector
-            branches={branches}
-            selectedBranch={selectedBranch}
-            onBranchSelect={onBranchSelect}
-            isLoading={loadingBranches}
-          />
-        )}
+
+        {/* Branch selector component - only shown for GitHub repos */}
+        {branches.length > 1 &&
+          resultText &&
+          !loading &&
+          activeTab === "github" && (
+            <BranchSelector
+              branches={branches}
+              selectedBranch={selectedBranch}
+              onBranchSelect={onBranchSelect}
+              isLoading={loadingBranches}
+            />
+          )}
+
         {resultText && (
           <div className="w-full animate-fade-in bg-card rounded-xl shadow-xl border border-border overflow-hidden">
             <div className="bg-background px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-border">
@@ -273,8 +372,14 @@ export default function CodeExtractor({
                     <polyline points="16 18 22 12 16 6"></polyline>
                     <polyline points="8 6 2 12 8 18"></polyline>
                   </svg>
-                  Extracted Code ({getRepoName(repoUrl)}
-                  {selectedBranch && ` - ${selectedBranch} branch`})
+                  {activeTab === "github" ? (
+                    <>
+                      Extracted Code ({getRepoName(repoUrl)}
+                      {selectedBranch && ` - ${selectedBranch} branch`})
+                    </>
+                  ) : (
+                    <>Extracted Code (Local Project)</>
+                  )}
                 </h2>
                 {successMessage && (
                   <p className="text-sm text-green-400 mt-1 animate-fade-in">
@@ -364,8 +469,9 @@ export default function CodeExtractor({
             </div>
             <div className="bg-background/50 px-6 py-3 border-t border-border">
               <p className="text-xs text-gray-400">
-                This extracted code may be subject to the original
-                repository&apos;s license and copyright terms.
+                {activeTab === "github"
+                  ? "This extracted code may be subject to the original repository's license and copyright terms."
+                  : "This extracted code is from your local files and was processed entirely in your browser."}
               </p>
             </div>
           </div>
