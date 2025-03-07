@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-card py-8 border-t border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4 lg:gap-8">
           {/* Logo and About Section */}
           <div className="space-y-4 md:col-span-1">
             <Link

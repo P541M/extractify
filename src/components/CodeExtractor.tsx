@@ -282,12 +282,12 @@ export default function CodeExtractor({
                   </p>
                 )}
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={handleCopyWithFeedback}
                   className={`${
                     copied ? "bg-green-600" : "bg-card-hover hover:bg-border"
-                  } text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center`}
+                  } text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center justify-center`}
                 >
                   {copied ? (
                     <>
@@ -337,7 +337,7 @@ export default function CodeExtractor({
                   )}`}
                   download="extracted-code.txt"
                   onClick={handleDownload}
-                  className="bg-card-hover hover:bg-border text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center"
+                  className="bg-card-hover hover:bg-border text-white px-4 py-2 rounded-lg transition-all text-sm font-medium flex items-center justify-center"
                 >
                   <svg
                     className="h-4 w-4 mr-1.5"

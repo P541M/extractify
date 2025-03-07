@@ -179,3 +179,41 @@ body {
   border-style: solid;
   border-color: transparent transparent var(--card) transparent;
 }
+
+/* Additional responsive adjustments */
+@media (max-width: 360px) {
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent,
+  .btn-outline {
+    @apply px-3 py-2 text-sm;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  .card {
+    @apply p-4;
+  }
+}
+
+/* Improve mobile menu positioning */
+@media (max-width: 640px) {
+  .mobile-menu-container {
+    width: calc(100% - 2rem);
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+/* Make repository items more readable on small screens */
+@media (max-width: 480px) {
+  .repo-item {
+    max-width: 220px;
+  }
+}

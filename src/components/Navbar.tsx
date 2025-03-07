@@ -204,13 +204,13 @@ export default function Navbar() {
         {/* Mobile menu - fixed to address the thick navbar issue */}
         <div
           ref={menuRef}
-          className={`md:hidden transition-all duration-300 ease-in-out absolute left-0 right-0 px-4 transform ${
+          className={`md:hidden transition-all duration-300 ease-in-out fixed inset-x-0 top-16 z-50 ${
             isMenuOpen
               ? "opacity-100 translate-y-0 pointer-events-auto"
-              : "opacity-0 -translate-y-4 pointer-events-none h-0 overflow-hidden"
+              : "opacity-0 -translate-y-4 pointer-events-none"
           }`}
         >
-          <div className="px-4 pt-4 pb-5 space-y-3 bg-card-hover rounded-xl mt-2 border border-border shadow-xl animate-fade-in">
+          <div className="px-4 pt-4 pb-5 mx-4 space-y-3 bg-card-hover rounded-xl mt-2 border border-border shadow-xl animate-fade-in">
             <Link
               href="/about"
               className={`flex items-center text-gray-300 hover:text-primary px-3 py-2.5 rounded-lg text-base font-medium transition-colors hover:bg-background ${
@@ -293,7 +293,7 @@ export default function Navbar() {
               <div className="pt-2 mt-2 border-t border-border">
                 <Link
                   href="/login"
-                  className="flex items-center bg-gradient-to-r from-primary to-secondary text-white px-3 py-2.5 rounded-lg text-base font-medium hover:from-primary/90 hover:to-secondary/90 transition-colors"
+                  className="flex items-center justify-center bg-gradient-to-r from-primary to-secondary text-white px-3 py-2.5 rounded-lg text-base font-medium hover:from-primary/90 hover:to-secondary/90 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <svg
