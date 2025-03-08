@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import Head from "next/head";
 
 export default function TermsPage() {
   const [mounted, setMounted] = useState(false);
@@ -12,6 +13,9 @@ export default function TermsPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Head>
+        <title>Extractify - Terms of Service</title>
+      </Head>
       {/* Navbar */}
       <Navbar />
       {/* Terms Content */}

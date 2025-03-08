@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import Head from "next/head";
 
 export default function PrivacyPage() {
   const [mounted, setMounted] = useState(false);
@@ -12,6 +13,9 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Head>
+        <title>Extractify - Privacy Policy</title>
+      </Head>
       {/* Navbar */}
       <Navbar />
       {/* Privacy Content */}

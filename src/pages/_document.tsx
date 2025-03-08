@@ -1,9 +1,13 @@
 import { Html, Head, Main, NextScript } from "next/document";
-
 export default function Document() {
   return (
     <Html lang="en">
       <Head>
+        <title>Extractify</title>
+        <meta
+          name="description"
+          content="Extract code from GitHub repositories and local projects"
+        />
         <link rel="icon" href="/favicon.ico" />
         <link
           rel="icon"

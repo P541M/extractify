@@ -1,5 +1,6 @@
 // src/pages/extract.tsx
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { db, getUserRepositoriesCollection } from "../firebase/firebase";
@@ -538,6 +539,9 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen bg-background flex relative">
+      <Head>
+        <title>Extractify - Code Extraction Tool</title>
+      </Head>
       <ProfileMenu
         // @ts-expect-error Session type incompatibility
         session={session}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import Head from "next/head";
 
 export default function AboutPage() {
   const [mounted, setMounted] = useState(false);
@@ -13,6 +14,9 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Head>
+        <title>Extractify - About Us</title>
+      </Head>
       {/* Navbar */}
       <Navbar />
 

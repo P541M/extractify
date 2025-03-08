@@ -2,6 +2,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Head from "next/head";
 import Image from "next/image";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -31,6 +32,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <Head>
+        <title>Extractify - Sign In</title>
+      </Head>
       {/* Navbar */}
       <Navbar />
 
