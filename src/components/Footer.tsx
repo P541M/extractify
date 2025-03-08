@@ -28,8 +28,8 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-400 text-sm">
-              Extract code from GitHub repositories with proper formatting for
-              seamless AI analysis.
+              Extract code from GitHub repositories and local folders with
+              proper formatting for seamless AI analysis.
             </p>
           </div>
 

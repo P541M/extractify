@@ -1,3 +1,4 @@
+// src/pages/about.tsx
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
@@ -37,9 +38,9 @@ export default function AboutPage() {
                 </p>
                 <p className="text-lg leading-relaxed">
                   Our platform streamlines your workflow by automatically
-                  extracting code from GitHub repositories with proper
-                  formatting, including file names and paths, ready to be
-                  analyzed by AI tools.
+                  extracting code from GitHub repositories or local project
+                  folders with proper formatting, including file names and
+                  paths, ready to be analyzed by AI tools.
                 </p>
               </div>
             </div>
@@ -91,15 +92,13 @@ export default function AboutPage() {
                   How It Works
                 </h2>
                 <p className="text-gray-300">
-                  Connect with GitHub, select a repository, and with a single
-                  click, Extractify formats your code with proper file names and
-                  paths—perfect for pasting into AI assistants to get
+                  Connect with GitHub or upload a local folder, and with a
+                  single click, Extractify formats your code with proper file
+                  names and paths—perfect for pasting into AI assistants to get
                   comprehensive help.
                 </p>
               </div>
             </div>
-
-            {/* Rest of the content remains the same */}
             <div className="bg-gradient-to-r from-background to-card-hover p-8 rounded-xl border border-border mb-10">
               <h2 className="text-2xl font-semibold text-white mb-6">
                 Key Features
@@ -154,8 +153,8 @@ export default function AboutPage() {
                       One-Click Extraction
                     </h3>
                     <p className="text-gray-300">
-                      Extract all essential files from your repository with
-                      proper structure in seconds.
+                      Extract all essential files from your repository or local
+                      folder with proper structure in seconds.
                     </p>
                   </div>
                 </div>
@@ -164,25 +163,24 @@ export default function AboutPage() {
                     <svg
                       className="w-5 h-5 text-primary"
                       xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
                       viewBox="0 0 24 24"
+                      fill="none"
                       stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
-                      />
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                     </svg>
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-white mb-2">
-                      Repository History
+                      Local Processing
                     </h3>
                     <p className="text-gray-300">
-                      Save and organize your frequently used repositories for
-                      quick access.
+                      Local files are processed entirely in your browser with no
+                      data sent to our servers, ensuring your code remains
+                      private.
                     </p>
                   </div>
                 </div>
@@ -220,9 +218,9 @@ export default function AboutPage() {
                 Get Started Today
               </h2>
               <p className="text-gray-300 mb-6">
-                Experience the ease of extracting code from repositories for AI
-                analysis. Save time and focus on what matters most—building and
-                improving your projects.
+                Experience the ease of extracting code from repositories or your
+                local projects for AI analysis. Save time and focus on what
+                matters most—building and improving your projects.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
@@ -242,7 +240,6 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
-
       {/* Footer */}
       <Footer />
     </div>

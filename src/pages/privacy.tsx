@@ -1,3 +1,4 @@
+// src/pages/privacy.tsx
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -13,7 +14,6 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
       <Navbar />
-
       {/* Privacy Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
                 Privacy Policy
               </h1>
               <p className="text-lg text-gray-300 mb-8">
-                Last Updated: March 4, 2025
+                Last Updated: March 7, 2025
               </p>
               <div className="space-y-5 text-gray-300">
                 <p className="text-lg leading-relaxed">
@@ -38,7 +38,6 @@ export default function PrivacyPage() {
                 </p>
               </div>
             </div>
-
             <div className="space-y-10">
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
@@ -98,6 +97,18 @@ export default function PrivacyPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-white mb-2">
+                      Local File Data
+                    </h3>
+                    <p className="text-gray-300">
+                      When you use our local file extraction feature, all
+                      processing is performed entirely within your browser. We
+                      do not receive, transmit, or store any of your local file
+                      content on our servers. The content of your local files
+                      never leaves your device.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-2">
                       Usage Information
                     </h3>
                     <p className="text-gray-300">
@@ -109,7 +120,6 @@ export default function PrivacyPage() {
                   </div>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -151,9 +161,14 @@ export default function PrivacyPage() {
                       Communicate updates and information about our service
                     </li>
                   </ul>
+                  <p className="text-gray-300 mt-3">
+                    <strong>Regarding Local Files</strong>: Since all local file
+                    processing occurs entirely within your browser, we do not
+                    collect, process, or store any content from your local files
+                    on our servers.
+                  </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -191,6 +206,10 @@ export default function PrivacyPage() {
                       systems
                     </li>
                     <li>
+                      Local file processing happens entirely in your browser,
+                      ensuring your code never leaves your device
+                    </li>
+                    <li>
                       Regular security reviews and updates to maintain best
                       practices
                     </li>
@@ -206,7 +225,6 @@ export default function PrivacyPage() {
                   </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -241,9 +259,15 @@ export default function PrivacyPage() {
                     </span>
                     .
                   </p>
+                  <p className="text-gray-300 mt-4">
+                    <strong>Local File Data</strong>: Since all local file
+                    processing is performed client-side in your browser, no
+                    local file data is retained on our servers. The processed
+                    content exists only temporarily in your browser's memory and
+                    is cleared when you close the application or navigate away.
+                  </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -287,7 +311,6 @@ export default function PrivacyPage() {
                   </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -320,7 +343,6 @@ export default function PrivacyPage() {
                   </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -359,7 +381,6 @@ export default function PrivacyPage() {
           </div>
         </div>
       </main>
-
       {/* Footer */}
       <Footer />
     </div>

@@ -1,3 +1,4 @@
+// src/pages/terms.tsx
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
@@ -13,7 +14,6 @@ export default function TermsPage() {
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Navbar */}
       <Navbar />
-
       {/* Terms Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -27,7 +27,7 @@ export default function TermsPage() {
                 Terms of Service
               </h1>
               <p className="text-lg text-gray-300 mb-8">
-                Last Updated: March 4, 2025
+                Last Updated: March 7, 2025
               </p>
               <div className="space-y-5 text-gray-300">
                 <p className="text-lg leading-relaxed">
@@ -37,7 +37,6 @@ export default function TermsPage() {
                 </p>
               </div>
             </div>
-
             <div className="space-y-10">
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
@@ -64,18 +63,18 @@ export default function TermsPage() {
                 <div className="ml-14 space-y-4">
                   <p className="text-gray-300">
                     Extractify is a tool that helps developers extract code from
-                    GitHub repositories with proper formatting for AI analysis.
-                    Our service allows you to:
+                    GitHub repositories and local project folders with proper
+                    formatting for AI analysis. Our service allows you to:
                   </p>
                   <ul className="list-disc pl-6 space-y-2 text-gray-300">
                     <li>Connect to GitHub repositories you have access to</li>
+                    <li>Upload and process local project folders</li>
                     <li>Extract code files with proper file names and paths</li>
                     <li>Format code for easy sharing with AI assistants</li>
                     <li>Maintain a history of repositories you've accessed</li>
                   </ul>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -124,6 +123,18 @@ export default function TermsPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-white mb-2">
+                      Local File Usage
+                    </h3>
+                    <p className="text-gray-300">
+                      When using our local file extraction feature, all file
+                      processing is performed within your browser. We do not
+                      transmit, store, or access your local files on our
+                      servers. You maintain full ownership and control of all
+                      local files you process through our service.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-2">
                       Account Termination
                     </h3>
                     <p className="text-gray-300">
@@ -135,7 +146,6 @@ export default function TermsPage() {
                   </div>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -174,6 +184,10 @@ export default function TermsPage() {
                       of applicable licenses
                     </li>
                     <li>
+                      Upload files containing malicious code, viruses, or other
+                      harmful content
+                    </li>
+                    <li>
                       Attempt to probe, scan, or test the vulnerability of our
                       systems
                     </li>
@@ -192,7 +206,6 @@ export default function TermsPage() {
                   </ul>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -224,7 +237,9 @@ export default function TermsPage() {
                       You retain all rights to the code you extract through our
                       service. Extractify does not claim ownership of any
                       content that you access, extract, or create using our
-                      service.
+                      service. For local file extraction, your files remain
+                      entirely on your device and are never transferred to our
+                      servers.
                     </p>
                   </div>
                   <div>
@@ -253,7 +268,57 @@ export default function TermsPage() {
                   </div>
                 </div>
               </section>
-
+              <section className="bg-background/50 p-6 rounded-xl border border-border">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
+                    <svg
+                      className="w-5 h-5 text-primary"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-semibold text-white">
+                    Privacy and Data Processing
+                  </h2>
+                </div>
+                <div className="ml-14 space-y-4">
+                  <p className="text-gray-300">
+                    We care about the privacy of your code and data:
+                  </p>
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-2">
+                      GitHub Repository Code
+                    </h3>
+                    <p className="text-gray-300">
+                      When extracting code from GitHub repositories, we process
+                      the code temporarily on our servers to provide the
+                      extraction service. We do not store the extracted code
+                      content permanently.
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-white mb-2">
+                      Local File Processing
+                    </h3>
+                    <p className="text-gray-300">
+                      When you use the local file extraction feature, all
+                      processing occurs within your web browser. Your files and
+                      their contents are never uploaded to our servers. The
+                      extraction process happens entirely on your device,
+                      ensuring complete privacy of your code.
+                    </p>
+                  </div>
+                </div>
+              </section>
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -315,7 +380,6 @@ export default function TermsPage() {
                   </div>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-secondary/20 rounded-lg flex items-center justify-center mr-4">
@@ -348,7 +412,6 @@ export default function TermsPage() {
                   </p>
                 </div>
               </section>
-
               <section className="bg-background/50 p-6 rounded-xl border border-border">
                 <div className="flex items-center mb-4">
                   <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center mr-4">
@@ -387,7 +450,6 @@ export default function TermsPage() {
           </div>
         </div>
       </main>
-
       {/* Footer */}
       <Footer />
     </div>
