@@ -23,6 +23,12 @@ export function parseRepoUrl(url: string): { owner: string; repo: string } {
   throw new Error("Invalid repository URL");
 }
 
+// Define a type for GitHub API errors
+interface GitHubApiError {
+  status?: number;
+  message?: string;
+}
+
 /**
  * Checks if the user has access to a GitHub repository.
  * @param repoUrl - The repository URL to check.
@@ -39,9 +45,13 @@ export async function checkRepoAccess(
   try {
     await octokit.repos.get({ owner, repo });
     return true;
-  } catch (error: any) {
-    if (error.status === 404 || error.status === 403) {
-      return false;
+  } catch (error) {
+    // Type guard to check if error has the right shape
+    if (typeof error === "object" && error !== null) {
+      const githubError = error as GitHubApiError;
+      if (githubError.status === 404 || githubError.status === 403) {
+        return false;
+      }
     }
     throw error;
   }

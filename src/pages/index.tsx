@@ -1,16 +1,19 @@
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Head from "next/head";
+
 export default function LandingPage() {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Head>

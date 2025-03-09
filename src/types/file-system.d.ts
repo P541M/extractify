@@ -1,9 +1,14 @@
 // src/types/file-system.d.ts
-
 // Add type definitions for HTML input element with webkitdirectory property
 interface HTMLInputElementWithDirectory extends HTMLInputElement {
   webkitdirectory?: boolean;
   directory?: boolean;
+}
+
+// FileSystem interface type
+interface FileSystemObj {
+  name: string;
+  root: FileSystemDirectoryEntry;
 }
 
 // Add type definitions for WebkitFileSystem API
@@ -12,24 +17,30 @@ interface FileSystemEntry {
   isDirectory: boolean;
   name: string;
   fullPath: string;
-  filesystem: any;
+  filesystem: FileSystemObj;
   getParent(
     successCallback: (parent: FileSystemDirectoryEntry) => void,
     errorCallback?: (error: Error) => void
   ): void;
 }
 
+// Define options interface for FileSystem operations
+interface FileSystemOptions {
+  create?: boolean;
+  exclusive?: boolean;
+}
+
 interface FileSystemDirectoryEntry extends FileSystemEntry {
   createReader(): FileSystemDirectoryReader;
   getFile(
     path?: string,
-    options?: any,
+    options?: FileSystemOptions,
     successCallback?: (file: FileSystemFileEntry) => void,
     errorCallback?: (error: Error) => void
   ): void;
   getDirectory(
     path?: string,
-    options?: any,
+    options?: FileSystemOptions,
     successCallback?: (directory: FileSystemDirectoryEntry) => void,
     errorCallback?: (error: Error) => void
   ): void;

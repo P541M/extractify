@@ -28,7 +28,6 @@ export default function LocalFileUploader({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-
     // Get the dropped folder or files
     const items = e.dataTransfer.items;
     if (items) {
@@ -46,7 +45,6 @@ export default function LocalFileUploader({
   const processFiles = async (items: DataTransferItemList) => {
     setIsLoading(true);
     setProgress(10);
-
     try {
       const entries: FileSystemEntry[] = [];
       for (let i = 0; i < items.length; i++) {
@@ -58,13 +56,12 @@ export default function LocalFileUploader({
           }
         }
       }
-
       setProgress(20);
       const files = await traverseFileSystem(entries);
       setProgress(50);
       await processFileContents(files);
-    } catch (error) {
-      console.error("Error processing files:", error);
+    } catch (err) {
+      console.error("Error processing files:", err);
       setIsLoading(false);
       setProgress(0);
     }
@@ -73,18 +70,16 @@ export default function LocalFileUploader({
   const processSelectedFiles = async (files: File[]) => {
     setIsLoading(true);
     setProgress(10);
-
     try {
       // Convert File objects to a structure with path and file
       const fileEntries = files.map((file) => ({
         path: file.webkitRelativePath || file.name,
         file,
       }));
-
       setProgress(50);
       await processFileContents(fileEntries);
-    } catch (error) {
-      console.error("Error processing selected files:", error);
+    } catch (err) {
+      console.error("Error processing selected files:", err);
       setIsLoading(false);
       setProgress(0);
     }
@@ -94,7 +89,6 @@ export default function LocalFileUploader({
     entries: FileSystemEntry[]
   ): Promise<{ path: string; file: File }[]> => {
     const fileEntries: { path: string; file: File }[] = [];
-
     const traverseEntry = async (entry: FileSystemEntry, path: string = "") => {
       if (entry.isFile) {
         const fileEntry = entry as FileSystemFileEntry;
@@ -105,7 +99,6 @@ export default function LocalFileUploader({
       } else if (entry.isDirectory) {
         const dirEntry = entry as FileSystemDirectoryEntry;
         const dirReader = dirEntry.createReader();
-
         const readEntries = (): Promise<FileSystemEntry[]> => {
           return new Promise((resolve) => {
             dirReader.readEntries((entries) => {
@@ -117,31 +110,25 @@ export default function LocalFileUploader({
             });
           });
         };
-
         let dirEntries: FileSystemEntry[] = [];
         let newEntries: FileSystemEntry[] = await readEntries();
-
         while (newEntries.length > 0) {
           dirEntries = dirEntries.concat(newEntries);
           newEntries = await readEntries();
         }
-
         for (const childEntry of dirEntries) {
           await traverseEntry(childEntry, path + entry.name + "/");
         }
       }
     };
-
     for (const entry of entries) {
       await traverseEntry(entry);
     }
-
     return fileEntries;
   };
 
   const processFileContents = async (files: { path: string; file: File }[]) => {
     setProgress(60);
-
     // Define file extensions to skip (binary files, images, etc.)
     const skipExtensions = [
       ".png",
@@ -179,20 +166,16 @@ export default function LocalFileUploader({
       ".exe",
       ".bin",
     ];
-
     let combinedCode = "";
     const totalFiles = files.length;
     const maxFiles = Math.min(totalFiles, 50); // Limit to 50 files
     const filesToProcess = files.slice(0, maxFiles);
-
     for (let i = 0; i < filesToProcess.length; i++) {
       const { path, file } = filesToProcess[i];
       const fileName = file.name;
       const extension = "." + fileName.split(".").pop()?.toLowerCase();
-
       // Update progress based on file index
       setProgress(60 + Math.floor((i / filesToProcess.length) * 35));
-
       if (skipExtensions.includes(extension)) {
         if (extension.match(/\.(png|jpg|jpeg|gif|bmp|tiff|webp|svg|ico)$/)) {
           combinedCode += `\nFile name: ${fileName}\nFile path: ${path}\nFile Code: [Image content omitted]\n\n`;
@@ -203,18 +186,17 @@ export default function LocalFileUploader({
         try {
           const content = await file.text();
           combinedCode += `\nFile name: ${fileName}\nFile path: ${path}\nFile Code:\n${content}\n\n`;
-        } catch (error) {
+        } catch {
+          // Catch error without defining an unused variable
           combinedCode += `\nFile name: ${fileName}\nFile path: ${path}\nFile Code: [Content could not be read]\n\n`;
         }
       }
     }
-
     if (totalFiles > maxFiles) {
       combinedCode += `\n[Additional ${
         totalFiles - maxFiles
       } files were omitted]\n`;
     }
-
     setProgress(100);
     setTimeout(() => {
       setIsLoading(false);
@@ -246,8 +228,8 @@ export default function LocalFileUploader({
           ref={fileInputRef}
           onChange={handleFileSelect}
           className="hidden"
-          directory="true"
-          webkitdirectory="true"
+          // Use attribute assignment for these non-standard attributes
+          {...{ webkitdirectory: "", directory: "" }}
           multiple
         />
         <div className="flex flex-col items-center justify-center">

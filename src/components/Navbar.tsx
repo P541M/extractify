@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 
 export default function Navbar() {
   const { data: session } = useSession();
-  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -23,7 +22,10 @@ export default function Navbar() {
       }
     };
     window.addEventListener("scroll", handleScroll);
-    setMounted(true);
+
+    // Initial scroll check
+    handleScroll();
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };

@@ -75,7 +75,9 @@ export default function TermsPage() {
                     <li>Upload and process local project folders</li>
                     <li>Extract code files with proper file names and paths</li>
                     <li>Format code for easy sharing with AI assistants</li>
-                    <li>Maintain a history of repositories you've accessed</li>
+                    <li>
+                      Maintain a history of repositories you&apos;ve accessed
+                    </li>
                   </ul>
                 </div>
               </section>
@@ -252,10 +254,10 @@ export default function TermsPage() {
                     </h3>
                     <p className="text-gray-300">
                       You are responsible for ensuring that your use of
-                      extracted code complies with the original repository's
-                      license terms. Extractify does not modify licensing
-                      information and encourages users to respect the original
-                      licenses.
+                      extracted code complies with the original
+                      repository&apos;s license terms. Extractify does not
+                      modify licensing information and encourages users to
+                      respect the original licenses.
                     </p>
                   </div>
                   <div>
@@ -351,11 +353,11 @@ export default function TermsPage() {
                       Service Availability
                     </h3>
                     <p className="text-gray-300">
-                      Extractify is provided "as is" and "as available." We do
-                      not guarantee that our service will be uninterrupted,
-                      timely, secure, or error-free. We reserve the right to
-                      modify, suspend, or discontinue the service at any time
-                      without notice.
+                      Extractify is provided &ldquo;as is&rdquo; and &ldquo;as
+                      available.&rdquo; We do not guarantee that our service
+                      will be uninterrupted, timely, secure, or error-free. We
+                      reserve the right to modify, suspend, or discontinue the
+                      service at any time without notice.
                     </p>
                   </div>
                   <div>
@@ -410,9 +412,9 @@ export default function TermsPage() {
                   <p className="text-gray-300">
                     We may update these Terms of Service from time to time. We
                     will notify you of any significant changes by posting the
-                    new Terms on this page and updating the "Last Updated" date.
-                    Your continued use of Extractify after such changes
-                    constitutes your acceptance of the new Terms.
+                    new Terms on this page and updating the &ldquo;Last
+                    Updated&rdquo; date. Your continued use of Extractify after
+                    such changes constitutes your acceptance of the new Terms.
                   </p>
                 </div>
               </section>

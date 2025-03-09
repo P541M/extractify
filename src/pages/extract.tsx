@@ -148,6 +148,7 @@ export default function ExtractPage() {
       </div>
     );
   }
+
   if (!session) return null;
 
   const updateSetting = (
@@ -315,7 +316,9 @@ export default function ExtractPage() {
       await handleRepoClick(repoUrl, true);
     } else {
       // Check access immediately
-      const hasAccess = await checkRepoAccess(repoUrl, session.accessToken);
+      // Ensure session.accessToken is defined or provide a default empty string
+      const accessToken = session.accessToken || "";
+      const hasAccess = await checkRepoAccess(repoUrl, accessToken);
       const userReposCollectionName = getUserRepositoriesCollection(
         session.githubUserId
       );
@@ -488,12 +491,15 @@ export default function ExtractPage() {
     updated.splice(index, 0, moved);
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
+
+    // Store the githubUserId in a local variable to ensure TypeScript recognizes it's defined
+    const githubUserId = session.githubUserId;
+
     updated.forEach(async (repo, idx) => {
       try {
         console.log("Updating repo order:", { repo, newOrder: idx });
-        const userReposCollectionName = getUserRepositoriesCollection(
-          session.githubUserId
-        );
+        const userReposCollectionName =
+          getUserRepositoriesCollection(githubUserId);
         await updateDoc(doc(db, userReposCollectionName, repo.id), {
           order: idx,
         });

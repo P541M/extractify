@@ -267,8 +267,9 @@ export default function PrivacyPage() {
                     <strong>Local File Data</strong>: Since all local file
                     processing is performed client-side in your browser, no
                     local file data is retained on our servers. The processed
-                    content exists only temporarily in your browser's memory and
-                    is cleared when you close the application or navigate away.
+                    content exists only temporarily in your browse&apos;s memory
+                    and is cleared when you close the application or navigate
+                    away.
                   </p>
                 </div>
               </section>
@@ -341,9 +342,9 @@ export default function PrivacyPage() {
                   <p className="text-gray-300">
                     We may update our Privacy Policy from time to time. We will
                     notify you of any changes by posting the new Privacy Policy
-                    on this page and updating the "Last Updated" date. You are
-                    advised to review this Privacy Policy periodically for any
-                    changes.
+                    on this page and updating the &ldquo;Last Updated&rdquo;
+                    date. You are advised to review this Privacy Policy
+                    periodically for any changes.
                   </p>
                 </div>
               </section>
