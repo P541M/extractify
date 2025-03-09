@@ -2,10 +2,10 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Head from "next/head";
 import Image from "next/image";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import SEO from "../components/SEO";
 
 export default function LoginPage() {
   const { status } = useSession();
@@ -14,7 +14,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/extract");
+      router.push("/extract/");
     }
     setMounted(true);
   }, [status, router]);
@@ -32,9 +32,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Head>
-        <title>Extractify - Sign In</title>
-      </Head>
+      <SEO
+        title="Sign In - Extractify"
+        description="Sign in to Extractify with your GitHub account to start extracting code from repositories and local projects for AI analysis."
+        canonicalUrl="https://extractifycode.com/login/"
+      />
+
       {/* Navbar */}
       <Navbar />
 
@@ -68,7 +71,7 @@ export default function LoginPage() {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-10 blur-lg rounded-lg"></div>
               <button
-                onClick={() => signIn("github", { callbackUrl: "/extract" })}
+                onClick={() => signIn("github", { callbackUrl: "/extract/" })}
                 className="w-full relative bg-background border border-border text-white px-6 py-4 rounded-lg font-medium hover:border-border-light transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 flex items-center justify-center group"
               >
                 <svg
@@ -101,14 +104,14 @@ export default function LoginPage() {
             <p>By continuing, you agree to Extractify&apos;s</p>
             <div className="flex justify-center space-x-2 mt-1">
               <Link
-                href="/terms"
+                href="/terms/"
                 className="text-primary hover:text-secondary transition-colors duration-300"
               >
                 Terms of Service
               </Link>
               <span>&</span>
               <Link
-                href="/privacy"
+                href="/privacy/"
                 className="text-primary hover:text-secondary transition-colors duration-300"
               >
                 Privacy Policy

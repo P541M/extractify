@@ -1,6 +1,5 @@
-// src/pages/extract.tsx
+// src/pages/extract.tsx (continued)
 import { useState, useEffect } from "react";
-import Head from "next/head";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { db, getUserRepositoriesCollection } from "../firebase/firebase";
@@ -18,6 +17,7 @@ import Sidebar from "../components/Sidebar";
 import CodeExtractor from "../components/CodeExtractor";
 import ProfileMenu from "../components/ProfileMenu";
 import { checkRepoAccess } from "../lib/api"; // Import the access check function
+import SEO from "../components/SEO";
 
 export default function ExtractPage() {
   // State Variables
@@ -58,8 +58,31 @@ export default function ExtractPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+  // Get repo name for dynamic SEO
+  const getRepoName = () => {
+    if (!repoUrl) return null;
+
+    const match = repoUrl.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+    if (match && match[1] && match[2]) {
+      const repoName = match[2].replace(/\.git$/, "");
+      return `${match[1]}/${repoName}`;
+    }
+
+    return null;
+  };
+
+  // Dynamic SEO description
+  const getSEODescription = () => {
+    const repoName = getRepoName();
+    if (repoName) {
+      return `Extract code from ${repoName} GitHub repository with proper formatting for AI analysis. Quickly access and share code with line numbers and file paths.`;
+    }
+
+    return "Extract code from GitHub repositories and local projects with proper formatting for AI analysis. Quickly access and share code with line numbers and file paths.";
+  };
+
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
+    if (status === "unauthenticated") router.push("/login/");
   }, [status, router]);
 
   useEffect(() => {
@@ -491,10 +514,8 @@ export default function ExtractPage() {
     updated.splice(index, 0, moved);
     setStarredRepos(updated);
     setDraggedRepoIndex(null);
-
     // Store the githubUserId in a local variable to ensure TypeScript recognizes it's defined
     const githubUserId = session.githubUserId;
-
     updated.forEach(async (repo, idx) => {
       try {
         console.log("Updating repo order:", { repo, newOrder: idx });
@@ -545,9 +566,16 @@ export default function ExtractPage() {
 
   return (
     <div className="min-h-screen bg-background flex relative">
-      <Head>
-        <title>Extractify - Code Extraction Tool</title>
-      </Head>
+      <SEO
+        title={
+          getRepoName()
+            ? `Extract Code from ${getRepoName()}`
+            : "Extract Code - Extractify"
+        }
+        description={getSEODescription()}
+        canonicalUrl="https://extractifycode.com/extract/"
+      />
+
       <ProfileMenu
         // @ts-expect-error Session type incompatibility
         session={session}
@@ -555,6 +583,7 @@ export default function ExtractPage() {
         autoExtract={autoExtract}
         updateSetting={updateSetting}
       />
+
       {!sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(true)}
@@ -577,6 +606,7 @@ export default function ExtractPage() {
           </svg>
         </button>
       )}
+
       <Sidebar
         sidebarOpen={sidebarOpen}
         toggleSidebar={() => setSidebarOpen((prev) => !prev)}
@@ -590,8 +620,9 @@ export default function ExtractPage() {
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        onAddNewRepo={handleAddNewRepo} // Updated to use the new handler
+        onAddNewRepo={handleAddNewRepo}
       />
+
       <div
         className={`flex-1 transition-all duration-300 ${
           sidebarOpen ? "ml-64" : "ml-0"

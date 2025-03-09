@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Head from "next/head";
+import SEO from "../components/SEO";
 
 export default function LandingPage() {
   const { data: session } = useSession();
@@ -14,13 +14,41 @@ export default function LandingPage() {
     setMounted(true);
   }, []);
 
+  // Structured data for search engines
+  const structuredDataScript = {
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "Extractify",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "Web",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      description:
+        "Extract code from GitHub repositories and local projects with proper formatting for AI analysis and collaboration.",
+    }),
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Head>
-        <title>Extractify</title>
-      </Head>
+      <SEO
+        title="Extractify - Extract Code from Anywhere"
+        description="Quickly extract and explore code from GitHub repositories or local project folders. Perfect for documentation, AI analysis, and sharing with teammates."
+        canonicalUrl="https://extractifycode.com/"
+      />
+
+      {/* Additional structured data script for rich results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={structuredDataScript}
+      />
+
       {/* Header */}
       <Navbar />
+
       {/* Hero Section */}
       <section className="relative bg-card overflow-hidden">
         <div className="absolute inset-0">
@@ -47,7 +75,7 @@ export default function LandingPage() {
             </p>
             {session ? (
               <Link
-                href="/extract"
+                href="/extract/"
                 className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Start Extracting</span>
@@ -66,7 +94,7 @@ export default function LandingPage() {
               </Link>
             ) : (
               <Link
-                href="/login"
+                href="/login/"
                 className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1 group"
               >
                 <span>Sign In with GitHub</span>
@@ -87,6 +115,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
       {/* Features Section */}
       <section className="py-20 bg-card relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
@@ -155,6 +184,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
       {/* Call to Action */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-card to-background"></div>
@@ -178,7 +208,7 @@ export default function LandingPage() {
           </p>
           {session ? (
             <Link
-              href="/extract"
+              href="/extract/"
               className="inline-flex items-center bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
             >
               Go to Extractor
@@ -186,16 +216,16 @@ export default function LandingPage() {
           ) : (
             <div className="space-y-4">
               <Link
-                href="/login"
+                href="/login/"
                 className="inline-block bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 text-lg shadow-lg hover:shadow-primary/20 hover:-translate-y-1"
               >
                 Get Started for Free
               </Link>
-              <p className="text-gray-400 text-sm">No credit card required</p>
             </div>
           )}
         </div>
       </section>
+
       {/* Footer */}
       <Footer />
     </div>

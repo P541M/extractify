@@ -2,22 +2,25 @@
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Head from "next/head";
+import SEO from "../components/SEO";
 
 export default function PrivacyPage() {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Head>
-        <title>Extractify - Privacy Policy</title>
-      </Head>
+      <SEO
+        title="Privacy Policy - Extractify"
+        description="Learn how Extractify protects your privacy and handles your data. We prioritize secure GitHub integration and local processing of files."
+        canonicalUrl="https://extractifycode.com/privacy/"
+      />
+
       {/* Navbar */}
       <Navbar />
+
       {/* Privacy Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -386,6 +389,7 @@ export default function PrivacyPage() {
           </div>
         </div>
       </main>
+
       {/* Footer */}
       <Footer />
     </div>

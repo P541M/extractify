@@ -3,20 +3,22 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Head from "next/head";
+import SEO from "../components/SEO";
 
 export default function AboutPage() {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Head>
-        <title>Extractify - About Us</title>
-      </Head>
+      <SEO
+        title="About Extractify"
+        description="Learn about Extractify, the tool that helps developers extract code from repositories and local projects for AI analysis and collaboration."
+        canonicalUrl="https://extractifycode.com/about/"
+      />
+
       {/* Navbar */}
       <Navbar />
 
@@ -228,13 +230,13 @@ export default function AboutPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/extract"
+                  href="/extract/"
                   className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 hover:shadow-lg font-medium text-center"
                 >
                   Try Extractify Now
                 </Link>
                 <Link
-                  href="/login"
+                  href="/login/"
                   className="bg-card-hover text-white px-6 py-3 rounded-lg hover:bg-card-hover/80 transition-all duration-300 hover:shadow-lg font-medium text-center border border-border"
                 >
                   Sign In with GitHub
@@ -244,6 +246,7 @@ export default function AboutPage() {
           </div>
         </div>
       </main>
+
       {/* Footer */}
       <Footer />
     </div>

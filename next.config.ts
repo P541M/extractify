@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
     // Check for TypeScript errors during build
     ignoreBuildErrors: false,
   },
+  // Add trailing slashes for better SEO
+  trailingSlash: true,
+  // Remove X-Powered-By header for security
+  poweredByHeader: false,
 };
 
 export default nextConfig;

@@ -2,22 +2,25 @@
 import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import Head from "next/head";
+import SEO from "../components/SEO";
 
 export default function TermsPage() {
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <Head>
-        <title>Extractify - Terms of Service</title>
-      </Head>
+      <SEO
+        title="Terms of Service - Extractify"
+        description="Read the Terms of Service for Extractify. Understand our service offering, user obligations, and privacy practices for code extraction."
+        canonicalUrl="https://extractifycode.com/terms/"
+      />
+
       {/* Navbar */}
       <Navbar />
+
       {/* Terms Content */}
       <main className="flex-1 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
@@ -456,6 +459,7 @@ export default function TermsPage() {
           </div>
         </div>
       </main>
+
       {/* Footer */}
       <Footer />
     </div>
