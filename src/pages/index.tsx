@@ -17,7 +17,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <Head>
-        <title>Extractify - Extract Code from Anywhere</title>
+        <title>Extractify</title>
       </Head>
       {/* Header */}
       <Navbar />
