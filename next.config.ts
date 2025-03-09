@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
     domains: ["avatars.githubusercontent.com"],
   },
   eslint: {
-    // Don't run ESLint during builds to prevent deployment failures
-    ignoreDuringBuilds: true,
+    // Run ESLint during builds to catch issues
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    // Ignore TypeScript errors during build
-    ignoreBuildErrors: true,
+    // Check for TypeScript errors during build
+    ignoreBuildErrors: false,
   },
 };
 
