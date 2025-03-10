@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Extractify - Code Extraction Tool
 
-## Getting Started
+Extractify is a web application that helps developers extract code from GitHub repositories and local projects with proper formatting for AI analysis, documentation, and collaboration.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **GitHub Repository Integration**: Connect with your GitHub account to extract code from any repository you have access to
+- **Local File Processing**: Upload local project folders for code extraction without any data leaving your browser
+- **Proper Code Formatting**: Extract code with file names, paths, and optional line numbers
+- **Repository Management**: Star and organize repositories for quick access
+- **Branch Selection**: Choose specific branches to extract code from
+- **Secure Authentication**: OAuth integration with GitHub
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15
+- **Authentication**: NextAuth.js with GitHub provider
+- **Database**: Firebase Firestore
+- **Styling**: TailwindCSS
+- **API Integration**: Octokit (GitHub API)
+- **TypeScript**: For type safety
+
+## 📋 Project Structure
+
+- `/src/components`: UI components
+- `/src/pages`: Page components and API routes
+- `/src/firebase`: Firebase configuration
+- `/src/lib`: Utility functions
+- `/src/styles`: Global styles
+- `/src/types`: TypeScript type definitions
+- `/public`: Static assets
+
+## 🔧 Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- GitHub OAuth App credentials
+- Firebase project
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory with the following variables:
+
+```
+# GitHub OAuth
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret
+
+# Firebase
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+
+# Debugging (optional)
+DEBUG_LOGGING=false
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/extractify.git
+   cd extractify
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Install dependencies
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-## Learn More
+3. Run the development server
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. Open [http://localhost:3000](http://localhost:3000) with your browser
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📦 Key Components
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **CodeExtractor**: The main component for handling code extraction
+- **LocalFileUploader**: Component for handling local file uploads and processing
+- **Sidebar**: Navigation and repository management
+- **BranchSelector**: Component for selecting repository branches
+- **ProfileMenu**: User settings and profile management
 
-## Deploy on Vercel
+## 🔄 API Routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/api/auth/[...nextauth]`: NextAuth authentication endpoints
+- `/api/extract`: Endpoint for extracting code from GitHub repositories
+- `/api/branches`: Endpoint for fetching repository branches
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧩 Local File Processing
+
+The application processes local files entirely in the browser:
+
+1. Files are selected via the file system API
+2. Processing happens in-memory using client-side JavaScript
+3. No file data is ever transmitted to the server
+4. Binary files and images are automatically detected and excluded
+
+## 📱 Responsive Design
+
+The application is fully responsive and works on:
+- Desktop computers
+- Tablets
+- Mobile devices
+
+## 🚢 Deployment
+
+This project is configured for easy deployment on Vercel:
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+## 🔒 Security Considerations
+
+- GitHub OAuth tokens are securely handled via NextAuth.js
+- Local file processing happens entirely client-side
+- Repository access is verified before extraction
+
+## 🧪 Future Improvements
+
+- Add support for custom file exclusion patterns
+- Implement GitLab and Bitbucket integration
+- Add code analytics features
+- Support custom extraction templates
+- Improve extraction performance for large repositories
