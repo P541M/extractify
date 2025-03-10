@@ -1,15 +1,64 @@
+// src/pages/index.tsx
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
 
+// CountUp component for animated number counting
+const CountUp = ({
+  end,
+  duration = 2,
+  decimals = 0,
+  separator = ",",
+  prefix = "",
+  suffix = "",
+}) => {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(0);
+
+  useEffect(() => {
+    let startTime = null;
+    let animationFrame;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+      const currentCount = Math.floor(progress * end);
+
+      if (currentCount !== countRef.current) {
+        countRef.current = currentCount;
+        setCount(currentCount);
+      }
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        setCount(end);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  const formatNumber = (num) => {
+    const fixed = parseFloat(num).toFixed(decimals);
+    return (
+      prefix +
+      fixed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator) +
+      suffix
+    );
+  };
+
+  return <>{formatNumber(count)}</>;
+};
+
 export default function LandingPage() {
   const { data: session } = useSession();
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -39,18 +88,16 @@ export default function LandingPage() {
         description="Quickly extract and explore code from GitHub repositories or local project folders. Perfect for documentation, AI analysis, and sharing with teammates."
         canonicalUrl="https://extractifycode.com/"
       />
-
       {/* Additional structured data script for rich results */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={structuredDataScript}
       />
-
       {/* Header */}
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative bg-card overflow-hidden">
+      <section className="relative bg-card overflow-hidden min-h-[68vh] flex items-center">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/10 animate-gradient"></div>
         </div>
@@ -112,6 +159,101 @@ export default function LandingPage() {
                 </svg>
               </Link>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section - Now a standalone section */}
+      <section className="py-16 bg-background relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-card/50 to-background"></div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl font-bold text-white">
+              Trusted by Developers Worldwide
+            </h2>
+            <p className="text-gray-400 mt-2">
+              Our platform helps developers streamline their workflow every day
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+            <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-primary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <div className="text-3xl font-bold text-primary mb-2">
+                <CountUp end={50000} duration={2.5} separator="," />+
+              </div>
+              <p className="text-gray-300">Files Extracted</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Helping developers share their code efficiently
+              </p>
+            </div>
+
+            <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-secondary/30 hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-secondary/10 rounded-lg mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-secondary"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+              <div className="text-3xl font-bold text-secondary mb-2">
+                <CountUp end={150} duration={2} separator="," />+
+              </div>
+              <p className="text-gray-300">Happy Developers</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Building better software with our tools
+              </p>
+            </div>
+
+            <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-accent/30 hover:-translate-y-1">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-accent/10 rounded-lg mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <div className="text-3xl font-bold text-accent mb-2">
+                <CountUp end={95} duration={3} suffix="%" />
+              </div>
+              <p className="text-gray-300">Time Saved</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Average time saved vs. manual code extraction
+              </p>
+            </div>
           </div>
         </div>
       </section>
