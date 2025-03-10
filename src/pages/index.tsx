@@ -7,6 +7,16 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import SEO from "../components/SEO";
 
+// Define types for CountUp component props
+interface CountUpProps {
+  end: number;
+  duration?: number;
+  decimals?: number;
+  separator?: string;
+  prefix?: string;
+  suffix?: string;
+}
+
 // CountUp component for animated number counting
 const CountUp = ({
   end,
@@ -15,44 +25,37 @@ const CountUp = ({
   separator = ",",
   prefix = "",
   suffix = "",
-}) => {
+}: CountUpProps) => {
   const [count, setCount] = useState(0);
   const countRef = useRef(0);
-
   useEffect(() => {
-    let startTime = null;
-    let animationFrame;
-
-    const animate = (timestamp) => {
+    let startTime: number | null = null;
+    let animationFrame: number;
+    const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
       const currentCount = Math.floor(progress * end);
-
       if (currentCount !== countRef.current) {
         countRef.current = currentCount;
         setCount(currentCount);
       }
-
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       } else {
         setCount(end);
       }
     };
-
     animationFrame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationFrame);
   }, [end, duration]);
-
-  const formatNumber = (num) => {
-    const fixed = parseFloat(num).toFixed(decimals);
+  const formatNumber = (num: number) => {
+    const fixed = parseFloat(num.toString()).toFixed(decimals);
     return (
       prefix +
       fixed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, separator) +
       suffix
     );
   };
-
   return <>{formatNumber(count)}</>;
 };
 
@@ -95,7 +98,6 @@ export default function LandingPage() {
       />
       {/* Header */}
       <Navbar />
-
       {/* Hero Section */}
       <section className="relative bg-card overflow-hidden min-h-[68vh] flex items-center">
         <div className="absolute inset-0">
@@ -162,7 +164,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Stats Section - Now a standalone section */}
       <section className="py-16 bg-background relative">
         <div className="absolute inset-0 bg-gradient-to-b from-card/50 to-background"></div>
@@ -175,13 +176,12 @@ export default function LandingPage() {
               Our platform helps developers streamline their workflow every day
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-primary/30 hover:-translate-y-1">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-lg mb-4">
                 <svg
+                  className="w-6 h-6 text-primary"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-primary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -202,12 +202,11 @@ export default function LandingPage() {
                 Helping developers share their code efficiently
               </p>
             </div>
-
             <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-secondary/30 hover:-translate-y-1">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-secondary/10 rounded-lg mb-4">
                 <svg
+                  className="w-6 h-6 text-secondary"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-secondary"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -228,12 +227,11 @@ export default function LandingPage() {
                 Building better software with our tools
               </p>
             </div>
-
             <div className="bg-card p-6 rounded-xl border border-border shadow-lg text-center transition-all duration-300 hover:shadow-xl hover:border-accent/30 hover:-translate-y-1">
               <div className="inline-flex items-center justify-center w-12 h-12 bg-accent/10 rounded-lg mb-4">
                 <svg
+                  className="w-6 h-6 text-accent"
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-accent"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -257,7 +255,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="py-20 bg-card relative">
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
@@ -326,7 +323,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       {/* Call to Action */}
       <section className="py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-card to-background"></div>
@@ -367,7 +363,6 @@ export default function LandingPage() {
           )}
         </div>
       </section>
-
       {/* Footer */}
       <Footer />
     </div>
